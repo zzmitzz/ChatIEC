@@ -29,78 +29,38 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.iec.ui.theme.ColorPrimary
+import com.example.iec.ui.theme.DarkGrayBg
 import com.example.iec.ui.theme.IecTheme
-
+import com.example.iec.ui.theme.PurpleGrey40
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModernChatScreen() {
     var messageText by remember { mutableStateOf("") }
-    val messages = remember { mutableStateListOf<ChatMessage>() }
+    val messages = remember { mutableStateListOf<Message>() }
+    val onlineStatus by remember { mutableStateOf(false) }
+
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(DarkGrayBg)
     ) {
-        // Top App Bar
-        TopAppBar(
-            modifier = Modifier.fillMaxWidth(),
-            title = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Image(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        modifier = Modifier.wrapContentSize(),
-                        contentDescription = "Back"
-                    )
-                    // Profile Picture
-                    Box(
-                        modifier = Modifier
-                            .size(40.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primary)
-                    ) {
-                        Text(
-                            "J",
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    }
-
-                    Column(
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        Text(
-                            "John Doe",
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            "Online",
-                            fontSize = 12.sp,
-                            color = Color.Green
-                        )
-                    }
-
-                    Icon(
-                        imageVector = Icons.Default.Call,
-                        contentDescription = null,
-                        modifier = Modifier.align(Alignment.CenterVertically).padding(end = 12.dp)
-                    )
-                }
-            },
-            colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.surface
+        Box(
+            modifier = Modifier.fillMaxWidth().padding(top = 12.dp)
+        ){
+            TopAppBarMessage(
+                userStatus = if (onlineStatus) UserStatus.ONLINE else UserStatus.OFFLINE,
+                onBackPressed = {},
+                onCallPressed = {}
             )
-        )
-
+        }
         // Chat Messages
         LazyColumn(
             modifier = Modifier
+                .imePadding()
                 .weight(1f)
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp,
@@ -108,41 +68,49 @@ fun ModernChatScreen() {
             reverseLayout = true
         ) {
             items(messages.asReversed()) { chatMessage ->
-                ChatMessageItem(chatMessage)
+                MessageBubble(chatMessage)
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }
 
         // Message Input
         Surface(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 8.dp),
+            modifier = Modifier.fillMaxWidth().background(color = Color.Black).padding(bottom = 8.dp),
             tonalElevation = 2.dp
         ) {
-            Box(){
-                Icon(
-                    imageVector = Icons.Default.MoreVert,
-                    contentDescription = "More options",
-                )
-            }
+
             Row(
                 modifier = Modifier
+                    .background(color = Color.Black)
                     .padding(16.dp)
                     .fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
+                Box(
+                    modifier = Modifier.padding(end = 4.dp)
+                ){
+                    Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        tint = Color(0xFFA9A9A9),
+                        contentDescription = "More options",
+                    )
+                }
                 TextField(
                     value = messageText,
                     onValueChange = { messageText = it },
                     modifier = Modifier
                         .weight(1f)
-                        .padding(end = 8.dp),
-                    placeholder = { Text("Type a message...") },
+                        .height(50.dp)
+                        .padding(end = 4.dp),
+                    placeholder = { Text("Type a message...", color = Color.White) },
                     colors = TextFieldDefaults.textFieldColors(
-                        containerColor = MaterialTheme.colorScheme.surface,
+                        containerColor = Color(0xFF454545),
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent
                     ),
+
                     shape = RoundedCornerShape(24.dp)
                 )
 
@@ -150,7 +118,7 @@ fun ModernChatScreen() {
                     onClick = {
                         if (messageText.isNotBlank()) {
                             messages.add(
-                                ChatMessage(
+                                Message(
                                     message = messageText,
                                     isFromUser = true,
                                     timestamp = System.currentTimeMillis()
@@ -159,7 +127,8 @@ fun ModernChatScreen() {
                             messageText = ""
                         }
                     },
-                    containerColor = MaterialTheme.colorScheme.primary,
+                    containerColor = ColorPrimary,
+                    modifier = Modifier.size(50.dp),
                     contentColor = MaterialTheme.colorScheme.onPrimary
                 ) {
                     Icon(Icons.Default.Send, contentDescription = "Send")

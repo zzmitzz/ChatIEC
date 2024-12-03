@@ -17,7 +17,6 @@ import com.example.iec.ui.theme.IecTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             IecTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
