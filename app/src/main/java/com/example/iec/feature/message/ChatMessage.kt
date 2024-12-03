@@ -10,21 +10,31 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Call
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -45,6 +55,92 @@ import com.example.iec.R
 import com.example.iec.ui.theme.ColorPrimary
 import com.example.iec.ui.theme.colorOnPrimary
 
+
+@Composable
+fun ChattingComponent(
+    messages: List<Message>
+){
+    Box(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp,
+            vertical = 8.dp),
+    ){
+        LazyColumn(
+            modifier = Modifier
+                .imePadding()
+                .fillMaxSize(),
+
+            reverseLayout = true
+        ) {
+            items(messages.asReversed()) { chatMessage ->
+                MessageBubble(chatMessage)
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MessageInput(
+    messageText: String,
+    onMessageChange: (String) -> Unit,
+    onMessageSent: (String) -> Unit
+){
+    Surface(
+        modifier = Modifier.fillMaxWidth().background(color = Color.Black).padding(bottom = 8.dp),
+        tonalElevation = 2.dp
+    ) {
+
+        Row(
+            modifier = Modifier
+                .background(color = Color.Black)
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier.padding(end = 4.dp)
+            ){
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    tint = Color(0xFFA9A9A9),
+                    contentDescription = "More options",
+                )
+            }
+            TextField(
+                value = messageText,
+                onValueChange = onMessageChange,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(50.dp)
+                    .padding(end = 4.dp),
+                placeholder = { Text("Type a message...", color = Color.White) },
+                colors = TextFieldDefaults.textFieldColors(
+                    containerColor = Color(0xFF454545),
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White,
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                ),
+
+                shape = RoundedCornerShape(24.dp)
+            )
+
+            FloatingActionButton(
+                onClick = {
+                    if (messageText.isNotBlank()) {
+                        onMessageSent(messageText)
+                    }
+                },
+                containerColor = ColorPrimary,
+                modifier = Modifier.size(50.dp),
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ) {
+                Icon(Icons.Default.Send, contentDescription = "Send")
+            }
+        }
+    }
+}
 
 @Composable
 fun MessageBubble(message: Message) {
@@ -190,6 +286,8 @@ fun TopAppBarMessage(
     }
 }
 
+
+
 @Preview(showBackground = true, backgroundColor = android.graphics.Color.BLACK.toLong())
 @Composable
 fun PreviewUI() {
@@ -205,3 +303,24 @@ fun PreviewUI1() {
         onCallPressed = {})
 
 }
+@Preview(showBackground = true, backgroundColor = android.graphics.Color.BLACK.toLong())
+@Composable
+fun PreviewUI3() {
+    MessageInput(
+        messageText = "",
+        onMessageChange = {},
+        onMessageSent = {}
+    )
+}
+@Preview(showBackground = true, backgroundColor = android.graphics.Color.BLACK.toLong())
+@Composable
+fun PreviewUI2() {
+    ChattingComponent(listOf(
+        Message(isFromUser = true, message = "Hello", timestamp = 0),
+        Message(isFromUser = false, message = "Hello", timestamp = 0),
+        Message(isFromUser = true, message = "Hello", timestamp = 0),
+        Message(isFromUser = false, message = "Hello", timestamp = 0),
+    ))
+
+}
+

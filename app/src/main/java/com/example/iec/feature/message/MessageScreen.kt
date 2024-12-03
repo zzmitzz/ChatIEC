@@ -41,15 +41,15 @@ fun ModernChatScreen() {
     var messageText by remember { mutableStateOf("") }
     val messages = remember { mutableStateListOf<Message>() }
     val onlineStatus by remember { mutableStateOf(false) }
-
-
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(DarkGrayBg)
     ) {
         Box(
-            modifier = Modifier.fillMaxWidth().padding(top = 12.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 12.dp)
         ){
             TopAppBarMessage(
                 userStatus = if (onlineStatus) UserStatus.ONLINE else UserStatus.OFFLINE,
@@ -57,84 +57,36 @@ fun ModernChatScreen() {
                 onCallPressed = {}
             )
         }
-        // Chat Messages
-        LazyColumn(
+        HorizontalDivider(
+            modifier = Modifier.padding(8.dp)
+        )
+        Box(
             modifier = Modifier
-                .imePadding()
-                .weight(1f)
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp,
-                    vertical = 8.dp),
-            reverseLayout = true
-        ) {
-            items(messages.asReversed()) { chatMessage ->
-                MessageBubble(chatMessage)
-                Spacer(modifier = Modifier.height(8.dp))
-            }
+                .weight(1f)
+        ){
+            ChattingComponent(messages)
         }
 
-        // Message Input
-        Surface(
-            modifier = Modifier.fillMaxWidth().background(color = Color.Black).padding(bottom = 8.dp),
-            tonalElevation = 2.dp
-        ) {
-
-            Row(
-                modifier = Modifier
-                    .background(color = Color.Black)
-                    .padding(16.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier.padding(end = 4.dp)
-                ){
-                    Icon(
-                        imageVector = Icons.Default.MoreVert,
-                        tint = Color(0xFFA9A9A9),
-                        contentDescription = "More options",
+        Box(
+            modifier = Modifier.fillMaxWidth()
+        ){
+            MessageInput(
+                messageText = messageText,
+                onMessageChange = { messageText = it },
+                onMessageSent = {
+                    messages.add(
+                        Message(
+                            message = messageText,
+                            isFromUser = true,
+                            timestamp = System.currentTimeMillis()
+                        )
                     )
+                    messageText = ""
                 }
-                TextField(
-                    value = messageText,
-                    onValueChange = { messageText = it },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(50.dp)
-                        .padding(end = 4.dp),
-                    placeholder = { Text("Type a message...", color = Color.White) },
-                    colors = TextFieldDefaults.textFieldColors(
-                        containerColor = Color(0xFF454545),
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
-                    ),
-
-                    shape = RoundedCornerShape(24.dp)
-                )
-
-                FloatingActionButton(
-                    onClick = {
-                        if (messageText.isNotBlank()) {
-                            messages.add(
-                                Message(
-                                    message = messageText,
-                                    isFromUser = true,
-                                    timestamp = System.currentTimeMillis()
-                                )
-                            )
-                            messageText = ""
-                        }
-                    },
-                    containerColor = ColorPrimary,
-                    modifier = Modifier.size(50.dp),
-                    contentColor = MaterialTheme.colorScheme.onPrimary
-                ) {
-                    Icon(Icons.Default.Send, contentDescription = "Send")
-                }
-            }
+            )
         }
+
     }
 }
 
