@@ -34,21 +34,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MainApp(){
     val myNavController = rememberNavController()
-    NavHost(
-        navController = myNavController,
-        startDestination = ScreenDestinationLevel.YourTask.route
-    ){
-        composable(route = ScreenDestinationLevel.Message.route) {
-            ModernChatScreen()
-        }
-        composable(route = ScreenDestinationLevel.YourTask.route) {
-            ModernChatScreen()
-        }
-        composable(route = ScreenDestinationLevel.Setting.route) {
-            ModernChatScreen()
-        }
-        composable(route = ScreenDestinationLevel.CheckIn.route) {
-            ModernChatScreen()
-        }
+    Scaffold(
+        bottomBar = { BottomBar(navController = myNavController) }
+    ) { paddingValues ->
+
     }
 }
