@@ -1,4 +1,4 @@
-package com.example.iec.feature.message
+package com.example.iec.ui.feature.message
 
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.Image

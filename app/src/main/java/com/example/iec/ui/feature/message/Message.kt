@@ -1,4 +1,4 @@
-package com.example.iec.feature.message
+package com.example.iec.ui.feature.message
 
 data class Message(
     val header: HEADER = HEADER.MESSAGE,

@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">iec</string>
     <string name="message">Message</string>
+    <string name="task">Task</string>
+    <string name="checkIn">Check In</string>
+    <string name="setting">Setting</string>
 </resources>

@@ -1,4 +1,4 @@
-package com.example.iec.feature.message
+package com.example.iec.ui.feature.message
 
 import androidx.compose.runtime.Composable
 import kotlinx.coroutines.CoroutineScope

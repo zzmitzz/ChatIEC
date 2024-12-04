@@ -11,7 +11,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.iec.feature.message.ModernChatScreen
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.example.iec.navigation.ScreenDestinationLevel
+import com.example.iec.ui.feature.message.ModernChatScreen
 import com.example.iec.ui.theme.IecTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,9 +24,31 @@ class MainActivity : ComponentActivity() {
         setContent {
             IecTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    ModernChatScreen()
+                    MainApp()
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun MainApp(){
+    val myNavController = rememberNavController()
+    NavHost(
+        navController = myNavController,
+        startDestination = ScreenDestinationLevel.YourTask.route
+    ){
+        composable(route = ScreenDestinationLevel.Message.route) {
+            ModernChatScreen()
+        }
+        composable(route = ScreenDestinationLevel.YourTask.route) {
+            ModernChatScreen()
+        }
+        composable(route = ScreenDestinationLevel.Setting.route) {
+            ModernChatScreen()
+        }
+        composable(route = ScreenDestinationLevel.CheckIn.route) {
+            ModernChatScreen()
         }
     }
 }
