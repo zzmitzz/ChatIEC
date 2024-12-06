@@ -49,14 +49,14 @@ enum class ScreenDestinationLevel(
         selectedIcon = Icons.Rounded.LocationOn,
         unSelectedIcon = Icons.Outlined.LocationOn,
         iconText = R.string.message,
-        titleTextId = R.string.message,
+        titleTextId = R.string.checkIn,
         route = TopScreenRoute.CheckIn.route
     ),
     Setting(
         selectedIcon = Icons.Rounded.Settings,
         unSelectedIcon = Icons.Outlined.Settings,
         iconText = R.string.message,
-        titleTextId = R.string.message,
+        titleTextId = R.string.setting,
         route = TopScreenRoute.Setting.route
     ),
 }

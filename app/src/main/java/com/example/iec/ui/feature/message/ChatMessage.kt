@@ -17,9 +17,12 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -42,6 +45,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -61,8 +65,12 @@ fun ChattingComponent(
     messages: List<Message>
 ){
     Box(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp,
-            vertical = 8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                horizontal = 8.dp,
+                vertical = 8.dp
+            ),
     ){
         LazyColumn(
             modifier = Modifier
@@ -71,8 +79,9 @@ fun ChattingComponent(
 
             reverseLayout = true
         ) {
-            items(messages.asReversed()) { chatMessage ->
-                MessageBubble(chatMessage)
+
+            itemsIndexed(messages) { index, chatMessage ->
+                MessageBubble((index == 0) || (index > 0 && messages[index-1].isFromUser), chatMessage)
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }
@@ -87,7 +96,10 @@ fun MessageInput(
     onMessageSent: (String) -> Unit
 ){
     Surface(
-        modifier = Modifier.fillMaxWidth().background(color = Color.Black).padding(bottom = 8.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = Color.Black)
+            .padding(bottom = 8.dp),
         tonalElevation = 2.dp
     ) {
 
@@ -112,7 +124,7 @@ fun MessageInput(
                 onValueChange = onMessageChange,
                 modifier = Modifier
                     .weight(1f)
-                    .height(50.dp)
+                    .wrapContentHeight()
                     .padding(end = 4.dp),
                 placeholder = { Text("Type a message...", color = Color.White) },
                 colors = TextFieldDefaults.textFieldColors(
@@ -143,19 +155,34 @@ fun MessageInput(
 }
 
 @Composable
-fun MessageBubble(message: Message) {
+fun MessageBubble(
+    showAvatar: Boolean,
+    message: Message) {
     var onShowTimeStamp by remember { mutableStateOf(false) }
     val interactionSource = remember { MutableInteractionSource() }
     Column(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp),
         horizontalAlignment = if (message.isFromUser) Alignment.End else Alignment.Start,
         verticalArrangement = Arrangement.Center
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.Bottom
         ) {
+            if(!message.isFromUser){
+                Image(
+                    modifier = Modifier
+                        .padding(end = 6.dp)
+                        .alpha(if (showAvatar) 1f else 0f)
+                        .background(color = colorOnPrimary, shape = CircleShape)
+                        .size(30.dp),
+                    painter = painterResource(R.drawable.ic_launcher_foreground),
+                    contentDescription = "Profile Picture",
+                )
+            }
             Surface(
+                modifier = Modifier,
                 shape = RoundedCornerShape(
                     topStart = 20.dp,
                     topEnd = 20.dp,
@@ -164,6 +191,7 @@ fun MessageBubble(message: Message) {
                 ),
                 color = ColorPrimary
             ) {
+
                 Column(
                     modifier = Modifier
                         .padding(12.dp)
@@ -175,12 +203,14 @@ fun MessageBubble(message: Message) {
                         }
 
                 ) {
+
                     Text(
+                        modifier = Modifier.wrapContentWidth(),
                         text = message.message,
                         color = if (message.isFromUser)
                             MaterialTheme.colorScheme.onSecondary
                         else
-                            MaterialTheme.colorScheme.onSurfaceVariant,
+                            MaterialTheme.colorScheme.onSecondary,
 
                         )
                     if (onShowTimeStamp) {
@@ -195,14 +225,7 @@ fun MessageBubble(message: Message) {
                     }
                 }
             }
-            Image(
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .background(color = colorOnPrimary, shape = CircleShape)
-                    .size(30.dp),
-                painter = painterResource(R.drawable.ic_launcher_foreground),
-                contentDescription = "Profile Picture",
-            )
+
         }
 
     }
@@ -219,16 +242,20 @@ fun TopAppBarMessage(
     onCallPressed: () -> Unit
 ) {
     Row(
-        modifier = Modifier.padding(horizontal = 8.dp).background(color = Color.Black),
+        modifier = Modifier
+            .padding(horizontal = 8.dp)
+            .background(color = Color.Black),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Image(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
             colorFilter = ColorFilter.tint(Color.White),
-            modifier = Modifier.wrapContentSize().clickable {
-                onBackPressed()
-            },
+            modifier = Modifier
+                .wrapContentSize()
+                .clickable {
+                    onBackPressed()
+                },
             contentDescription = "Back"
         )
         // Profile Picture
@@ -291,7 +318,7 @@ fun TopAppBarMessage(
 @Preview(showBackground = true, backgroundColor = android.graphics.Color.BLACK.toLong())
 @Composable
 fun PreviewUI() {
-    MessageBubble(Message(isFromUser = true, message = "Hello", timestamp = 0))
+    MessageBubble(true, Message(isFromUser = false, message = "Helsdafsdjfioasjdoifjaoisasdfasdfiojasodijfosiddfjaoisdjfoajdsoifjdosalo", timestamp = 0))
 
 }
 

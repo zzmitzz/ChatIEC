@@ -75,10 +75,10 @@ fun ModernChatScreen() {
                 messageText = messageText,
                 onMessageChange = { messageText = it },
                 onMessageSent = {
-                    messages.add(
+                    messages.add(0,
                         Message(
                             message = messageText,
-                            isFromUser = true,
+                            isFromUser = messageText.startsWith("a"),
                             timestamp = System.currentTimeMillis()
                         )
                     )
