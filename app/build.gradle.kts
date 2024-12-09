@@ -76,5 +76,6 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.1")
+    implementation("androidx.constraintlayout:constraintlayout-compose-android:1.1.0")
 
 }
