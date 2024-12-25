@@ -9,13 +9,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -23,20 +29,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.get
 import com.example.iec.ui.theme.colorOnPrimary
 
 
 @Composable
-fun BottomBarNav(navController: NavController?, currentScreen: String) {
+fun BottomBarNav(navController: NavController?, currentScreen: String, isExpanded: Boolean, onExpandClick: () -> Unit= {} ) {
     val onItemSelected: (ScreenDestinationLevel) -> Unit = { screenChosen ->
         navController!!.navigate(screenChosen.route) {
             popUpTo(navController.graph.findStartDestination().id) {
@@ -47,33 +58,74 @@ fun BottomBarNav(navController: NavController?, currentScreen: String) {
         }
     }
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(colorOnPrimary),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        ItemBottomBar(
-            screenMetaData = ScreenDestinationLevel.Home,
-            currentScreen == ScreenDestinationLevel.Home.route,
-            onItemSelected
-        )
-        ItemBottomBar(
-            screenMetaData = ScreenDestinationLevel.Translate,
-            currentScreen == ScreenDestinationLevel.Translate.route,
-            onItemSelected
-        )
-        ItemBottomBar(
-            screenMetaData = ScreenDestinationLevel.Message,
-            currentScreen == ScreenDestinationLevel.Message.route,
-            onItemSelected
-        )
-        ItemBottomBar(
-            screenMetaData = ScreenDestinationLevel.FaceRecognise,
-            currentScreen == ScreenDestinationLevel.FaceRecognise.route,
-            onItemSelected
-        )
+    if(isExpanded){
+        Box(
+            modifier = Modifier
+        ){
+            Row(
+                modifier = Modifier
+                    .height(70.dp)
+                    .wrapContentWidth()
+                    .background(colorOnPrimary),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    fontSize = 12.sp,
+                    modifier = Modifier.rotate(90f),
+                    text = currentScreen.toUpperCase(
+                        Locale.current)
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowForward,
+                    contentDescription = "",
+                    Modifier.size(15.dp).clickable {
+                        onExpandClick()
+                    }
+                )
+            }
+        }
+    }else{
+        Box(
+            modifier = Modifier.padding(end = 30.dp)
+        ){
+            Row(
+                modifier = Modifier
+                    .height(70.dp)
+                    .fillMaxWidth()
+                    .background(colorOnPrimary),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ItemBottomBar(
+                    screenMetaData = ScreenDestinationLevel.Home,
+                    currentScreen == ScreenDestinationLevel.Home.route,
+                    onItemSelected
+                )
+                ItemBottomBar(
+                    screenMetaData = ScreenDestinationLevel.Translate,
+                    currentScreen == ScreenDestinationLevel.Translate.route,
+                    onItemSelected
+                )
+                ItemBottomBar(
+                    screenMetaData = ScreenDestinationLevel.Message,
+                    currentScreen == ScreenDestinationLevel.Message.route,
+                    onItemSelected
+                )
+                ItemBottomBar(
+                    screenMetaData = ScreenDestinationLevel.FaceRecognise,
+                    currentScreen == ScreenDestinationLevel.FaceRecognise.route,
+                    onItemSelected
+                )
+                Icon(
+                    imageVector = Icons.Default.ArrowBack,
+                    contentDescription = "",
+                    Modifier.size(15.dp).clickable {
+                        onExpandClick()
+                    }
+                )
+            }
+        }
     }
 }
 
@@ -107,7 +159,7 @@ fun ItemBottomBar(
                 )
                 Text(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
-                    color = Color.Blue,
+                    color = Color.Red,
                     text = stringResource(screenMetaData.titleTextId),
                 )
             } else {
@@ -130,5 +182,5 @@ fun ItemBottomBar(
 @Preview(showBackground = true)
 @Composable
 fun BottomView() {
-    BottomBarNav(navController = null, currentScreen = "")
+    BottomBarNav(navController = null, currentScreen = "", isExpanded = false)
 }
