@@ -16,7 +16,7 @@ fun NavigationGraph(
     startDestination: ScreenDestinationLevel
 ) {
     NavHost(navController = navController, startDestination = startDestination.route) {
-        composable(route = ScreenDestinationLevel.YourTask.route) {
+        composable(route = ScreenDestinationLevel.Home.route) {
             ConstraintLayout(){
                 val (text) = createRefs()
                 Text(
@@ -29,7 +29,7 @@ fun NavigationGraph(
                 )
             }
         }
-        composable(route = ScreenDestinationLevel.Message.route) {
+        composable(route = ScreenDestinationLevel.Translate.route) {
             ConstraintLayout(){
                 val (text) = createRefs()
                 Text(
@@ -42,7 +42,7 @@ fun NavigationGraph(
                 )
             }
         }
-        composable(route = ScreenDestinationLevel.CheckIn.route) {
+        composable(route = ScreenDestinationLevel.Message.route) {
             ConstraintLayout(){
                 val (text) = createRefs()
                 Text(
@@ -55,7 +55,7 @@ fun NavigationGraph(
                 )
             }
         }
-        composable(route = ScreenDestinationLevel.Setting.route) {
+        composable(route = ScreenDestinationLevel.FaceRecognise.route) {
             ConstraintLayout(){
                 val (text) = createRefs()
                 Text(

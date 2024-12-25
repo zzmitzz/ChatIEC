@@ -75,7 +75,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-core:1.0.1")
-    implementation("androidx.constraintlayout:constraintlayout-compose-android:1.1.0")
+    implementation(libs.kotlinx.serialization.core)
+    implementation(libs.androidx.constraintlayout.compose.android)
 
 }
