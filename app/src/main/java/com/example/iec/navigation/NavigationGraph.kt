@@ -7,6 +7,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.iec.ui.feature.people_information.InfoScreen
 import com.example.iec.ui.theme.ColorPrimary
 
 
@@ -17,17 +18,7 @@ fun NavigationGraph(
 ) {
     NavHost(navController = navController, startDestination = startDestination.route) {
         composable(route = ScreenDestinationLevel.Home.route) {
-            ConstraintLayout(){
-                val (text) = createRefs()
-                Text(
-                    text = "1",
-                    color = ColorPrimary,
-                    modifier = Modifier.constrainAs(text){
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-                )
-            }
+            InfoScreen()
         }
         composable(route = ScreenDestinationLevel.Translate.route) {
             ConstraintLayout(){

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -34,6 +36,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.text.toUpperCase
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,7 +51,12 @@ import com.example.iec.ui.theme.colorOnPrimary
 
 
 @Composable
-fun BottomBarNav(navController: NavController?, currentScreen: String, isExpanded: Boolean, onExpandClick: () -> Unit= {} ) {
+fun BottomBarNav(
+    navController: NavController?,
+    currentScreen: String,
+    isExpanded: Boolean,
+    onExpandClick: () -> Unit = {}
+) {
     val onItemSelected: (ScreenDestinationLevel) -> Unit = { screenChosen ->
         navController!!.navigate(screenChosen.route) {
             popUpTo(navController.graph.findStartDestination().id) {
@@ -58,40 +67,49 @@ fun BottomBarNav(navController: NavController?, currentScreen: String, isExpande
         }
     }
 
-    if(isExpanded){
+    if (isExpanded) {
         Box(
             modifier = Modifier
-        ){
+                .height(50.dp)
+                .wrapContentSize()
+                .clip(RoundedCornerShape(topEnd = 16.dp))
+                .background(colorOnPrimary)
+                .padding(start = 8.dp)
+        ) {
             Row(
                 modifier = Modifier
-                    .height(70.dp)
-                    .wrapContentWidth()
-                    .background(colorOnPrimary),
+                    .fillMaxHeight()
+                    .wrapContentWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    fontSize = 12.sp,
+                    fontSize = 16.sp,
                     modifier = Modifier.rotate(90f),
-                    text = currentScreen.toUpperCase(
-                        Locale.current)
+                    text = "IEC",
+                    fontWeight = FontWeight.Bold
                 )
                 Icon(
                     imageVector = Icons.Default.ArrowForward,
                     contentDescription = "",
-                    Modifier.size(15.dp).clickable {
-                        onExpandClick()
-                    }
+                    Modifier
+                        .size(15.dp)
+                        .clickable {
+                            onExpandClick()
+                        }
                 )
             }
         }
-    }else{
+    } else {
         Box(
-            modifier = Modifier.padding(end = 30.dp)
-        ){
+            modifier = Modifier
+                .padding(end = 80.dp)
+                .height(50.dp)
+                .wrapContentSize()
+                .clip(RoundedCornerShape(topEnd = 16.dp))
+        ) {
             Row(
                 modifier = Modifier
-                    .height(70.dp)
                     .fillMaxWidth()
                     .background(colorOnPrimary),
                 horizontalArrangement = Arrangement.SpaceEvenly,
@@ -102,15 +120,24 @@ fun BottomBarNav(navController: NavController?, currentScreen: String, isExpande
                     currentScreen == ScreenDestinationLevel.Home.route,
                     onItemSelected
                 )
+                VerticalDivider(
+                    modifier = Modifier.height(8.dp).width(3.dp).background(Color.DarkGray)
+                )
                 ItemBottomBar(
                     screenMetaData = ScreenDestinationLevel.Translate,
                     currentScreen == ScreenDestinationLevel.Translate.route,
                     onItemSelected
                 )
+                VerticalDivider(
+                    modifier = Modifier.height(8.dp).width(3.dp).background(Color.DarkGray)
+                )
                 ItemBottomBar(
                     screenMetaData = ScreenDestinationLevel.Message,
                     currentScreen == ScreenDestinationLevel.Message.route,
                     onItemSelected
+                )
+                VerticalDivider(
+                    modifier = Modifier.height(8.dp).width(3.dp).background(Color.DarkGray)
                 )
                 ItemBottomBar(
                     screenMetaData = ScreenDestinationLevel.FaceRecognise,
@@ -120,9 +147,11 @@ fun BottomBarNav(navController: NavController?, currentScreen: String, isExpande
                 Icon(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "",
-                    Modifier.size(15.dp).clickable {
-                        onExpandClick()
-                    }
+                    Modifier
+                        .size(15.dp)
+                        .clickable {
+                            onExpandClick()
+                        }
                 )
             }
         }
@@ -140,37 +169,42 @@ fun ItemBottomBar(
     Box(
         modifier = Modifier
             .wrapContentSize()
-            .clip(RoundedCornerShape(16.dp))
             .clickable {
                 onItemSelected(screenMetaData)
             },
     ) {
         Column(
             modifier = Modifier
-                .width(80.dp)
+                .wrapContentSize()
                 .padding(8.dp)
                 .background(Color.Transparent)
         ) {
             if (isSelected) {
                 Image(
-                    modifier = Modifier.align(Alignment.CenterHorizontally).size(30.dp),
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .size(20.dp),
                     painter = painterResource(screenMetaData.unSelectedIcon),
                     contentDescription = stringResource(screenMetaData.iconText)
                 )
                 Text(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     color = Color.Red,
+                    fontSize = 12.sp,
                     text = stringResource(screenMetaData.titleTextId),
                 )
             } else {
                 Image(
-                    modifier = Modifier.align(Alignment.CenterHorizontally).size(30.dp),
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .size(20.dp),
                     painter = painterResource(screenMetaData.selectedIcon),
                     contentDescription = stringResource(screenMetaData.iconText)
                 )
                 Text(
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     color = Color.Black,
+                    fontSize = 12.sp,
                     text = stringResource(screenMetaData.titleTextId),
                 )
             }

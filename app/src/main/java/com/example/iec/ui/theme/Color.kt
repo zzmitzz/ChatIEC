@@ -15,3 +15,7 @@ val DarkGrayBg = Color(0xFF000000)
 val LightGrayBg = Color(0xFFCF0A0A)
 val ColorPrimary = Color(0xFFDC5F00)
 val colorOnPrimary = Color(0xFFEEEEEE)
+
+
+val TopColorBg = Color(0xFFE1EEC3)
+val BottomColorBg = Color(0xFFF05053)
