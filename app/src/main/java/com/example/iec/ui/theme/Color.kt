@@ -18,4 +18,4 @@ val colorOnPrimary = Color(0xFFEEEEEE)
 
 
 val TopColorBg = Color(0xFFE1EEC3)
-val BottomColorBg = Color(0xFFF05053)
+val BottomColorBg = Color(0xFFEE2F2F)
