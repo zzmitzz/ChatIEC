@@ -22,6 +22,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.iec.navigation.BottomBarNav
 import com.example.iec.navigation.NavigationGraph
 import com.example.iec.navigation.ScreenDestinationLevel
+import com.example.iec.ui.feature.authorise.LoginScreen
 import com.example.iec.ui.theme.IecTheme
 
 class MainActivity : ComponentActivity() {
@@ -30,7 +31,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             IecTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    MainApp()
+                    LoginScreen()
                 }
             }
         }

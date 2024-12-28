@@ -145,7 +145,7 @@ fun InfoCard() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(250.dp)
+            .height(300.dp)
             .padding(horizontal = 16.dp, vertical = 16.dp)
             .clip(RoundedCornerShape(16.dp))
             .border(2.dp, color = Color.Black, shape = RoundedCornerShape(16.dp))
@@ -217,7 +217,7 @@ fun InfoWithQR(){
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(250.dp).clip(RoundedCornerShape(16.dp))
+            .height(300.dp).clip(RoundedCornerShape(16.dp))
             .border(2.dp, color = Color.Black, shape = RoundedCornerShape(16.dp))
             .padding(horizontal = 6.dp, vertical = 8.dp)
             .background(color = Color.White)
@@ -237,5 +237,5 @@ fun InfoWithQR(){
 )
 @Composable
 fun InfoScreenPreview() {
-    InfoWithQR()
+    InfoScreen()
 }
