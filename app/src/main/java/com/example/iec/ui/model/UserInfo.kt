@@ -5,7 +5,9 @@ data class UserInfo(
     val name: String? = null,
     val birth: String? = null,
     val currentJob: String? = null,
-    val quotes: String? = null
+    val quotes: String? = null,
+    val email: String? = null,
+    val sessionToken: String? = null
 ){
 
 }

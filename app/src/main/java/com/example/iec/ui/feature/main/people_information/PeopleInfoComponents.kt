@@ -1,4 +1,4 @@
-package com.example.iec.ui.feature.people_information
+package com.example.iec.ui.feature.main.people_information
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

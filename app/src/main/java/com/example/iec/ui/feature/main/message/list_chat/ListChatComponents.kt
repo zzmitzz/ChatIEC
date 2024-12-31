@@ -1,4 +1,4 @@
-package com.example.iec.ui.feature.message.list_chat
+package com.example.iec.ui.feature.main.message.list_chat
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row

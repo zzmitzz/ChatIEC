@@ -1,4 +1,4 @@
-package com.example.iec.ui.feature.home
+package com.example.iec.ui.feature.main.home
 
 import android.widget.Space
 import androidx.compose.foundation.clickable

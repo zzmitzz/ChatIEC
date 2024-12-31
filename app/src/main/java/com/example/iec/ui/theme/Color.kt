@@ -19,12 +19,34 @@ val colorOnPrimary = Color(0xFFEEEEEE)
 
 val TopColorBg = Color(0xFFE1EEC3)
 val BottomColorBg = Color(0xFFEE2F2F)
+val ButtonBackground = (Color(0xFF1F41BB))
+val ButtonContent = (Color.White)
 
 
-enum class AppTheme(
-    val colorName: Color
-){
-    // Button pallet
-    ButtonBackground(Color(0xFF1F41BB)),
-    ButtonContent(Color.White)
-}
+val md_theme_dark_primary = Color(0xFFFFB3B4)
+val md_theme_dark_onPrimary = Color(0xFF680016)
+val md_theme_dark_primaryContainer = Color(0xFF920023)
+val md_theme_dark_onPrimaryContainer = Color(0xFFFFDAD9)
+val md_theme_dark_secondary = Color(0xFFE6BDBC)
+val md_theme_dark_onSecondary = Color(0xFF44292A)
+val md_theme_dark_secondaryContainer = Color(0xFF5D3F3F)
+val md_theme_dark_onSecondaryContainer = Color(0xFFFFDAD9)
+val md_theme_dark_tertiary = Color(0xFFE5C18D)
+val md_theme_dark_onTertiary = Color(0xFF422C05)
+val md_theme_dark_tertiaryContainer = Color(0xFF5B421A)
+val md_theme_dark_onTertiaryContainer = Color(0xFFFFDDAF)
+val md_theme_dark_error = Color(0xFFFFB4AB)
+val md_theme_dark_errorContainer = Color(0xFF93000A)
+val md_theme_dark_onError = Color(0xFF690005)
+val md_theme_dark_onErrorContainer = Color(0xFFFFDAD6)
+val md_theme_dark_background = Color(0xFF201A1A)
+val md_theme_dark_onBackground = Color(0xFFECE0DF)
+val md_theme_dark_surface = Color(0xFF201A1A)
+val md_theme_dark_onSurface = Color(0xFFECE0DF)
+val md_theme_dark_surfaceVariant = Color(0xFF524343)
+val md_theme_dark_onSurfaceVariant = Color(0xFFD7C1C1)
+val md_theme_dark_outline = Color(0xFFA08C8C)
+val md_theme_dark_inverseOnSurface = Color(0xFF201A1A)
+val md_theme_dark_inverseSurface = Color(0xFFECE0DF)
+val md_theme_dark_inversePrimary = Color(0xFFBF0031)
+val md_theme_dark_surfaceTint = Color(0xFFFFB3B4)

@@ -1,4 +1,4 @@
-package com.example.iec.ui.feature.home
+package com.example.iec.ui.feature.main.home
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background

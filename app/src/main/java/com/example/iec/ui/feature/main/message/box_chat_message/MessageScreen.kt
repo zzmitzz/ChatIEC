@@ -1,4 +1,4 @@
-package com.example.iec.ui.feature.message.box_chat_message
+package com.example.iec.ui.feature.main.message.box_chat_message
 
 import androidx.compose.runtime.Composable
 
@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.iec.ui.theme.DarkGrayBg
-import com.example.iec.ui.theme.IecTheme
+import com.example.iec.ui.theme.IECTheme
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,7 +73,7 @@ fun ModernChatScreen() {
 @Preview(showBackground = true)
 @Composable
 fun ModernChatScreenPreview() {
-    IecTheme {
+    IECTheme  {
         ModernChatScreen()
     }
 }

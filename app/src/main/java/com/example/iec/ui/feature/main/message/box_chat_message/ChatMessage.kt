@@ -1,4 +1,4 @@
-package com.example.iec.ui.feature.message.box_chat_message
+package com.example.iec.ui.feature.main.message.box_chat_message
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -52,7 +52,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.iec.R
-import com.example.iec.ui.feature.message.convertTimeStamp
+import com.example.iec.ui.feature.main.message.convertTimeStamp
 import com.example.iec.ui.theme.ColorPrimary
 import com.example.iec.ui.theme.colorOnPrimary
 

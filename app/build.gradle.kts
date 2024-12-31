@@ -77,5 +77,6 @@ dependencies {
     kapt(libs.hilt.android.compiler)
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.androidx.constraintlayout.compose.android)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
 
 }

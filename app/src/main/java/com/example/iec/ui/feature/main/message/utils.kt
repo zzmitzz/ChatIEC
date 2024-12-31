@@ -1,4 +1,4 @@
-package com.example.iec.ui.feature.message
+package com.example.iec.ui.feature.main.message
 
 fun convertTimeStamp(timeInMilli: Long): String {
     return when (val timeInSecond = timeInMilli / 1000) {

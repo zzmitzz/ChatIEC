@@ -34,7 +34,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.iec.ui.theme.AppTheme
+import com.example.iec.ui.theme.ButtonBackground
 import com.example.iec.ui.theme.Purple40
 
 
@@ -84,7 +84,7 @@ fun SimpleButton(
         modifier = Modifier
             .clip(RoundedCornerShape(12.dp))
             .background(
-            color = AppTheme.ButtonBackground.colorName
+            color =ButtonBackground
         )
     ) {
         Column(

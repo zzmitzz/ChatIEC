@@ -1,6 +1,9 @@
 package com.example.iec.ui.feature.authorise
 
+import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -34,12 +38,20 @@ import androidx.compose.ui.unit.sp
 import com.example.iec.R
 import com.example.iec.ui.CustomTextField
 import com.example.iec.ui.SimpleButton
-import com.example.iec.ui.theme.AppTheme
+import com.example.iec.ui.theme.ButtonBackground
 
 
-@OptIn(ExperimentalMaterial3Api::class)
+enum class LoginType{
+    FACEBOOK, GOOGLE, APPLE
+}
+
 @Composable
-fun LoginScreen(){
+fun LoginScreen(
+    doLogin: (String, String) -> Unit  = { _, _ -> },
+    @SuppressLint("ShowToast") onRegisterAction: Toast = Toast.makeText(LocalContext.current, "On Develop", Toast.LENGTH_SHORT),
+    doOtherLogin: (LoginType) -> Unit,
+    onExitApp: () -> Unit
+){
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     Column(
@@ -48,7 +60,7 @@ fun LoginScreen(){
     ){
         Text(
             text = "Login here",
-            color = AppTheme.ButtonBackground.colorName,
+            color = ButtonBackground,
             fontWeight = FontWeight.Bold,
             fontSize = 24.sp,
             modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -87,12 +99,14 @@ fun LoginScreen(){
                     Alignment.End
                 )
                 .padding(horizontal = 16.dp),
-            color = AppTheme.ButtonBackground.colorName,
+            color = ButtonBackground,
             fontWeight = FontWeight.Bold
         )
         Spacer(Modifier.height(30.dp))
         Card(
-            modifier = Modifier.padding(horizontal = 32.dp),
+            modifier = Modifier.padding(horizontal = 32.dp).clickable {
+                doLogin(email, password)
+            },
             elevation = CardDefaults.cardElevation()
         ){
             SimpleButton(
@@ -114,12 +128,14 @@ fun LoginScreen(){
             text = "Create new account",
             color = Color.Black,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            modifier = Modifier.align(Alignment.CenterHorizontally).clickable {
+                onRegisterAction.show()
+            }
         )
         Spacer(Modifier.height(30.dp))
         Text(
             text = "Or continue with",
-            color = AppTheme.ButtonBackground.colorName,
+            color = ButtonBackground,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
@@ -137,7 +153,9 @@ fun LoginScreen(){
                     .padding(12.dp)
             ) {
                 Image(
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier.size(20.dp).clickable {
+                        doOtherLogin(LoginType.GOOGLE)
+                    },
                     painter = painterResource(R.drawable.google),
 
                     contentDescription = ""
@@ -150,7 +168,9 @@ fun LoginScreen(){
                     .padding(12.dp)
             ) {
                 Image(
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier.size(20.dp).clickable {
+                        doOtherLogin(LoginType.FACEBOOK)
+                    },
                     painter = painterResource(R.drawable.facebook),
                     contentDescription = ""
                 )
@@ -162,7 +182,9 @@ fun LoginScreen(){
                     .padding(12.dp)
             ) {
                 Image(
-                    modifier = Modifier.size(20.dp),
+                    modifier = Modifier.size(20.dp).clickable {
+                        doOtherLogin(LoginType.APPLE)
+                    },
                     painter = painterResource(R.drawable.apple),
                     contentDescription = ""
                 )
@@ -170,14 +192,14 @@ fun LoginScreen(){
         }
     }
 }
-
-
-@Preview(
-    showBackground = true,
-    backgroundColor = android.graphics.Color.WHITE.toLong()
-)
-@Composable
-
-fun LoginScreenPreview() {
-    LoginScreen()
-}
+//
+//
+//@Preview(
+//    showBackground = true,
+//    backgroundColor = android.graphics.Color.WHITE.toLong()
+//)
+//@Composable
+//
+//fun LoginScreenPreview() {
+//    LoginScreen({}, {})
+//}
