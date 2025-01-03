@@ -3,6 +3,7 @@ package com.example.iec.ui.feature.authorise
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -37,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.iec.R
 import com.example.iec.ui.CustomTextField
+import com.example.iec.ui.LoadingDialog
 import com.example.iec.ui.SimpleButton
 import com.example.iec.ui.theme.ButtonBackground
 
@@ -47,6 +49,7 @@ enum class LoginType{
 
 @Composable
 fun LoginScreen(
+    uiState: LoginUIState,
     doLogin: (String, String) -> Unit  = { _, _ -> },
     @SuppressLint("ShowToast") onRegisterAction: Toast = Toast.makeText(LocalContext.current, "On Develop", Toast.LENGTH_SHORT),
     doOtherLogin: (LoginType) -> Unit,
@@ -54,6 +57,9 @@ fun LoginScreen(
 ){
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+
+
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center
@@ -104,13 +110,11 @@ fun LoginScreen(
         )
         Spacer(Modifier.height(30.dp))
         Card(
-            modifier = Modifier.padding(horizontal = 32.dp).clickable {
-                doLogin(email, password)
-            },
+            modifier = Modifier.padding(horizontal = 32.dp),
             elevation = CardDefaults.cardElevation()
         ){
             SimpleButton(
-                onClick = {},
+                onClick = { doLogin(email, password)},
             ) {
                 Text(
                     text = "Sign in",

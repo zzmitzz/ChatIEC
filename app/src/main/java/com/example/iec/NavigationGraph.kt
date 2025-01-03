@@ -22,7 +22,7 @@ fun NavigationGraph(
             startDestination = "login",
             route = "login"
         ){
-            compos
+//            compos
         }
 
         navigation(

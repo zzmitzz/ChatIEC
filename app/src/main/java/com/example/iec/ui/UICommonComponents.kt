@@ -12,9 +12,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -74,7 +76,18 @@ fun CustomTextField(
         )
     )
 }
-
+@Composable
+fun LoadingDialog(){
+    Box(
+        modifier = Modifier.wrapContentSize()
+            .clip(RoundedCornerShape(4.dp))
+            .background(
+            color = Color.White
+        ).padding(12.dp)
+    ){
+        CircularProgressIndicator()
+    }
+}
 @Composable
 fun SimpleButton(
     onClick: () -> Unit,
@@ -108,14 +121,6 @@ fun SimpleButton(
     backgroundColor = android.graphics.Color.WHITE.toLong(), showBackground = true
 )
 @Composable
-fun CustomTextFieldPreview() {
-    SimpleButton(
-        onClick = {}
-    ) {
-        Text(
-            text = "Sign in",
-            color = Color.White,
-            modifier = Modifier
-        )
-    }
+fun AllPreview() {
+    LoadingDialog()
 }

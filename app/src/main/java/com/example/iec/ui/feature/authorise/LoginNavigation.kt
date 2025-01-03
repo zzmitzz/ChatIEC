@@ -18,13 +18,13 @@ fun LoginNavigation(
     onPassLogin: () -> Unit
 ) {
     val loginNavCtr = rememberNavController()
-    val viewModel by viewModels<LoginViewModel>()
+    val viewModel : LoginViewModel = viewModel()
     NavHost(
         navController = loginNavCtr,
         startDestination = "Login"
     ) {
         composable(LoginRouteLink.Login.route) {
-            LoginScreen() { }
+            LoginRoute(viewModel)
         }
         composable(LoginRouteLink.Register.route) {
 

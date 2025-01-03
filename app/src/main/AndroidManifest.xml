@@ -4,6 +4,8 @@
 
     <application
         android:allowBackup="true"
+
+        android:name=".IECApplication"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -14,7 +16,7 @@
         android:theme="@style/Theme.Iec"
         tools:targetApi="31">
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Iec">

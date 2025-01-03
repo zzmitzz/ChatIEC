@@ -4,11 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.iec.ui.feature.main.message.box_chat_message.Message
 import com.example.iec.ui.model.UserInfo
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.LinkedList
 import java.util.Queue
+import javax.inject.Inject
 
 
 data class LoginUIState(
@@ -16,8 +19,8 @@ data class LoginUIState(
     val errorMessage: Queue<String>
 )
 
-
-class LoginViewModel(
+@HiltViewModel
+class LoginViewModel @Inject constructor(
 //    private val repository: RepositoryImpl
 ) : ViewModel() {
     val uiState = MutableStateFlow(
@@ -32,7 +35,7 @@ class LoginViewModel(
         uiState.update { it.copy(isLoading = true) }
 
         // Simulate Login phase, simply return true for success Login, fail for failed Login.
-
+        delay(2000)
         val userInfo = UserInfo(
             imageProfile = "NULL",
             name = "NULL",
