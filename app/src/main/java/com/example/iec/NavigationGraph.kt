@@ -8,7 +8,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import com.example.iec.ui.feature.main.people_information.InfoScreen
 import com.example.iec.ui.theme.ColorPrimary
 
 
@@ -30,7 +29,7 @@ fun NavigationGraph(
             route = "home"
         ){
             composable(route = ScreenDestinationLevel.Home.route) {
-                InfoScreen()
+//                InfoScreen()
             }
             composable(route = ScreenDestinationLevel.Translate.route) {
                 ConstraintLayout(){
