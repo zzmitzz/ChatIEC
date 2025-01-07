@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -53,7 +54,6 @@ enum class ProfileType {
 
 @Composable
 fun ProfileComponent(
-    height: Dp,
     screenType: ProfileType = ProfileType.PROFILE,
     onDiscovery: (Boolean) -> Unit = {},
     onEdit: () -> Unit = {},
@@ -64,7 +64,7 @@ fun ProfileComponent(
         ProfileType.PROFILE -> {
             Column(
                 modifier = Modifier
-                    .height(height)
+                    .fillMaxHeight()
                     .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
                     .background(color = Color.White)
@@ -327,5 +327,5 @@ private fun InfoSection(
 )
 @Composable
 fun ProfileBadgePreview() {
-    ProfileComponent(800.dp)
+    ProfileComponent()
 }

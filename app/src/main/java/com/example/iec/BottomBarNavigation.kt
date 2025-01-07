@@ -42,9 +42,7 @@ import com.example.iec.ui.theme.colorOnPrimary
 @Composable
 fun BottomBarNav(
     navController: NavController?,
-    currentScreen: String,
-    isExpanded: Boolean,
-    onExpandClick: () -> Unit = {}
+    currentScreen: String
 ) {
     val onItemSelected: (ScreenDestinationLevel) -> Unit = { screenChosen ->
         navController!!.navigate(screenChosen.route) {
@@ -55,94 +53,57 @@ fun BottomBarNav(
             restoreState = true
         }
     }
-
-    if (isExpanded) {
-        Box(
+    Box(
+        modifier = Modifier
+            .height(50.dp)
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(topEnd = 16.dp))
+    ) {
+        Row(
             modifier = Modifier
-                .height(50.dp)
-                .wrapContentSize()
-                .clip(RoundedCornerShape(topEnd = 16.dp))
-                .background(colorOnPrimary)
-                .padding(start = 8.dp)
+                .fillMaxWidth()
+                .background(colorOnPrimary),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
+            ItemBottomBar(
+                screenMetaData = ScreenDestinationLevel.Home,
+                currentScreen == ScreenDestinationLevel.Home.route,
+                onItemSelected
+            )
+            VerticalDivider(
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .wrapContentWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    fontSize = 16.sp,
-                    modifier = Modifier.rotate(90f),
-                    text = "IEC",
-                    fontWeight = FontWeight.Bold
-                )
-                Icon(
-                    imageVector = Icons.Default.ArrowForward,
-                    contentDescription = "",
-                    Modifier
-                        .size(15.dp)
-                        .clickable {
-                            onExpandClick()
-                        }
-                )
-            }
-        }
-    } else {
-        Box(
-            modifier = Modifier
-                .padding(end = 80.dp)
-                .height(50.dp)
-                .wrapContentSize()
-                .clip(RoundedCornerShape(topEnd = 16.dp))
-        ) {
-            Row(
+                    .height(8.dp)
+                    .width(3.dp)
+                    .background(Color.DarkGray)
+            )
+            ItemBottomBar(
+                screenMetaData = ScreenDestinationLevel.Translate,
+                currentScreen == ScreenDestinationLevel.Translate.route,
+                onItemSelected
+            )
+            VerticalDivider(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(colorOnPrimary),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                ItemBottomBar(
-                    screenMetaData = ScreenDestinationLevel.Home,
-                    currentScreen == ScreenDestinationLevel.Home.route,
-                    onItemSelected
-                )
-                VerticalDivider(
-                    modifier = Modifier.height(8.dp).width(3.dp).background(Color.DarkGray)
-                )
-                ItemBottomBar(
-                    screenMetaData = ScreenDestinationLevel.Translate,
-                    currentScreen == ScreenDestinationLevel.Translate.route,
-                    onItemSelected
-                )
-                VerticalDivider(
-                    modifier = Modifier.height(8.dp).width(3.dp).background(Color.DarkGray)
-                )
-                ItemBottomBar(
-                    screenMetaData = ScreenDestinationLevel.Message,
-                    currentScreen == ScreenDestinationLevel.Message.route,
-                    onItemSelected
-                )
-                VerticalDivider(
-                    modifier = Modifier.height(8.dp).width(3.dp).background(Color.DarkGray)
-                )
-                ItemBottomBar(
-                    screenMetaData = ScreenDestinationLevel.FaceRecognise,
-                    currentScreen == ScreenDestinationLevel.FaceRecognise.route,
-                    onItemSelected
-                )
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "",
-                    Modifier
-                        .size(15.dp)
-                        .clickable {
-                            onExpandClick()
-                        }
-                )
-            }
+                    .height(8.dp)
+                    .width(3.dp)
+                    .background(Color.DarkGray)
+            )
+            ItemBottomBar(
+                screenMetaData = ScreenDestinationLevel.Message,
+                currentScreen == ScreenDestinationLevel.Message.route,
+                onItemSelected
+            )
+            VerticalDivider(
+                modifier = Modifier
+                    .height(8.dp)
+                    .width(3.dp)
+                    .background(Color.DarkGray)
+            )
+            ItemBottomBar(
+                screenMetaData = ScreenDestinationLevel.FaceRecognise,
+                currentScreen == ScreenDestinationLevel.FaceRecognise.route,
+                onItemSelected
+            )
         }
     }
 }
@@ -205,5 +166,5 @@ fun ItemBottomBar(
 @Preview(showBackground = true)
 @Composable
 fun BottomView() {
-    BottomBarNav(navController = null, currentScreen = "", isExpanded = false)
+    BottomBarNav(navController = null, currentScreen = "")
 }

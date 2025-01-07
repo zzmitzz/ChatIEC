@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import com.example.iec.ui.IECApp
 import com.example.iec.ui.feature.main.home.HomeScreen
 import com.example.iec.ui.theme.IECTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -18,10 +19,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             IECTheme  {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-//                    LoginNavigation {
-//                        Unit
-//                    }
-                    HomeScreen()
+                    IECApp()
                 }
             }
         }

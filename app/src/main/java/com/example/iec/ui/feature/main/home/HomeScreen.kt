@@ -135,7 +135,8 @@ fun HomeScreen(
                     .background(color = if (screenType == ProfileType.PROFILE) Color.White else Color.Transparent)
                     .padding(8.dp)
                     .clickable(
-                        onClick = { onScreenTypeChange.invoke() }
+                        onClick = { if(screenType == ProfileType.CHECK)
+                            onScreenTypeChange.invoke() }
                     )
             ) {
                 Text(
@@ -160,7 +161,8 @@ fun HomeScreen(
                     .padding(8.dp)
                     .clickable(
                         onClick = {
-                            onScreenTypeChange.invoke()
+                            if(screenType == ProfileType.PROFILE)
+                                onScreenTypeChange.invoke()
                         }
                     )
             ) {
@@ -180,7 +182,6 @@ fun HomeScreen(
                 elevation = CardDefaults.cardElevation(30.dp)
             ) {
                 ProfileComponent(
-                    800.dp,
                     screenType = screenType
                 )
             }
