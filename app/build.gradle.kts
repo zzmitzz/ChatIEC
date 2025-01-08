@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("com.google.gms.google-services")
     kotlin("plugin.serialization") version "1.9.0"
 }
 kapt {
@@ -78,5 +79,7 @@ dependencies {
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.androidx.constraintlayout.compose.android)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
 
 }

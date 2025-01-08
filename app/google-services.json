@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "148489318698",
+    "project_id": "iec-checkin",
+    "storage_bucket": "iec-checkin.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:148489318698:android:9a35601dbebfccafefee53",
+        "android_client_info": {
+          "package_name": "com.example.iec"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBe5UMh_S7yhhy8mza7OSYo5KySR1Bi0Q0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

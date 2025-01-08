@@ -3,6 +3,7 @@ package com.example.iec.ui.feature.main.home
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -46,6 +47,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.iec.R
+import com.example.iec.ui.CustomDialog
+import com.example.iec.ui.feature.main.home.common.EditProfileScreen
 import com.example.iec.ui.feature.main.home.common.RoundedAvatar
 
 enum class ProfileType {
@@ -56,10 +59,14 @@ enum class ProfileType {
 fun ProfileComponent(
     screenType: ProfileType = ProfileType.PROFILE,
     onDiscovery: (Boolean) -> Unit = {},
-    onEdit: () -> Unit = {},
+    onSaveChange: () -> Unit = {},
     onShare: () -> Unit = {}
 ) {
     var discoveryMode by remember { mutableStateOf(false) }
+    var onShowEditProfile by remember { mutableStateOf(false) }
+    var actionShareProfile by remember { mutableStateOf(false) }
+
+
     when (screenType) {
         ProfileType.PROFILE -> {
             Column(
@@ -131,6 +138,11 @@ fun ProfileComponent(
                     RoundedAvatar(180)
                     Icon(
                         imageVector = Icons.Default.Edit,
+                        modifier = Modifier.clickable(
+                            onClick = {
+                                onShowEditProfile = true
+                            }
+                        ),
                         contentDescription = ""
                     )
                 }
@@ -160,6 +172,17 @@ fun ProfileComponent(
 
         ProfileType.CHECK -> {
             QRDisplayScreen("")
+        }
+    }
+
+
+    CustomDialog(
+        showDialog = onShowEditProfile,
+        onDismissRequest = { onShowEditProfile = false },
+    ) {
+        EditProfileScreen {
+            onSaveChange()
+            onShowEditProfile = false
         }
     }
 
@@ -262,7 +285,7 @@ fun ProfileInformation(
     age: Int = 21,
     jobTitle: String = "Research",
     company: String = "IEC",
-    aboutMe: String = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed"
+    aboutMe: String = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sedLorem ipsum dolor sit amet, consectetur adipiscing elit, sedLorem ipsum dolor sit amet, consectetur adipiscing elit, sedLorem ipsum dolor sit amet, consectetur adipiscing elit, sedLorem ipsum dolor sit amet, consectetur adipiscing elit, sedLorem ipsum dolor sit amet, consectetur adipiscing elit, sedLorem ipsum dolor sit amet, consectetur adipiscing elit, sedLorem ipsum dolor sit amet, consectetur adipiscing elit, sedLorem ipsum dolor sit amet, consectetur adipiscing elit, sedLorem ipsum dolor sit amet, consectetur adipiscing elit, sed"
 ) {
     Column(
         modifier = modifier

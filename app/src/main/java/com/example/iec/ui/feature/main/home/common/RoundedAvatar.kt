@@ -21,7 +21,8 @@ import com.example.iec.R
 fun RoundedAvatar(
     size: Int = 120,
     imagePathDrawable: Int = R.drawable.avatarasdfds,
-    imagePathURL: Uri? = null
+    imagePathURL: Uri? = null,
+    layerOnTopContent: @Composable () -> Unit = {}
 ) {
     Card(
         modifier = Modifier
@@ -37,5 +38,6 @@ fun RoundedAvatar(
                 .fillMaxSize()
                 .border(width = 2.dp, color = Color.White, shape = CircleShape)
         )
+        layerOnTopContent()
     }
 }

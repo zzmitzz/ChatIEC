@@ -52,7 +52,7 @@ fun HomeScreenStateful(
     viewModel: ViewModel,
     navController: NavController
 ) {
-    var screenType by remember { mutableStateOf(ProfileType.CHECK) }
+    var screenType by remember { mutableStateOf(ProfileType.PROFILE) }
     HomeScreen(
         screenType = screenType,
         onScreenTypeChange = {
@@ -64,6 +64,9 @@ fun HomeScreenStateful(
                 Log.d("HomeScreen", "Changing to PROFILE") // Add this
                 ProfileType.PROFILE
             }
+        },
+        onSaveEditProfile = {
+
         }
     )
 }
@@ -71,8 +74,9 @@ fun HomeScreenStateful(
 
 @Composable
 fun HomeScreen(
-    screenType: ProfileType = ProfileType.CHECK,
-    onScreenTypeChange: () -> Unit = {}
+    screenType: ProfileType = ProfileType.PROFILE,
+    onScreenTypeChange: () -> Unit = {},
+    onSaveEditProfile: () -> Unit = {}
 ) {
     LaunchedEffect(screenType) {
         Log.d("HomeScreen", "Screen type changed to: $screenType")
@@ -182,8 +186,10 @@ fun HomeScreen(
                 elevation = CardDefaults.cardElevation(30.dp)
             ) {
                 ProfileComponent(
-                    screenType = screenType
-                )
+                    screenType = screenType,
+                    onSaveChange = {onSaveEditProfile()}
+                ){
+                }
             }
         }
     }
