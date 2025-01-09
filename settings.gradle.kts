@@ -21,4 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "iec"
 include(":app")
- 
+include(":camera")

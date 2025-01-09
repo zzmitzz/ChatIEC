@@ -1,6 +1,7 @@
 package com.example.iec
 
 import android.os.Bundle
+import android.speech.SpeechRecognizer
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
@@ -24,7 +25,6 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var applicationStateHolder : ApplicationStateHolder
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

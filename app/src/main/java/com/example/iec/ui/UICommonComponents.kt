@@ -39,6 +39,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -155,6 +156,10 @@ fun CustomDialog(
     onDismissRequest: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
+    val localConfig = LocalConfiguration.current
+    val widthScreen = localConfig.screenWidthDp
+    val heightScreen = localConfig.screenHeightDp
+
     if (showDialog) {
 
         Dialog(
@@ -162,7 +167,8 @@ fun CustomDialog(
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp, horizontal = 4.dp)
                     .background(color = Color.White),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
@@ -199,6 +205,7 @@ fun CustomDialog(
                     )
                 }
                 Spacer(modifier = Modifier.height(4.dp))
+
                 Box(
                     modifier = Modifier
                         .clip(

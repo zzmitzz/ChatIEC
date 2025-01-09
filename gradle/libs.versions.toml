@@ -4,19 +4,23 @@ constraintlayoutComposeAndroid = "1.1.0"
 firebaseBom = "33.7.0"
 hiltAndroidCompiler = "2.51.1"
 hiltAndroidGradlePlugin = "2.52"
-kotlin = "1.9.0"
+kotlin = "1.9.21"
 coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 kotlinxSerializationCore = "1.6.3"
 kotlinxSerializationRuntime = "1.0.1"
-lifecycleRuntimeKtx = "2.8.6"
+lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.9.3"
-composeBom = "2024.04.01"
+composeBom = "2024.12.01"
 lifecycleViewmodelKtx = "2.8.7"
-navigationRuntimeKtx = "2.8.3"
-navigationCompose = "2.8.4"
+navigationRuntimeKtx = "2.8.5"
+navigationCompose = "2.8.5"
+appcompat = "1.6.1"
+material = "1.10.0"
+activity = "1.9.3"
+constraintlayout = "2.2.0"
 
 [libraries]
 androidx-constraintlayout-compose-android = { module = "androidx.constraintlayout:constraintlayout-compose-android", version.ref = "constraintlayoutComposeAndroid" }
@@ -44,6 +48,10 @@ androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navig
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinxSerializationCore" }
 kotlinx-serialization-runtime = { module = "org.jetbrains.kotlinx:kotlinx-serialization-runtime", version.ref = "kotlinxSerializationRuntime" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

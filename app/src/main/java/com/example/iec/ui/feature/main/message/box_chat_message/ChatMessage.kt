@@ -124,13 +124,13 @@ fun MessageInput(
                     .wrapContentHeight()
                     .padding(end = 4.dp),
                 placeholder = { Text("Type a message...", color = Color.White) },
-                colors = TextFieldDefaults.textFieldColors(
-                    containerColor = Color(0xFF454545),
-                    focusedTextColor = Color.White,
-                    unfocusedTextColor = Color.White,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
+//                colors = TextFieldDefaults.textFieldColors(
+//                    containerColor = Color(0xFF454545),
+//                    focusedTextColor = Color.White,
+//                    unfocusedTextColor = Color.White,
+//                    focusedIndicatorColor = Color.Transparent,
+//                    unfocusedIndicatorColor = Color.Transparent
+//                ),
 
                 shape = RoundedCornerShape(24.dp)
             )

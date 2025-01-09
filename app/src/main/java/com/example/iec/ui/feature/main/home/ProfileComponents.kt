@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.iec.R
 import com.example.iec.ui.CustomDialog
+import com.example.iec.ui.feature.main.home.common.CheckInStateful
 import com.example.iec.ui.feature.main.home.common.EditProfileScreen
 import com.example.iec.ui.feature.main.home.common.RoundedAvatar
 
@@ -66,7 +67,7 @@ fun ProfileComponent(
     var onShowEditProfile by remember { mutableStateOf(false) }
     var actionShareProfile by remember { mutableStateOf(false) }
 
-
+    var onCheckInDialog by remember { mutableStateOf(false) }
     when (screenType) {
         ProfileType.PROFILE -> {
             Column(
@@ -111,7 +112,7 @@ fun ProfileComponent(
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
-                                text = if(discoveryMode) "ON" else "OFF",
+                                text = if (discoveryMode) "ON" else "OFF",
                                 fontWeight = FontWeight.Bold,
                                 fontSize = 14.sp
                             )
@@ -163,7 +164,7 @@ fun ProfileComponent(
 
                 Box(
                     modifier = Modifier.padding(horizontal = 4.dp)
-                ){
+                ) {
                     ProfileInformation()
                 }
             }
@@ -171,7 +172,10 @@ fun ProfileComponent(
         }
 
         ProfileType.CHECK -> {
-            QRDisplayScreen("")
+            QRDisplayScreen("",
+                onCheckIn = {
+                    onCheckInDialog = true
+                })
         }
     }
 
@@ -184,6 +188,13 @@ fun ProfileComponent(
             onSaveChange()
             onShowEditProfile = false
         }
+    }
+
+    CustomDialog(
+        showDialog = onCheckInDialog,
+        onDismissRequest = { onCheckInDialog = false },
+    ) {
+        CheckInStateful()
     }
 
 }
@@ -276,7 +287,6 @@ fun QRDisplayScreen(
 }
 
 
-
 @Composable
 fun ProfileInformation(
     modifier: Modifier = Modifier,
@@ -345,6 +355,7 @@ private fun InfoSection(
         )
     }
 }
+
 @Preview(
     showBackground = true
 )
