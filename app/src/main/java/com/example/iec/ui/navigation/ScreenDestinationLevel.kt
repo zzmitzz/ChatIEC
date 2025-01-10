@@ -1,6 +1,7 @@
-package com.example.iec
+package com.example.iec.ui.navigation
 
 import androidx.annotation.StringRes
+import com.example.iec.R
 
 enum class TopScreenRoute(
     val route:String,
@@ -22,7 +23,7 @@ enum class ScreenDestinationLevel(
     val route: String
 ) {
     Home(
-        selectedIcon =  R.drawable.home,
+        selectedIcon = R.drawable.home,
         unSelectedIcon = R.drawable.home_filled,
         iconText = R.string.home,
         titleTextId = R.string.home,

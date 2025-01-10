@@ -1,4 +1,4 @@
-package com.example.iec.ui
+package com.example.iec.ui.feature
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -15,11 +14,10 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.iec.BottomBarNav
-import com.example.iec.NavigationGraph
-import com.example.iec.ScreenDestinationLevel
 import com.example.iec.state.ApplicationStateHolder
-import kotlinx.coroutines.delay
+import com.example.iec.ui.navigation.BottomBarNav
+import com.example.iec.ui.navigation.NavigationGraph
+import com.example.iec.ui.navigation.ScreenDestinationLevel
 
 @Composable
 fun IECApp(
@@ -31,11 +29,8 @@ fun IECApp(
     val loadingState = applicationStateHolder.loadingStateHolder.loadingState.collectAsState()
 
 
-//    LaunchedEffect(Unit) {
-//        applicationStateHolder.loadingStateHolder.onLoading()
-//        delay(3000)
-//        applicationStateHolder.loadingStateHolder.offLoading()
-//    }
+
+
     ConstraintLayout(
         modifier = Modifier.fillMaxSize(),
     ) {

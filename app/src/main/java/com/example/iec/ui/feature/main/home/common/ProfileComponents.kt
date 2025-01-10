@@ -1,4 +1,4 @@
-package com.example.iec.ui.feature.main.home
+package com.example.iec.ui.feature.main.home.common
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,9 +37,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -51,27 +48,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import com.example.iec.R
-import com.example.iec.ui.CustomDialog
-import com.example.iec.ui.feature.main.home.common.CheckInStateful
-import com.example.iec.ui.feature.main.home.common.EditProfileScreen
-import com.example.iec.ui.feature.main.home.common.Location
-import com.example.iec.ui.feature.main.home.common.RoundedAvatar
+import com.example.iec.ui.feature.CustomDialog
+import com.example.iec.ui.feature.main.home.HomeVM
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 
-enum class ProfileType {
-    PROFILE, CHECK
-}
+
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
@@ -86,34 +75,10 @@ fun ProfileComponent(
     var onShowEditProfile by remember { mutableStateOf(false) }
     var actionShareProfile by remember { mutableStateOf(false) }
     var onCheckInDialog by remember { mutableStateOf(false) }
-
     val context = LocalContext.current
     var currentLocation: Location? by remember { mutableStateOf<Location?>(null) }
 
 
-    // Request Permission
-    val locationFinePermission =
-        rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
-    val locationCoarsePermission =
-        rememberPermissionState(android.Manifest.permission.ACCESS_COARSE_LOCATION)
-
-    val requestPermissionLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show()
-            }
-        }
-    LaunchedEffect(key1 = locationFinePermission, key2 = locationCoarsePermission) {
-        if (!locationFinePermission.status.isGranted) {
-            requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
-        }
-        if (!locationCoarsePermission.status.isGranted) {
-            requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_COARSE_LOCATION)
-        }
-    }
-    var fusedLocationProviderClient by remember { mutableStateOf<FusedLocationProviderClient?>(null) }
 
     Log.d("ScreenType", screenType.toString())
     when (screenType) {
