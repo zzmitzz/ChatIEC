@@ -88,7 +88,9 @@ fun ProfileComponent(
     var onCheckInDialog by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
-    var currentLocation: Location? = null
+    var currentLocation: Location? by remember { mutableStateOf<Location?>(null) }
+
+
     // Request Permission
     val locationFinePermission =
         rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
@@ -104,32 +106,16 @@ fun ProfileComponent(
             }
         }
     LaunchedEffect(key1 = locationFinePermission, key2 = locationCoarsePermission) {
-        if(!locationFinePermission.status.isGranted || !locationCoarsePermission.status.isGranted){
+        if (!locationFinePermission.status.isGranted) {
             requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+        }
+        if (!locationCoarsePermission.status.isGranted) {
             requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_COARSE_LOCATION)
         }
-
     }
     var fusedLocationProviderClient by remember { mutableStateOf<FusedLocationProviderClient?>(null) }
 
-    fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
-
-    if (ActivityCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-            context,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        ) != PackageManager.PERMISSION_GRANTED
-    ) {
-
-    } else{
-        fusedLocationProviderClient!!.lastLocation.addOnSuccessListener {
-            currentLocation = Location(it.latitude, it.longitude)
-        }
-    }
-
-
+    Log.d("ScreenType", screenType.toString())
     when (screenType) {
         ProfileType.PROFILE -> {
             Column(
@@ -258,7 +244,7 @@ fun ProfileComponent(
     ) {
         CheckInStateful(
             onCheckInClick = {},
-            onGetLocationClick = { currentLocation })
+            currentLocation = currentLocation )
     }
 }
 

@@ -1,5 +1,6 @@
 package com.example.iec.ui.feature.main.home.common
 
+import android.annotation.SuppressLint
 import android.text.format.DateUtils
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -52,12 +53,12 @@ data class Location(
 
 @Composable
 fun CheckInStateful(
-    onGetLocationClick: () -> Location?,
+    currentLocation: Location?,
     onCheckInClick: () -> Unit
 ) {
     val context = LocalContext.current
     CheckInScreen(
-        onGetLocationClick = onGetLocationClick,
+        onGetLocationClick = currentLocation,
         userName = "ZzMITzZ",
         onCheckInClick = {
             Toast.makeText(context, " ✅ Successful check-in", Toast.LENGTH_SHORT).show()
@@ -66,20 +67,17 @@ fun CheckInStateful(
 }
 
 
+@SuppressLint("DefaultLocale")
 @Composable
 fun CheckInScreen(
-    onGetLocationClick: () -> Location?,
+    onGetLocationClick: Location?,
     onCheckInClick: () -> Unit,
     userName: String = "Ngô Tuấn Anh",
 ) {
 
     // Later fetch Location from Server.
     val eventLocation = Location(20.981173435734032, 105.78749159814292)
-    var checkInLocation: Location? = null
 
-    LaunchedEffect(Unit) {
-        checkInLocation = onGetLocationClick.invoke()
-    }
 
 //    val expectedCheckInTime = remember {
 //        val formatter = SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.getDefault())
@@ -115,9 +113,6 @@ fun CheckInScreen(
                     .wrapContentSize()
                     .clip(RoundedCornerShape(8.dp))
                     .background(Color.Blue)
-                    .clickable {
-                        if (checkInLocation == null) checkInLocation = onGetLocationClick.invoke()
-                    }
                     .padding(8.dp)
             ) {
                 Column(
@@ -177,7 +172,7 @@ fun CheckInScreen(
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = checkInLocation?.let {
+                    text = onGetLocationClick?.let {
                         String.format(
                             "Lat: %.6f,  Lng: %.6f",
                             it.lat,
@@ -206,11 +201,11 @@ fun CheckInScreen(
                 .wrapContentSize()
                 .clip(RoundedCornerShape(8.dp))
                 .background(
-                    color = if (checkInLocation != null) Color.Green else Color.Gray
+                    color = if (onGetLocationClick != null) Color.Green else Color.Gray
                 )
                 .padding(8.dp)
                 .clickable {
-                    if(checkInLocation != null) onCheckInClick.invoke()
+                    if(onGetLocationClick != null) onCheckInClick.invoke()
                 },
         ) {
             Text(
@@ -231,7 +226,7 @@ fun CheckInScreen(
 fun CheckInPreview() {
     CheckInScreen(
         userName = "Ngô Tuấn Anh",
-        onGetLocationClick = { Location(0.0, 0.0) },
+        onGetLocationClick = Location(0.0, 0.0),
         onCheckInClick = {}
     )
 }
