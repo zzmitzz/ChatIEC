@@ -26,7 +26,7 @@ fun NavigationGraph(
             composable(route = ScreenDestinationLevel.Home.route) {
                 HomeNavigation()
             }
-            composable(route = ScreenDestinationLevel.Translate.route) {
+            composable(route = ScreenDestinationLevel.Tools.route) {
                 ConstraintLayout(){
                     val (text) = createRefs()
                     Text(

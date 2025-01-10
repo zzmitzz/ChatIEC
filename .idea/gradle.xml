@@ -4,7 +4,6 @@
   <component name="GradleSettings">
     <option name="linkedExternalProjectsSettings">
       <GradleProjectSettings>
-        <option name="testRunner" value="CHOOSE_PER_TEST" />
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="gradleJvm" value="azul-21" />
         <option name="modules">
@@ -12,6 +11,7 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/camera" />
+            <option value="$PROJECT_DIR$/camera_ml" />
           </set>
         </option>
         <option name="resolveExternalAnnotations" value="false" />

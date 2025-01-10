@@ -6,7 +6,7 @@ enum class TopScreenRoute(
     val route:String,
 ){
     Home("Home"),
-    Translate("Translate"),
+    Tools("Tools"),
     Message("Message"),
     FaceRecognise("FaceRecognise"),
     Login("Login"),
@@ -28,12 +28,12 @@ enum class ScreenDestinationLevel(
         titleTextId = R.string.home,
         route = TopScreenRoute.Home.route
     ),
-    Translate(
-        selectedIcon = R.drawable.translate,
-        unSelectedIcon = R.drawable.translation,
-        iconText = R.string.translate,
-        titleTextId = R.string.translate,
-        route = TopScreenRoute.Translate.route
+    Tools(
+        selectedIcon = R.drawable.backpack_24dp_000000_fill0_wght400_grad0_opsz24,
+        unSelectedIcon = R.drawable.backpack_24dp_000000_fill1_wght400_grad0_opsz24,
+        iconText = R.string.tools,
+        titleTextId = R.string.tools,
+        route = TopScreenRoute.Tools.route
     ),
     Message(
         selectedIcon = R.drawable.chat,
@@ -43,8 +43,8 @@ enum class ScreenDestinationLevel(
         route = TopScreenRoute.Message.route
     ),
     FaceRecognise(
-        selectedIcon = R.drawable.face_filled,
-        unSelectedIcon = R.drawable.face_filled,
+        selectedIcon = R.drawable.ar_on_you_24dp_000000_fill0_wght400_grad0_opsz24,
+        unSelectedIcon = R.drawable.ar_on_you_24dp_000000_fill1_wght400_grad0_opsz24,
         iconText = R.string.face_detect,
         titleTextId = R.string.face_detect,
         route = TopScreenRoute.FaceRecognise.route

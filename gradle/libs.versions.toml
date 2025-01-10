@@ -1,11 +1,12 @@
 [versions]
+accompanistPermissions = "0.30.1"
 agp = "8.6.1"
 constraintlayoutComposeAndroid = "1.1.0"
 firebaseBom = "33.7.0"
 hiltAndroidCompiler = "2.51.1"
 hiltAndroidGradlePlugin = "2.52"
 kotlin = "1.9.21"
-coreKtx = "1.15.0"
+coreKtx = "1.12.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
@@ -21,8 +22,11 @@ appcompat = "1.6.1"
 material = "1.10.0"
 activity = "1.9.3"
 constraintlayout = "2.2.0"
+playServicesCodeScanner = "16.1.0"
+playServicesLocation = "21.3.0"
 
 [libraries]
+accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 androidx-constraintlayout-compose-android = { module = "androidx.constraintlayout:constraintlayout-compose-android", version.ref = "constraintlayoutComposeAndroid" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
@@ -52,8 +56,11 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+play-services-code-scanner = { module = "com.google.android.gms:play-services-code-scanner", version.ref = "playServicesCodeScanner" }
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+android-library = { id = "com.android.library", version.ref = "agp" }
 

@@ -1,6 +1,11 @@
 package com.example.iec.ui.feature.main.home
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,7 +37,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -46,28 +54,82 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.app.ActivityCompat
 import com.example.iec.R
 import com.example.iec.ui.CustomDialog
 import com.example.iec.ui.feature.main.home.common.CheckInStateful
 import com.example.iec.ui.feature.main.home.common.EditProfileScreen
+import com.example.iec.ui.feature.main.home.common.Location
 import com.example.iec.ui.feature.main.home.common.RoundedAvatar
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
 
 enum class ProfileType {
     PROFILE, CHECK
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ProfileComponent(
     screenType: ProfileType = ProfileType.PROFILE,
     onDiscovery: (Boolean) -> Unit = {},
     onSaveChange: () -> Unit = {},
-    onShare: () -> Unit = {}
+    onShare: () -> Unit = {},
+    viewModel: HomeVM
 ) {
     var discoveryMode by remember { mutableStateOf(false) }
     var onShowEditProfile by remember { mutableStateOf(false) }
     var actionShareProfile by remember { mutableStateOf(false) }
-
     var onCheckInDialog by remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
+    var currentLocation: Location? = null
+    // Request Permission
+    val locationFinePermission =
+        rememberPermissionState(android.Manifest.permission.ACCESS_FINE_LOCATION)
+    val locationCoarsePermission =
+        rememberPermissionState(android.Manifest.permission.ACCESS_COARSE_LOCATION)
+
+    val requestPermissionLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                Toast.makeText(context, "Permission Granted", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "Permission Denied", Toast.LENGTH_SHORT).show()
+            }
+        }
+    LaunchedEffect(key1 = locationFinePermission, key2 = locationCoarsePermission) {
+        if(!locationFinePermission.status.isGranted || !locationCoarsePermission.status.isGranted){
+            requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+            requestPermissionLauncher.launch(android.Manifest.permission.ACCESS_COARSE_LOCATION)
+        }
+
+    }
+    var fusedLocationProviderClient by remember { mutableStateOf<FusedLocationProviderClient?>(null) }
+
+    fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
+
+    if (ActivityCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED
+    ) {
+
+    } else{
+        fusedLocationProviderClient!!.lastLocation.addOnSuccessListener {
+            currentLocation = Location(it.latitude, it.longitude)
+        }
+    }
+
+
     when (screenType) {
         ProfileType.PROFILE -> {
             Column(
@@ -194,9 +256,10 @@ fun ProfileComponent(
         showDialog = onCheckInDialog,
         onDismissRequest = { onCheckInDialog = false },
     ) {
-        CheckInStateful()
+        CheckInStateful(
+            onCheckInClick = {},
+            onGetLocationClick = { currentLocation })
     }
-
 }
 
 
@@ -361,5 +424,5 @@ private fun InfoSection(
 )
 @Composable
 fun ProfileBadgePreview() {
-    ProfileComponent()
+    ProfileComponent(viewModel = HomeVM())
 }

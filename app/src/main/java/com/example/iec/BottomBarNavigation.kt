@@ -82,8 +82,8 @@ fun BottomBarNav(
                     .background(Color.DarkGray)
             )
             ItemBottomBar(
-                screenMetaData = ScreenDestinationLevel.Translate,
-                currentScreen == ScreenDestinationLevel.Translate.route,
+                screenMetaData = ScreenDestinationLevel.Tools,
+                currentScreen == ScreenDestinationLevel.Tools.route,
                 onItemSelected
             )
             VerticalDivider(

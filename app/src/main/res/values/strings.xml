@@ -2,6 +2,6 @@
     <string name="app_name">iec</string>
     <string name="home">Home</string>
     <string name="chat">Message</string>
-    <string name="translate">Translate</string>
+    <string name="tools">Tools</string>
     <string name="face_detect">Detection</string>
 </resources>

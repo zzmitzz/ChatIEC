@@ -31,11 +31,11 @@ fun IECApp(
     val loadingState = applicationStateHolder.loadingStateHolder.loadingState.collectAsState()
 
 
-    LaunchedEffect(Unit) {
-        applicationStateHolder.loadingStateHolder.onLoading()
-        delay(3000)
-        applicationStateHolder.loadingStateHolder.offLoading()
-    }
+//    LaunchedEffect(Unit) {
+//        applicationStateHolder.loadingStateHolder.onLoading()
+//        delay(3000)
+//        applicationStateHolder.loadingStateHolder.offLoading()
+//    }
     ConstraintLayout(
         modifier = Modifier.fillMaxSize(),
     ) {
