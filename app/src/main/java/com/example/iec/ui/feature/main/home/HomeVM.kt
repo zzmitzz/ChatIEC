@@ -6,6 +6,8 @@ import com.example.iec.ui.model.UserInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.net.URL
+import java.util.Queue
 import javax.inject.Inject
 
 
@@ -18,9 +20,10 @@ sealed interface HomeUIState{
     data class ErrorMessage(val message: String? = null): HomeUIState
     data class HomeReady(
         val selectedHomeScreen: ProfileType = ProfileType.PROFILE,
-        val onEditProfilePopUp: UserInfo? = null,
-        val onQRCodeReady: Unit? = null
-
+        val userInfoShow: UserInfo? = null,
+        val qrCodeReceive: URL? = null,
+        val onNotificationMessage: Queue<String>?= null,
+        val checkedInStatus: Boolean = false,
     )
 }
 
@@ -30,7 +33,7 @@ class HomeVM @Inject constructor(): ViewModel(){
     private var _isLoading = MutableStateFlow<Boolean>(false)
     val isLoading = _isLoading.asStateFlow()
 
-    fun getLocation(): Location? {
-
-    }
+//    fun getLocation(): Location? {
+//
+//    }
 }

@@ -54,6 +54,7 @@ import androidx.core.app.ActivityCompat
 import com.example.iec.R
 import com.example.iec.ui.feature.CustomDialog
 import com.example.iec.ui.feature.main.home.HomeVM
+import com.example.iec.ui.feature.main.home.ProfileType
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState

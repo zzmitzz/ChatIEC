@@ -8,24 +8,24 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.example.iec.ui.feature.DestinationRoute
 import com.example.iec.ui.feature.main.home.HomeNavigation
 import com.example.iec.ui.theme.ColorPrimary
 
 
 @Composable
 fun NavigationGraph(
-    navController: NavHostController,
-    startDestination: ScreenDestinationLevel
+    navController: NavHostController
 ) {
-    NavHost(navController = navController, startDestination = "Home_Graph") {
+    NavHost(navController = navController, startDestination = "main") {
         navigation(
-            startDestination = "Home",
-            route = "Home_Graph"
+            startDestination = DestinationRoute.Home.route,
+            route = "main"
         ){
-            composable(route = ScreenDestinationLevel.Home.route) {
+            composable(route = DestinationRoute.Home.route) {
                 HomeNavigation()
             }
-            composable(route = ScreenDestinationLevel.Tools.route) {
+            composable(route = DestinationRoute.Tools.route) {
                 ConstraintLayout(){
                     val (text) = createRefs()
                     Text(
@@ -38,7 +38,7 @@ fun NavigationGraph(
                     )
                 }
             }
-            composable(route = ScreenDestinationLevel.Message.route) {
+            composable(route = DestinationRoute.Message.route) {
                 ConstraintLayout(){
                     val (text) = createRefs()
                     Text(
@@ -51,7 +51,7 @@ fun NavigationGraph(
                     )
                 }
             }
-            composable(route = ScreenDestinationLevel.FaceRecognise.route) {
+            composable(route = DestinationRoute.FaceRecognition.route) {
                 ConstraintLayout(){
                     val (text) = createRefs()
                     Text(
