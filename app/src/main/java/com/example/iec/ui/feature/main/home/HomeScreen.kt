@@ -75,12 +75,9 @@ fun HomeScreenStateful(
     HomeScreen(
         screenType = screenType,
         onScreenTypeChange = {
-            Log.d("HomeScreen", "onScreenTypeChange called") // Add this
             screenType = if (screenType == ProfileType.PROFILE) {
-                Log.d("HomeScreen", "Changing to CHECK") // Add this
                 ProfileType.CHECK
             } else {
-                Log.d("HomeScreen", "Changing to PROFILE") // Add this
                 ProfileType.PROFILE
             }
         },
