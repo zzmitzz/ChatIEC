@@ -195,16 +195,6 @@ fun ProfileComponent(
 
 
     CustomDialog(
-        showDialog = onShowEditProfile,
-        onDismissRequest = { onShowEditProfile = false },
-    ) {
-        EditProfileScreen {
-            onSaveChange()
-            onShowEditProfile = false
-        }
-    }
-
-    CustomDialog(
         showDialog = onCheckInDialog,
         onDismissRequest = { onCheckInDialog = false },
     ) {

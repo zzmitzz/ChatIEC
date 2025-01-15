@@ -83,9 +83,6 @@ fun HomeScreenStateful(
                 ProfileType.PROFILE
             }
         },
-        onSaveEditProfile = {
-
-        },
         viewModel = viewModel
     )
 }
@@ -95,7 +92,6 @@ fun HomeScreenStateful(
 fun HomeScreen(
     screenType: ProfileType = ProfileType.PROFILE,
     onScreenTypeChange: () -> Unit = {},
-    onSaveEditProfile: () -> Unit = {},
     onGetLocation: () -> Unit = {},
     onActionCheckIn: () -> Unit = {},
     viewModel: HomeVM? = null

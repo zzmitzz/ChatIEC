@@ -1,5 +1,6 @@
 package com.example.iec.ui.feature.main.home.common
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,16 +11,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,11 +36,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.iec.R
+import com.example.iec.ui.feature.CustomDialog
 
 enum class Gender(val text: String){
     Male("Male"),
@@ -57,17 +67,26 @@ data class ProfileData(
 @Composable
 fun EditProfileScreen(
     modifier: Modifier = Modifier,
-    onSave: (ProfileData) -> Unit
+    defaultProfileData: ProfileData? = null,
+    onBackPress: () -> Unit = {},
+    onSaveProfile: (ProfileData) -> Unit,
 ) {
-    var name by remember { mutableStateOf("") }
-    var alias by remember { mutableStateOf("") }
-    var hometown by remember { mutableStateOf("") }
-    var gender by remember { mutableStateOf(Gender.Male) }
-    var age by remember { mutableStateOf("") }
-    var jobTitle by remember { mutableStateOf("") }
-    var company by remember { mutableStateOf("") }
-    var aboutMe by remember { mutableStateOf("") }
-
+    var userProfile by remember{
+        mutableStateOf(
+            ProfileData(
+                name = "",
+                alias = "",
+                hometown = "",
+                gender = Gender.Male,
+                age = "",
+                jobTitle = "",
+                company = "",
+                aboutMe = ""
+            )
+        )
+    }
+    var showCancelDialog by remember { mutableStateOf(false) }
+    var showOnSaveDialog by remember { mutableStateOf(false) }
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -75,6 +94,19 @@ fun EditProfileScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
+        Box {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Back",
+            )
+            Image(
+                painter = painterResource(R.drawable.ptit_iec),
+                contentDescription = "",
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .size(50.dp)
+            )
+        }
         // Avatar and Basic Info Card
         Card(
             modifier = Modifier.fillMaxWidth(),
@@ -95,15 +127,15 @@ fun EditProfileScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     OutlinedTextField(
-                        value = name,
-                        onValueChange = { name = it },
+                        value = userProfile.name,
+                        onValueChange = { userProfile = userProfile.copy(name = it) },
                         label = { Text("Name") },
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     OutlinedTextField(
-                        value = alias,
-                        onValueChange = { alias = it },
+                        value = userProfile.alias,
+                        onValueChange = { userProfile = userProfile.copy(alias = it) },
                         label = { Text("Alias") },
                         modifier = Modifier.fillMaxWidth()
                     )
@@ -113,8 +145,8 @@ fun EditProfileScreen(
 
         // Profile Details
         OutlinedTextField(
-            value = hometown,
-            onValueChange = { hometown = it },
+            value = userProfile.hometown,
+            onValueChange = { userProfile = userProfile.copy(hometown = it) },
             label = { Text("Hometown") },
             modifier = Modifier.fillMaxWidth()
         )
@@ -138,8 +170,8 @@ fun EditProfileScreen(
                     ) {
                         Text(text = "Male", modifier = Modifier.wrapContentSize().align(Alignment.CenterVertically), color = Color.DarkGray)
                         RadioButton(
-                            selected = gender == Gender.Male,
-                            onClick = { gender =  Gender.Male },
+                            selected = userProfile.gender == Gender.Male,
+                            onClick = { userProfile = userProfile.copy(gender = Gender.Male) },
                             modifier = Modifier.wrapContentSize()
                         )
                     }
@@ -150,8 +182,8 @@ fun EditProfileScreen(
                     ) {
                         Text(text = "Female", modifier = Modifier.wrapContentSize().align(Alignment.CenterVertically), color = Color.DarkGray)
                         RadioButton(
-                            selected = gender ==  Gender.Female,
-                            onClick = { gender = Gender.Female },
+                            selected = userProfile.gender ==  Gender.Female,
+                            onClick = { userProfile = userProfile.copy(gender = Gender.Female) },
                             modifier = Modifier.wrapContentSize()
                         )
                     }
@@ -162,8 +194,8 @@ fun EditProfileScreen(
                     ) {
                         Text(text = "Other", modifier = Modifier.wrapContentSize().align(Alignment.CenterVertically), color = Color.DarkGray)
                         RadioButton(
-                            selected = gender ==  Gender.Other,
-                            onClick = { gender = Gender.Other },
+                            selected = userProfile.gender == Gender.Other,
+                            onClick = { userProfile = userProfile.copy(gender = Gender.Other) },
                             modifier = Modifier.wrapContentSize()
                         )
                     }
@@ -173,30 +205,30 @@ fun EditProfileScreen(
             }
         }
         OutlinedTextField(
-            value = age,
-            onValueChange = { age = it },
+            value = userProfile.age,
+            onValueChange = { userProfile = userProfile.copy(age = it) },
             label = { Text("Age") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth()
         )
 
         OutlinedTextField(
-            value = jobTitle,
-            onValueChange = { jobTitle = it },
+            value = userProfile.jobTitle,
+            onValueChange = { userProfile = userProfile.copy(jobTitle = it) },
             label = { Text("Job Title") },
             modifier = Modifier.fillMaxWidth()
         )
 
         OutlinedTextField(
-            value = company,
-            onValueChange = { company = it },
+            value = userProfile.company,
+            onValueChange = { userProfile = userProfile.copy(company = it) },
             label = { Text("Company") },
             modifier = Modifier.fillMaxWidth()
         )
 
         OutlinedTextField(
-            value = aboutMe,
-            onValueChange = { aboutMe = it },
+            value = userProfile.aboutMe,
+            onValueChange = { userProfile = userProfile.copy(aboutMe = it) },
             label = { Text("About Me") },
             modifier = Modifier
                 .fillMaxWidth()
@@ -206,17 +238,8 @@ fun EditProfileScreen(
 
         Button(
             onClick = {
-                onSave(
-                    ProfileData(
-                        name = name,
-                        alias = alias,
-                        hometown = hometown,
-                        gender = gender,
-                        age = age,
-                        jobTitle = jobTitle,
-                        company = company,
-                        aboutMe = aboutMe
-                    )
+                onSaveProfile(
+                    userProfile
                 )
 
             },
@@ -227,10 +250,40 @@ fun EditProfileScreen(
             Text("Save Profile")
         }
     }
+
+
+    if(showCancelDialog){
+        AlertDialog(
+            onDismissRequest = { showCancelDialog = false },
+            title = { Text("Cancel Edit") },
+            text = { Text("All information will be lost?") },
+            dismissButton = {
+                TextButton(onClick = { showCancelDialog = false }) {
+                    Text("No")
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { onBackPress() }) {
+                    Text("Yes")
+                }
+            }
+        )
+    }
+    CustomDialog(
+        showOnSaveDialog,
+        onDismissRequest = {
+            onBackPress()
+        }
+    ) {
+        Text("Profile saved successfully!")
+    }
 }
 
-@Preview
+fun checkInput(userProfile: ProfileData): Boolean {
+    return userProfile.name.isNotEmpty() && userProfile.alias.isNotEmpty()}
+
+@Preview(showBackground = true)
 @Composable
 fun EditProfileCardPreview() {
-    EditProfileScreen {  }
+    EditProfileScreen() {  }
 }
