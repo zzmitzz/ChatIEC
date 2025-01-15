@@ -16,6 +16,7 @@ import javax.inject.Inject
 
 data class LoginUIState(
     val isLoading: Boolean = false,
+    val userInfo: UserInfo? = null,
     val errorMessage: Queue<String>
 )
 
@@ -26,6 +27,7 @@ class LoginViewModel @Inject constructor(
     val uiState = MutableStateFlow(
         LoginUIState(
             false,
+            userInfo = null,
             LinkedList<String>()
         )
     )
@@ -46,6 +48,6 @@ class LoginViewModel @Inject constructor(
             sessionToken = null
         )
 
-        uiState.update { it.copy(isLoading =  false) }
+        uiState.update { it.copy(isLoading =  false, userInfo = userInfo) }
     }
 }

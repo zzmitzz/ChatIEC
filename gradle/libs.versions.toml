@@ -24,6 +24,7 @@ activity = "1.9.3"
 constraintlayout = "2.2.0"
 playServicesCodeScanner = "16.1.0"
 playServicesLocation = "21.3.0"
+qrcodeKotlin = "4.1.1"
 
 [libraries]
 accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
@@ -58,6 +59,7 @@ androidx-activity = { group = "androidx.activity", name = "activity", version.re
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 play-services-code-scanner = { module = "com.google.android.gms:play-services-code-scanner", version.ref = "playServicesCodeScanner" }
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
+qrcode-kotlin = { module = "io.github.g0dkar:qrcode-kotlin", version.ref = "qrcodeKotlin" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

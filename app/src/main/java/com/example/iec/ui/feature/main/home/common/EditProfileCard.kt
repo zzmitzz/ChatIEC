@@ -2,6 +2,7 @@ package com.example.iec.ui.feature.main.home.common
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -53,37 +54,26 @@ enum class Gender(val text: String){
 
 
 data class ProfileData(
-    val name: String,
-    val alias: String,
-    val hometown: String,
-    val gender: Gender,
-    val age: String,
-    val jobTitle: String,
-    val company: String,
-    val aboutMe: String
+    val name: String = "",
+    val alias: String = "",
+    val hometown: String = "",
+    val gender: Gender = Gender.Male,
+    val age: String = "",
+    val jobTitle: String = "",
+    val company: String = "",
+    val aboutMe: String = "",
 )
 
 
 @Composable
 fun EditProfileScreen(
     modifier: Modifier = Modifier,
-    defaultProfileData: ProfileData? = null,
+    defaultProfileData: ProfileData = ProfileData(),
     onBackPress: () -> Unit = {},
     onSaveProfile: (ProfileData) -> Unit,
 ) {
     var userProfile by remember{
-        mutableStateOf(
-            ProfileData(
-                name = "",
-                alias = "",
-                hometown = "",
-                gender = Gender.Male,
-                age = "",
-                jobTitle = "",
-                company = "",
-                aboutMe = ""
-            )
-        )
+        mutableStateOf(defaultProfileData)
     }
     var showCancelDialog by remember { mutableStateOf(false) }
     var showOnSaveDialog by remember { mutableStateOf(false) }
@@ -96,6 +86,9 @@ fun EditProfileScreen(
     ) {
         Box {
             Icon(
+                modifier = Modifier.clickable {
+                    onBackPress()
+                },
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = "Back",
             )
@@ -238,10 +231,11 @@ fun EditProfileScreen(
 
         Button(
             onClick = {
+
+                showOnSaveDialog = true
                 onSaveProfile(
                     userProfile
                 )
-
             },
             modifier = Modifier
                 .fillMaxWidth()
@@ -275,7 +269,11 @@ fun EditProfileScreen(
             onBackPress()
         }
     ) {
-        Text("Profile saved successfully!")
+        Box(
+            modifier = Modifier.padding(8.dp)
+        ){
+            Text("Profile saved successfully!")
+        }
     }
 }
 

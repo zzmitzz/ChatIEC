@@ -12,6 +12,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.iec.ui.navigation.BottomBarNav
@@ -19,49 +21,13 @@ import com.example.iec.ui.navigation.NavigationGraph
 import com.example.iec.ui.navigation.ScreenDestinationLevel
 
 
-
-
-sealed class DestinationRoute(
-    val route: String
-){
-    // It should be split into lower level destinations
-    // 1. Home
-    data object Home : DestinationRoute("home/{$AGR_HOME_USER_ID}") {
-        fun createRoute(usrID: String) = "home/$usrID"
-    }
-    data object EditUserInfo: DestinationRoute("home/editUserInfo/{$AGR_HOME_USER_ID}"){
-        fun createRoute(usrID: String) = "home/editUserInfo/$usrID"
-    }
-    // 2. Tools
-    data object Tools : DestinationRoute("tools")
-
-    // 3. Message
-    data object Message : DestinationRoute("message")
-
-    data object MessagePersonal : DestinationRoute("message/personal/{$AGR_MESS_ID}")
-
-    data object MessageDetail: DestinationRoute("message/detail/{$AGR_MESS_ID}")
-
-    // 4. Face Recognition
-    data object FaceRecognition : DestinationRoute("faceRecognition")
-
-    companion object {
-        const val AGR_HOME_USER_ID = "userID"
-        const val AGR_MESS_ID = "messageID"
-
-    }
-}
-
-
-
-
 @Composable
 fun IECApp(
-    iecAppState: IECAppState
+    iecAppState: IECAppState,
+    navController: NavHostController
 ) {
-    val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route ?: DestinationRoute.Home.route
+    val currentRoute = navBackStackEntry?.destination?.route ?: DestinationRoute.Login.route
 
     ConstraintLayout(
         modifier = Modifier.fillMaxSize(),
@@ -71,23 +37,32 @@ fun IECApp(
             .height(0.dp)
             .constrainAs(content){
                 top.linkTo(parent.top)
-                bottom.linkTo(bottomBar.top)
+                bottom.linkTo(if(currentRoute != DestinationRoute.Login.route) bottomBar.top else parent.bottom)
                 height = Dimension.fillToConstraints
         }) {
-            NavigationGraph(navController = navController)
-        }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .constrainAs(bottomBar){
-                    start.linkTo(parent.start)
-                    bottom.linkTo(parent.bottom)
-            }.wrapContentHeight()
-        ){
-            BottomBarNav(
+            NavigationGraph(
                 navController = navController,
-                currentScreen = currentRoute
+                iecAppState = iecAppState
             )
+        }
+
+        if (currentRoute != DestinationRoute.Login.route) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .constrainAs(bottomBar){
+                        start.linkTo(parent.start)
+                        bottom.linkTo(parent.bottom)
+                    }.wrapContentHeight()
+            ){
+                BottomBarNav(
+                    homeScreen = {iecAppState.navToHome("Ngo Anh")},
+                    toolsScreen = {iecAppState.navigateToTools()},
+                    messageScreen = {iecAppState.navigateToMessage()},
+                    faceRecognitionScreen = {iecAppState.navigateToFaceRecognition()},
+                    currentScreen = currentRoute
+                )
+            }
         }
     }
 

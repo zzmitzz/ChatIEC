@@ -84,4 +84,6 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
     implementation(libs.accompanist.permissions)
+    // Use this for both Android and JVM
+    implementation(libs.qrcode.kotlin)
 }

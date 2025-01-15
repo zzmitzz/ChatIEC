@@ -49,7 +49,7 @@ fun LoginScreen(
     doLogin: (String, String) -> Unit  = { _, _ -> },
     @SuppressLint("ShowToast") onRegisterAction: Toast = Toast.makeText(LocalContext.current, "On Develop", Toast.LENGTH_SHORT),
     doOtherLogin: (LoginType) -> Unit,
-    onExitApp: () -> Unit
+    onExitApp: () -> Unit,
 ){
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -110,7 +110,7 @@ fun LoginScreen(
             elevation = CardDefaults.cardElevation()
         ){
             SimpleButton(
-                onClick = { doLogin(email, password)},
+                onClick = { doLogin(email, password) },
             ) {
                 Text(
                     text = "Sign in",

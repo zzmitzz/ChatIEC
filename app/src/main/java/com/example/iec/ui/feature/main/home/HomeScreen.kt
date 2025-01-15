@@ -68,7 +68,8 @@ import kotlinx.coroutines.plus
 @Composable
 fun HomeScreenStateful(
     viewModel: HomeVM,
-    navController: NavController
+    navToEditProfile: (String) -> Unit,
+    backPressed: () -> Unit = {}
 ) {
     var screenType by remember { mutableStateOf(ProfileType.PROFILE) }
     HomeScreen(
@@ -83,7 +84,9 @@ fun HomeScreenStateful(
                 ProfileType.PROFILE
             }
         },
-        viewModel = viewModel
+        viewModel = viewModel,
+        onEditProfile = navToEditProfile,
+        backPressed = backPressed
     )
 }
 
@@ -94,11 +97,10 @@ fun HomeScreen(
     onScreenTypeChange: () -> Unit = {},
     onGetLocation: () -> Unit = {},
     onActionCheckIn: () -> Unit = {},
-    viewModel: HomeVM? = null
+    onEditProfile : (String) -> Unit = {},
+    viewModel: HomeVM? = null,
+    backPressed: () -> Unit = {}
 ) {
-    LaunchedEffect(screenType) {
-        Log.d("HomeScreen", "Screen type changed to: $screenType")
-    }
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     var onMenuOpened by remember { mutableStateOf(false) }
@@ -185,7 +187,7 @@ fun HomeScreen(
                                         .launchIn(scope = scopeContext)
                                 }
                             ),
-                        painter = painterResource(R.drawable.scanner),
+                        painter = painterResource(R.drawable.sdf),
                         contentDescription = "",
                     )
                     Spacer(modifier = Modifier.width(16.dp))
@@ -261,8 +263,9 @@ fun HomeScreen(
             ) {
                 ProfileComponent(
                     screenType = screenType,
-                    onSaveChange = { onSaveEditProfile() },
-                    viewModel = viewModel!!
+                    navigateEditProfile = onEditProfile,
+                    viewModel = viewModel!!,
+                    backPressed = backPressed
                 )
             }
         }
@@ -373,6 +376,17 @@ fun HomeScreen(
                     color = Color.Red,
                     modifier = Modifier.clickable {
                         Toast.makeText(context, "Delete Account", Toast.LENGTH_SHORT).show()
+                    }
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = "Log out",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Red,
+                    modifier = Modifier.clickable {
+                        Toast.makeText(context, "Logout", Toast.LENGTH_SHORT).show()
                     }
                 )
             }

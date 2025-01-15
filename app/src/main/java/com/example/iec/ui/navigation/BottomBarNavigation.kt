@@ -36,18 +36,12 @@ import com.example.iec.ui.theme.colorOnPrimary
 
 @Composable
 fun BottomBarNav(
-    navController: NavController?,
+    homeScreen: () -> Unit,
+    toolsScreen: () -> Unit,
+    messageScreen: () -> Unit,
+    faceRecognitionScreen: () -> Unit,
     currentScreen: String
 ) {
-    val onItemSelected: (ScreenDestinationLevel) -> Unit = { screenChosen ->
-        navController!!.navigate(screenChosen.route) {
-            popUpTo(navController.graph.findStartDestination().id) {
-                saveState = true
-            }
-            launchSingleTop = true
-            restoreState = true
-        }
-    }
     Box(
         modifier = Modifier
             .wrapContentHeight()
@@ -65,7 +59,7 @@ fun BottomBarNav(
             ItemBottomBar(
                 screenMetaData = ScreenDestinationLevel.Home,
                 currentScreen == ScreenDestinationLevel.Home.route,
-                onItemSelected
+                onItemSelected = homeScreen
             )
             VerticalDivider(
                 modifier = Modifier
@@ -76,7 +70,7 @@ fun BottomBarNav(
             ItemBottomBar(
                 screenMetaData = ScreenDestinationLevel.Tools,
                 currentScreen == ScreenDestinationLevel.Tools.route,
-                onItemSelected
+                onItemSelected = toolsScreen
             )
             VerticalDivider(
                 modifier = Modifier
@@ -87,7 +81,7 @@ fun BottomBarNav(
             ItemBottomBar(
                 screenMetaData = ScreenDestinationLevel.Message,
                 currentScreen == ScreenDestinationLevel.Message.route,
-                onItemSelected
+                onItemSelected = messageScreen
             )
             VerticalDivider(
                 modifier = Modifier
@@ -98,7 +92,7 @@ fun BottomBarNav(
             ItemBottomBar(
                 screenMetaData = ScreenDestinationLevel.FaceRecognise,
                 currentScreen == ScreenDestinationLevel.FaceRecognise.route,
-                onItemSelected
+                onItemSelected = faceRecognitionScreen
             )
         }
     }
@@ -109,14 +103,16 @@ fun BottomBarNav(
 fun ItemBottomBar(
     screenMetaData: ScreenDestinationLevel,
     isSelected: Boolean = false,
-    onItemSelected: (ScreenDestinationLevel) -> Unit = {}
+    onItemSelected: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     Box(
         modifier = Modifier
             .wrapContentSize()
             .clickable(
-                onClick = {onItemSelected(screenMetaData)},
+                onClick = {
+                    onItemSelected()
+                },
                 indication = null,
                 interactionSource = interactionSource
             ),
@@ -161,8 +157,8 @@ fun ItemBottomBar(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun BottomView() {
-    BottomBarNav(navController = null, currentScreen = "")
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun BottomView() {
+//    BottomBarNav(navController = null, currentScreen = "")
+//}

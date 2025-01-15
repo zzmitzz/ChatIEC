@@ -16,7 +16,8 @@ import com.example.iec.ui.theme.IECTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ModernChatScreen() {
+fun ModernChatScreen(
+) {
     var messageText by remember { mutableStateOf("") }
     val messages = remember { mutableStateListOf<Message>() }
     val onlineStatus by remember { mutableStateOf(false) }

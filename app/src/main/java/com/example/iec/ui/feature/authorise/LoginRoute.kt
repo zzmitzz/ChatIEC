@@ -16,9 +16,13 @@ import com.example.iec.ui.feature.LoadingDialog
 @Composable
 fun LoginRoute(
     viewModel: LoginViewModel,
+    navigateToHome: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    if(uiState.userInfo != null){
+        navigateToHome()
+    }
     LoginScreen(
         uiState = uiState,
         doLogin = viewModel::doLogin,

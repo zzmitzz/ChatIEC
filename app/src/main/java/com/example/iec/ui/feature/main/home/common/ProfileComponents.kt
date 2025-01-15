@@ -2,6 +2,8 @@ package com.example.iec.ui.feature.main.home.common
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -21,6 +23,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -40,19 +43,24 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.iec.R
 import com.example.iec.ui.feature.CustomDialog
+import com.example.iec.ui.feature.main.home.HomeUIState
 import com.example.iec.ui.feature.main.home.HomeVM
 import com.example.iec.ui.feature.main.home.ProfileType
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -60,26 +68,28 @@ import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
+import qrcode.QRCode
+import qrcode.color.Colors
 
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ProfileComponent(
-    screenType: ProfileType = ProfileType.PROFILE,
+    screenType: ProfileType = ProfileType.CHECK,
     onDiscovery: (Boolean) -> Unit = {},
-    onSaveChange: () -> Unit = {},
+    navigateEditProfile: (String) -> Unit = {},
+    backPressed: () -> Unit = {},
     onShare: () -> Unit = {},
     viewModel: HomeVM
 ) {
     var discoveryMode by remember { mutableStateOf(false) }
-    var onShowEditProfile by remember { mutableStateOf(false) }
-    var actionShareProfile by remember { mutableStateOf(false) }
     var onCheckInDialog by remember { mutableStateOf(false) }
-    val context = LocalContext.current
     var currentLocation: Location? by remember { mutableStateOf<Location?>(null) }
 
-
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
 
     Log.d("ScreenType", screenType.toString())
     when (screenType) {
@@ -155,7 +165,7 @@ fun ProfileComponent(
                         imageVector = Icons.Default.Edit,
                         modifier = Modifier.clickable(
                             onClick = {
-                                onShowEditProfile = true
+                                navigateEditProfile("Ngo Tuan Anh")
                             }
                         ),
                         contentDescription = ""
@@ -186,10 +196,11 @@ fun ProfileComponent(
         }
 
         ProfileType.CHECK -> {
-            QRDisplayScreen("",
+            QRDisplayScreen(
                 onCheckIn = {
                     onCheckInDialog = true
-                })
+                },
+                qrBitmap = (uiState.value as HomeUIState.HomeReady).qrCodeReceive)
         }
     }
 
@@ -207,9 +218,8 @@ fun ProfileComponent(
 
 @Composable
 fun QRDisplayScreen(
-    qrContent: String,
     onCheckIn: () -> Unit = {},
-    onCheckOut: () -> Unit = {}
+    qrBitmap: Bitmap? = null, // QR Code Bitmap
 ) {
     Column(
         modifier = Modifier
@@ -219,29 +229,33 @@ fun QRDisplayScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
+        Text(
+            text = "FAIR",
+            fontFamily = FontFamily.Cursive,
+            fontSize = 24.sp
+        )
         // QR Code Display
         Card(
             modifier = Modifier
                 .padding(32.dp)
-                .weight(1f),
+                .wrapContentSize(),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 4.dp
             ),
             shape = RoundedCornerShape(16.dp)
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.qr),
-                    contentDescription = "QR Code",
+            if(qrBitmap != null) {
+                Box(
                     modifier = Modifier
-                        .size(250.dp)
-                        .padding(8.dp)
-                )
+                        .wrapContentSize()
+                        .padding(32.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        bitmap = qrBitmap.asImageBitmap(),
+                        contentDescription = "QR Code",
+                    )
+                }
             }
         }
 
@@ -265,24 +279,6 @@ fun QRDisplayScreen(
             ) {
                 Text(
                     "CHECK IN",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            // Check Out Button
-            Button(
-                onClick = onCheckOut,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFFF44336) // Red
-                ),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(
-                    "CHECK OUT",
                     fontSize = 18.sp,
                     fontWeight = FontWeight.Bold
                 )

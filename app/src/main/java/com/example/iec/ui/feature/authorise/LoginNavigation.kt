@@ -15,22 +15,9 @@ enum class LoginRouteLink(val route: String) {
 
 @Composable
 fun LoginNavigation(
-    onPassLogin: () -> Unit
+    navigateToRegister: () -> Unit = {},
+    navigateToHome: () -> Unit = {}
 ) {
-    val loginNavCtr = rememberNavController()
     val viewModel : LoginViewModel = viewModel()
-    NavHost(
-        navController = loginNavCtr,
-        startDestination = "Login"
-    ) {
-        composable(LoginRouteLink.Login.route) {
-            LoginRoute(viewModel)
-        }
-        composable(LoginRouteLink.Register.route) {
-
-        }
-        composable(LoginRouteLink.ForgotPassword.route) {
-
-        }
-    }
+    LoginRoute(viewModel, navigateToHome = navigateToHome)
 }

@@ -5,9 +5,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun HomeNavigation(){
+fun HomeNavigation(
+    navigateEditScreen: (String) -> Unit = {}
+){
     val homeNavController = rememberNavController()
     val homeVM: HomeVM = viewModel()
 
-    HomeScreenStateful(homeVM, homeNavController)
+    HomeScreenStateful(homeVM, navigateEditScreen)
 }
