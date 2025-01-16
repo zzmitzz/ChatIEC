@@ -1,10 +1,13 @@
 package com.example.iec.ui.feature.main.home
 
+import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.webkit.URLUtil
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -50,18 +53,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.camera.QRReader
 import com.example.camera.QRReaderML
 import com.example.camera.QRResult
 import com.example.iec.R
 import com.example.iec.ui.feature.CustomDialog
+import com.example.iec.ui.feature.main.home.common.Location
 import com.example.iec.ui.feature.main.home.common.OtherPPInfoCard
 import com.example.iec.ui.feature.main.home.common.ProfileComponent
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
 
 
@@ -72,6 +78,38 @@ fun HomeScreenStateful(
     backPressed: () -> Unit = {}
 ) {
     var screenType by remember { mutableStateOf(ProfileType.PROFILE) }
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissionsMap ->
+        // 2. Check if all requested permissions are granted
+        val arePermissionsGranted = permissionsMap.values.reduce { acc, next ->
+            acc && next
+        }
+
+    }
+
+    CustomDialog(
+        !checkLocationOn(LocalContext.current)
+    ) {
+        Text(
+            text = "You need to turn on the Location first to use this feature",
+        )
+    }
+
+    // 4. Launch the permission request on composition
+    LaunchedEffect(Unit) {
+        locationPermissionLauncher.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
+    }
+
+
+
     HomeScreen(
         screenType = screenType,
         onScreenTypeChange = {
@@ -81,9 +119,10 @@ fun HomeScreenStateful(
                 ProfileType.PROFILE
             }
         },
-        viewModel = viewModel,
+        uiState = uiState.value,
         onEditProfile = navToEditProfile,
-        backPressed = backPressed
+        backPressed = backPressed,
+        onGetLocation = { Location(0.0, 0.0) },
     )
 }
 
@@ -92,10 +131,10 @@ fun HomeScreenStateful(
 fun HomeScreen(
     screenType: ProfileType = ProfileType.PROFILE,
     onScreenTypeChange: () -> Unit = {},
-    onGetLocation: () -> Unit = {},
+    onGetLocation: () -> Location,
     onActionCheckIn: () -> Unit = {},
     onEditProfile : (String) -> Unit = {},
-    viewModel: HomeVM? = null,
+    uiState: HomeUIState? = null,
     backPressed: () -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -261,8 +300,8 @@ fun HomeScreen(
                 ProfileComponent(
                     screenType = screenType,
                     navigateEditProfile = onEditProfile,
-                    viewModel = viewModel!!,
-                    backPressed = backPressed
+                    uiState = uiState!!,
+                    onGetLocation = {onGetLocation()},
                 )
             }
         }
@@ -391,8 +430,14 @@ fun HomeScreen(
     }
 }
 
-@Preview
 @Composable
-fun HomeScreenPreview() {
-    HomeScreen()
+fun GetLocation(){
+    val context = LocalContext.current
+
 }
+
+//@Preview
+//@Composable
+//fun HomeScreenPreview() {
+//    HomeScreen()
+//}

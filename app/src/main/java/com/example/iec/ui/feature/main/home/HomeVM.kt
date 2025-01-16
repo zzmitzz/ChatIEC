@@ -57,7 +57,7 @@ class HomeVM @Inject constructor() : ViewModel() {
             val qrCreator = QRCode.ofCircles()
                 .withColor(Colors.ORANGE_RED)
                 .withSize(25)
-                .build("Good day")
+                .build(userKey)
             val imageByteArray = qrCreator.renderToBytes()
             BitmapFactory.decodeByteArray(imageByteArray, 0, imageByteArray.size)
         }
@@ -70,7 +70,7 @@ class HomeVM @Inject constructor() : ViewModel() {
             }
             _uiState.update {
                 HomeUIState.Loading(false)
-                HomeUIState.HomeReady(qrCodeReceive = generateQRCode("1234"))
+                HomeUIState.HomeReady(qrCodeReceive = generateQRCode("XinChao"))
             }
 
         }

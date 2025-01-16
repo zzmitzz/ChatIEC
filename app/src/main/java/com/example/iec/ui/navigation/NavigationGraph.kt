@@ -1,5 +1,7 @@
 package com.example.iec.ui.navigation
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -42,11 +44,23 @@ fun NavigationGraph(
 
         navigation(
             startDestination = DestinationRoute.Home.route,
-            route = "main"
+            route = "main",
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Up    ,
+                    animationSpec = tween(700)
+                )
+            }
         ) {
 
 
             composable(route = DestinationRoute.Home.route,
+                enterTransition = {
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(700)
+                    )
+                },
                 arguments = listOf(
                     navArgument(
                         name = DestinationRoute.AGR_HOME_USER_ID,
@@ -56,9 +70,7 @@ fun NavigationGraph(
                     }
                 )) {
                 HomeNavigation(
-                    navigateEditScreen = { userID ->
-                        iecAppState.navToEditProfile(userID)
-                    }
+                    appState = iecAppState
                 )
             }
             composable(route = DestinationRoute.EditUserInfo.route,
@@ -69,7 +81,13 @@ fun NavigationGraph(
                         type = NavType.StringType
                         defaultValue = ""
                     }
-                )
+                ),
+                enterTransition = {
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(700)
+                    )
+                },
             ) {
                 EditProfileScreen(
                     onBackPress = { iecAppState.navigateBack() }

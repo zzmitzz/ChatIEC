@@ -79,17 +79,15 @@ import qrcode.color.Colors
 @Composable
 fun ProfileComponent(
     screenType: ProfileType = ProfileType.CHECK,
-    onDiscovery: (Boolean) -> Unit = {},
+    uiState: HomeUIState,
     navigateEditProfile: (String) -> Unit = {},
-    backPressed: () -> Unit = {},
     onShare: () -> Unit = {},
-    viewModel: HomeVM
+    onDiscovery: (Boolean) -> Unit = {},
+    onGetLocation: () -> Location = { Location(0.0, 0.0) }
 ) {
     var discoveryMode by remember { mutableStateOf(false) }
     var onCheckInDialog by remember { mutableStateOf(false) }
-    var currentLocation: Location? by remember { mutableStateOf<Location?>(null) }
-
-    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     Log.d("ScreenType", screenType.toString())
     when (screenType) {
@@ -200,7 +198,7 @@ fun ProfileComponent(
                 onCheckIn = {
                     onCheckInDialog = true
                 },
-                qrBitmap = (uiState.value as HomeUIState.HomeReady).qrCodeReceive)
+                qrBitmap = (uiState as HomeUIState.HomeReady).qrCodeReceive)
         }
     }
 
@@ -209,9 +207,13 @@ fun ProfileComponent(
         showDialog = onCheckInDialog,
         onDismissRequest = { onCheckInDialog = false },
     ) {
-        CheckInStateful(
-            onCheckInClick = {},
-            currentLocation = currentLocation )
+        CheckInScreen(
+            onGetLocationClick = { onGetLocation() },
+            userName = "ZzMITzZ",
+            onCheckInClick = {
+                Toast.makeText(context, " ✅ Successful check-in", Toast.LENGTH_SHORT).show()
+            }
+        )
     }
 }
 
@@ -357,10 +359,10 @@ private fun InfoSection(
     }
 }
 
-@Preview(
-    showBackground = true
-)
-@Composable
-fun ProfileBadgePreview() {
-    ProfileComponent(viewModel = HomeVM())
-}
+//@Preview(
+//    showBackground = true
+//)
+//@Composable
+//fun ProfileBadgePreview() {
+//    ProfileComponent(viewModel = HomeVM())
+//}

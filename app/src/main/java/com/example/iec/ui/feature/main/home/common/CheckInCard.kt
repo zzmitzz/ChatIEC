@@ -2,6 +2,7 @@ package com.example.iec.ui.feature.main.home.common
 
 import android.annotation.SuppressLint
 import android.text.format.DateUtils
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,7 +28,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +45,16 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.iec.R
+import com.example.iec.ui.feature.main.home.checkLocationOn
+import com.example.iec.ui.feature.main.home.getDistance
+import com.example.iec.ui.feature.main.home.getLocation
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.util.Date
@@ -51,39 +67,32 @@ data class Location(
 )
 
 
-@Composable
-fun CheckInStateful(
-    currentLocation: Location?,
-    onCheckInClick: () -> Unit
-) {
-    val context = LocalContext.current
-    CheckInScreen(
-        onGetLocationClick = currentLocation,
-        userName = "ZzMITzZ",
-        onCheckInClick = {
-            Toast.makeText(context, " ✅ Successful check-in", Toast.LENGTH_SHORT).show()
-        }
-    )
-}
-
-
 @SuppressLint("DefaultLocale")
 @Composable
 fun CheckInScreen(
-    onGetLocationClick: Location?,
+    onGetLocationClick: () -> Location?,
     onCheckInClick: () -> Unit,
     userName: String = "Ngô Tuấn Anh",
 ) {
 
     // Later fetch Location from Server.
     val eventLocation = Location(20.981173435734032, 105.78749159814292)
+    var location: Location? by remember { mutableStateOf(null) }
+    val context = LocalContext.current
+    var refreshStimulate by remember { mutableIntStateOf(0) }
+    val scopeException = rememberCoroutineScope() + CoroutineExceptionHandler() { _, exception -> }
 
 
-//    val expectedCheckInTime = remember {
-//        val formatter = SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.getDefault())
-//        val randomDate = LocalDateTime.now()
-//        formatter.format(randomDate)
-//    }
+    LaunchedEffect(key1 = refreshStimulate) {
+        if (checkLocationOn(context)) {
+            getLocation(context).filterNotNull().onEach {
+                location = it
+                Log.d("Location", location!!.lat.toString())
+            }.catch {
+                Log.d("Location", it.message.toString())
+            }.launchIn(scopeException)
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -116,7 +125,10 @@ fun CheckInScreen(
                     .padding(8.dp)
             ) {
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.clickable {
+                        refreshStimulate++
+                    }
                 ) {
                     Icon(
                         imageVector = Icons.Default.LocationOn,
@@ -172,7 +184,7 @@ fun CheckInScreen(
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = onGetLocationClick?.let {
+                    text = location?.let {
                         String.format(
                             "Lat: %.6f,  Lng: %.6f",
                             it.lat,
@@ -189,8 +201,12 @@ fun CheckInScreen(
                     text = "Thời gian dự kiến check-in:",
                     fontWeight = FontWeight.Bold
                 )
+
+                val dateFormat = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+                val date = Date()
+                val time = dateFormat.format(date)
                 Text(
-                    text = "expectedCheckInTime",
+                    text = time,
                     color = Color.Gray
                 )
             }
@@ -201,11 +217,14 @@ fun CheckInScreen(
                 .wrapContentSize()
                 .clip(RoundedCornerShape(8.dp))
                 .background(
-                    color = if (onGetLocationClick != null) Color.Green else Color.Gray
+                    color = if (location != null) Color.Green else Color.Gray
                 )
                 .padding(8.dp)
                 .clickable {
-                    if(onGetLocationClick != null) onCheckInClick.invoke()
+                    if (location != null && location?.getDistance(eventLocation)!! < 0.5) onCheckInClick.invoke()
+                    else{
+                        Toast.makeText(context, "Can't get location or location is too far ${location?.getDistance(eventLocation) ?: 0}", Toast.LENGTH_SHORT).show()
+                    }
                 },
         ) {
             Text(
@@ -226,7 +245,7 @@ fun CheckInScreen(
 fun CheckInPreview() {
     CheckInScreen(
         userName = "Ngô Tuấn Anh",
-        onGetLocationClick = Location(0.0, 0.0),
+        onGetLocationClick = { Location(0.0, 0.0) },
         onCheckInClick = {}
     )
 }

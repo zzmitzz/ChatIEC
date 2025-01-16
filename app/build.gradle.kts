@@ -69,6 +69,8 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(project(":camera_ml"))
     implementation(libs.play.services.location)
+    implementation(libs.play.services.mlkit.document.scanner)
+    implementation(libs.firebase.messaging.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

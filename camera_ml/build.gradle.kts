@@ -39,8 +39,10 @@ dependencies {
     implementation(libs.material)
     implementation(libs.hilt.android)
     implementation(libs.hilt.android)
+    implementation(libs.androidx.activity)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.play.services.code.scanner)
+    implementation(libs.play.services.mlkit.document.scanner)
 }

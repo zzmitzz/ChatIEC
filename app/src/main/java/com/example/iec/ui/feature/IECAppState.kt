@@ -78,18 +78,21 @@ class IECAppState(
     fun navToHome(userID: String) {
         navController.navigate(DestinationRoute.Home.createRoute(userID)) {
             launchSingleTop = true
+            restoreState = true
         }
     }
 
     fun navToEditProfile(userID: String) {
         navController.navigate(DestinationRoute.EditUserInfo.createRoute(userID)) {
             launchSingleTop = true
+            restoreState = true
         }
     }
 
     fun navigateToTools() {
         navController.navigate(DestinationRoute.Tools.route) {
             launchSingleTop = true
+            restoreState = true
         }
     }
 
@@ -97,6 +100,7 @@ class IECAppState(
         navController.navigate(DestinationRoute.Message.route) {
 
             launchSingleTop = true
+            restoreState = true
         }
     }
 
@@ -104,6 +108,7 @@ class IECAppState(
         navController.navigate(DestinationRoute.FaceRecognition.route) {
 
             launchSingleTop = true
+            restoreState = true
         }
     }
     fun navigateBack(){
