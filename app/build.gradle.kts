@@ -44,6 +44,7 @@ android {
     }
     buildFeatures {
         compose = true
+        viewBinding = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.7"
@@ -71,6 +72,11 @@ dependencies {
     implementation(libs.play.services.location)
     implementation(libs.play.services.mlkit.document.scanner)
     implementation(libs.firebase.messaging.ktx)
+    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation(libs.androidx.swiperefreshlayout)
+    implementation(libs.androidx.recyclerview)
+    implementation(libs.androidx.coordinatorlayout)
+    implementation(libs.androidx.cardview)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

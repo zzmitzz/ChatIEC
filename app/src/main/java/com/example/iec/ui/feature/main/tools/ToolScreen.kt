@@ -46,7 +46,6 @@ fun ToolScreen(
 ) {
 
     val context = LocalContext.current
-    val activity = context.getActivity()
     Scaffold(
         topBar = {
             Row(
@@ -83,7 +82,12 @@ fun ToolScreen(
             ) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.clickable {
+                        val intent = Intent(context, HostActivity::class.java)
+                        intent.putExtra(HostActivity.SCREEN_CHOOSE, ToolsFragmentScreen.SCANNER.name)
+                        context.startActivity(intent)
+                    }
                 ) {
                     Image(
                         painter = painterResource(R.drawable.map),
@@ -123,8 +127,8 @@ fun ToolScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier.clickable {
-                        val intent = Intent(activity, DocsScannerActivity::class.java)
-                        activity?.startActivity(intent)
+                        val intent = Intent(context, DocsScannerActivity::class.java)
+                        context.startActivity(intent)
                     }
                 ) {
                     Image(

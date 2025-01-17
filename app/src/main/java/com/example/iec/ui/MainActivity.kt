@@ -3,9 +3,11 @@ package com.example.iec.ui
 import android.Manifest
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -14,6 +16,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
+import com.example.iec.service.NetworkService
 import com.example.iec.ui.feature.IECApp
 import com.example.iec.ui.feature.IECAppState
 import com.example.iec.ui.feature.authorise.LoginNavigation
@@ -47,7 +50,13 @@ class MainActivity : ComponentActivity() {
             }
         }
         getNotificationPermission()
-        FirebaseMessaging.getInstance().
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token = task.result
+                Log.d("FCM Token", token)
+            }
+        }
+        startForegroundService(Intent(this, NetworkService::class.java))
     }
     private fun getNotificationPermission(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -60,6 +69,11 @@ class MainActivity : ComponentActivity() {
                 requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        stopService(Intent(this, NetworkService::class.java))
     }
 }
 
