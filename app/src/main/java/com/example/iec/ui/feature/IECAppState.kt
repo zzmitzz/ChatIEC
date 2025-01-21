@@ -34,7 +34,9 @@ sealed class DestinationRoute(
     // 3. Message
     data object Message : DestinationRoute("message")
 
-    data object MessagePersonal : DestinationRoute("message/personal/{$AGR_MESS_ID}")
+    data object MessagePersonal : DestinationRoute("message/personal/{$AGR_MESS_ID}"){
+        fun createRoute(messID: String) = "message/personal/$messID"
+    }
 
     data object MessageDetail : DestinationRoute("message/detail/{$AGR_MESS_ID}")
 
@@ -98,7 +100,14 @@ class IECAppState(
 
     fun navigateToMessage() {
         navController.navigate(DestinationRoute.Message.route) {
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
 
+
+    fun navigateToMessagePersonal(messID: String) {
+        navController.navigate(DestinationRoute.MessagePersonal.createRoute(messID)) {
             launchSingleTop = true
             restoreState = true
         }

@@ -22,7 +22,7 @@ abstract class BaseFragment<T : ViewBinding, VM: BaseViewModel>: Fragment() {
 
     abstract val binding: T
 
-    lateinit var viewModel: VM
+    abstract val viewModel: VM
 
     private val loadingDialog: LoadingDialogView by lazy {
         LoadingDialogView(requireContext())
@@ -38,12 +38,11 @@ abstract class BaseFragment<T : ViewBinding, VM: BaseViewModel>: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initViewModel()
+//        initViewModel()
         initDefaultState()
         initLogicState()
     }
     abstract fun initLogicState(): Unit
-    abstract fun initViewModel(): Unit
     private fun initDefaultState() {
         viewModel.isLoading.onEach {
             if (it) {

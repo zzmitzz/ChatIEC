@@ -1,21 +1,23 @@
-package com.example.iec.ui.feature.main.tools.components
+package com.example.iec.ui.feature.main.tools.components.documents
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.ViewModel
-import com.example.iec.R
+import androidx.fragment.app.viewModels
 import com.example.iec.core.BaseFragment
 import com.example.iec.databinding.FragmentDocsViewBinding
 import com.example.iec.ui.feature.main.tools.ToolVM
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-class DocsViewFragment : BaseFragment<FragmentDocsViewBinding, ToolVM>() {
+@AndroidEntryPoint
+class DocsViewFragment @Inject constructor() : BaseFragment<FragmentDocsViewBinding, ToolVM>() {
 
 
     override val binding: FragmentDocsViewBinding
         get() = FragmentDocsViewBinding.inflate(layoutInflater)
-
+    override val viewModel: ToolVM by viewModels()
     private lateinit var mAdapter: DocumentListRecyclerView
 
     override fun initLogicState() {
@@ -41,12 +43,10 @@ class DocsViewFragment : BaseFragment<FragmentDocsViewBinding, ToolVM>() {
         super.onCreateView(inflater, container, savedInstanceState)
         return binding.root
     }
-    override fun initViewModel() {
-        viewModel = ToolVM()
-    }
+
     companion object {
         private var instance: DocsViewFragment? = null
-        fun newInstance(): DocsViewFragment{
+        fun newInstance(): DocsViewFragment {
             return if(instance == null){
                 DocsViewFragment()
             }else{

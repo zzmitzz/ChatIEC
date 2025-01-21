@@ -188,6 +188,11 @@ fun ToolScreen(
                         painter = painterResource(R.drawable.ptit_iec),
                         contentDescription = "Timeline Icon",
                         modifier = Modifier.size(48.dp)
+                            .clickable {
+                                val intent = Intent(context, HostActivity::class.java)
+                                intent.putExtra(HostActivity.SCREEN_CHOOSE, ToolsFragmentScreen.NOTE.name)
+                                context.startActivity(intent)
+                            }
                     )
                     Text(
                         text = "Notes",

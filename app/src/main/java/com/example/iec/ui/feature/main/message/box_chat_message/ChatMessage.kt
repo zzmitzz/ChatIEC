@@ -60,7 +60,7 @@ import com.example.iec.ui.theme.colorOnPrimary
 @Composable
 fun ChattingComponent(
     messages: List<Message>
-){
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -68,7 +68,7 @@ fun ChattingComponent(
                 horizontal = 8.dp,
                 vertical = 8.dp
             ),
-    ){
+    ) {
         LazyColumn(
             modifier = Modifier
                 .imePadding()
@@ -78,7 +78,10 @@ fun ChattingComponent(
         ) {
 
             itemsIndexed(messages) { index, chatMessage ->
-                MessageBubble((index == 0) || (index > 0 && messages[index-1].isFromUser), chatMessage)
+                MessageBubble(
+                    (index == 0) || (index > 0 && messages[index - 1].isFromUser),
+                    chatMessage
+                )
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }
@@ -91,25 +94,22 @@ fun MessageInput(
     messageText: String,
     onMessageChange: (String) -> Unit,
     onMessageSent: (String) -> Unit
-){
+) {
     Surface(
         modifier = Modifier
-            .fillMaxWidth()
-            .background(color = Color.Black)
-            .padding(bottom = 8.dp),
+            .fillMaxWidth(),
         tonalElevation = 2.dp
     ) {
 
         Row(
             modifier = Modifier
-                .background(color = Color.Black)
                 .padding(16.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
                 modifier = Modifier.padding(end = 4.dp)
-            ){
+            ) {
                 Icon(
                     imageVector = Icons.Default.MoreVert,
                     tint = Color(0xFFA9A9A9),
@@ -123,15 +123,11 @@ fun MessageInput(
                     .weight(1f)
                     .wrapContentHeight()
                     .padding(end = 4.dp),
-                placeholder = { Text("Type a message...", color = Color.White) },
-//                colors = TextFieldDefaults.textFieldColors(
-//                    containerColor = Color(0xFF454545),
-//                    focusedTextColor = Color.White,
-//                    unfocusedTextColor = Color.White,
-//                    focusedIndicatorColor = Color.Transparent,
-//                    unfocusedIndicatorColor = Color.Transparent
-//                ),
-
+                placeholder = { Text("Type a message...", color = Color.Black) },
+                colors = TextFieldDefaults.colors().copy(
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent
+                ),
                 shape = RoundedCornerShape(24.dp)
             )
 
@@ -168,7 +164,7 @@ fun MessageBubble(
         Row(
             verticalAlignment = Alignment.Bottom
         ) {
-            if(!message.isFromUser){
+            if (!message.isFromUser) {
                 Image(
                     modifier = Modifier
                         .padding(end = 6.dp)
@@ -241,14 +237,13 @@ fun TopAppBarMessage(
 ) {
     Row(
         modifier = Modifier
-            .padding(horizontal = 8.dp)
-            .background(color = Color.Black),
+            .padding(horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Image(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-            colorFilter = ColorFilter.tint(Color.White),
+            colorFilter = ColorFilter.tint(Color.Black),
             modifier = Modifier
                 .wrapContentSize()
                 .clickable {
@@ -276,10 +271,10 @@ fun TopAppBarMessage(
             Text(
                 "John Doe",
                 fontSize = 16.sp,
-                color = colorOnPrimary,
+                color = Color.Black,
                 fontWeight = FontWeight.Bold
             )
-            when(userStatus){
+            when (userStatus) {
                 UserStatus.ONLINE -> {
                     Text(
                         "Online",
@@ -287,6 +282,7 @@ fun TopAppBarMessage(
                         color = Color.Green
                     )
                 }
+
                 UserStatus.OFFLINE -> {
                     Text(
                         "Offline",
@@ -312,11 +308,17 @@ fun TopAppBarMessage(
 }
 
 
-
 @Preview(showBackground = true, backgroundColor = android.graphics.Color.BLACK.toLong())
 @Composable
 fun PreviewUI() {
-    MessageBubble(true, Message(isFromUser = false, message = "Helsdafsdjfioasjdoifjaoisasdfasdfiojasodijfosiddfjaoisdjfoajdsoifjdosalo", timestamp = 0))
+    MessageBubble(
+        true,
+        Message(
+            isFromUser = false,
+            message = "Helsdafsdjfioasjdoifjaoisasdfasdfiojasodijfosiddfjaoisdjfoajdsoifjdosalo",
+            timestamp = 0
+        )
+    )
 
 }
 
@@ -328,6 +330,7 @@ fun PreviewUI1() {
         onCallPressed = {})
 
 }
+
 @Preview(showBackground = true, backgroundColor = android.graphics.Color.BLACK.toLong())
 @Composable
 fun PreviewUI3() {
@@ -337,15 +340,18 @@ fun PreviewUI3() {
         onMessageSent = {}
     )
 }
+
 @Preview(showBackground = true, backgroundColor = android.graphics.Color.BLACK.toLong())
 @Composable
 fun PreviewUI2() {
-    ChattingComponent(listOf(
-        Message(isFromUser = true, message = "Hello", timestamp = 0),
-        Message(isFromUser = false, message = "Hello", timestamp = 0),
-        Message(isFromUser = true, message = "Hello", timestamp = 0),
-        Message(isFromUser = false, message = "Hello", timestamp = 0),
-    ))
+    ChattingComponent(
+        listOf(
+            Message(isFromUser = true, message = "Hello", timestamp = 0),
+            Message(isFromUser = false, message = "Hello", timestamp = 0),
+            Message(isFromUser = true, message = "Hello", timestamp = 0),
+            Message(isFromUser = false, message = "Hello", timestamp = 0),
+        )
+    )
 
 }
 

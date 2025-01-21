@@ -22,6 +22,11 @@ import com.example.iec.ui.feature.IECAppState
 import com.example.iec.ui.feature.authorise.LoginNavigation
 import com.example.iec.ui.theme.IECTheme
 import com.google.firebase.messaging.FirebaseMessaging
+import com.pusher.client.Pusher
+import com.pusher.client.PusherOptions
+import com.pusher.client.connection.ConnectionEventListener
+import com.pusher.client.connection.ConnectionState
+import com.pusher.client.connection.ConnectionStateChange
 import dagger.Component
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -56,6 +61,7 @@ class MainActivity : ComponentActivity() {
                 Log.d("FCM Token", token)
             }
         }
+        setUpConnect()
         startForegroundService(Intent(this, NetworkService::class.java))
     }
     private fun getNotificationPermission(){
@@ -74,6 +80,33 @@ class MainActivity : ComponentActivity() {
     override fun onDestroy() {
         super.onDestroy()
         stopService(Intent(this, NetworkService::class.java))
+    }
+
+    private fun setUpConnect(){
+        val options = PusherOptions()
+        options.setCluster("ap1");
+
+        val pusher = Pusher("a3ec8480ad22f43b4cf9", options)
+
+        pusher.connect(object : ConnectionEventListener {
+            override fun onConnectionStateChange(change: ConnectionStateChange) {
+                Log.i("Pusher", "State changed from ${change.previousState} to ${change.currentState}")
+            }
+
+            override fun onError(
+                message: String,
+                code: String,
+                e: Exception
+            ) {
+                Log.i("Pusher", "There was a problem connecting! code ($code), message ($message), exception($e)")
+            }
+        }, ConnectionState.ALL)
+
+        val channel = pusher.subscribe("my-channel")
+        channel.bind("my-event") { event ->
+            Log.i("Pusher","Received event with data: $event")
+        }
+
     }
 }
 

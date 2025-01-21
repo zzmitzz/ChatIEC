@@ -29,14 +29,14 @@ class DocsScannerActivity : ComponentActivity() {
             if (result.resultCode == RESULT_OK) {
                 val ans =
                     GmsDocumentScanningResult.fromActivityResultIntent(result.data)
-                ans?.getPages()?.let { pages ->
+                ans?.pages?.let { pages ->
                     for (page in pages) {
-                        val imageUri = pages.get(0).getImageUri()
+                        val imageUri = pages[0].imageUri
                     }
                 }
-                ans?.getPdf()?.let { pdf ->
-                    val pdfUri = pdf.getUri()
-                    val pageCount = pdf.getPageCount()
+                ans?.pdf?.let { pdf ->
+                    val pdfUri = pdf.uri
+                    val pageCount = pdf.pageCount
                 }
             }
         }

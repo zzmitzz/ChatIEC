@@ -77,6 +77,7 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.coordinatorlayout)
     implementation(libs.androidx.cardview)
+    implementation(project(":data"))
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -94,4 +95,20 @@ dependencies {
     implementation(libs.accompanist.permissions)
     // Use this for both Android and JVM
     implementation(libs.qrcode.kotlin)
+// Hilt for ViewModel
+    implementation("androidx.fragment:fragment-ktx:1.6.1")
+    // Lifecycle ViewModel
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+    // Retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // Hilt
+    implementation ("com.google.dagger:hilt-android:2.50")
+    kapt ("com.google.dagger:hilt-compiler:2.50")
+    implementation("androidx.hilt:hilt-navigation-compose:1.0.0")
+
+
+
+    implementation("com.pusher:pusher-java-client:2.4.2")
 }

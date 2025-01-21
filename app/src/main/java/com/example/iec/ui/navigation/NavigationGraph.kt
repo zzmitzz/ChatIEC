@@ -18,7 +18,9 @@ import com.example.iec.ui.feature.authorise.LoginNavigation
 import com.example.iec.ui.feature.authorise.LoginScreen
 import com.example.iec.ui.feature.main.home.HomeNavigation
 import com.example.iec.ui.feature.main.home.common.EditProfileScreen
+import com.example.iec.ui.feature.main.message.ChatMessageVM
 import com.example.iec.ui.feature.main.message.box_chat_message.ModernChatScreen
+import com.example.iec.ui.feature.main.message.list_chat.ListChatScreen
 import com.example.iec.ui.feature.main.tools.ToolScreen
 import com.example.iec.ui.theme.ColorPrimary
 
@@ -26,15 +28,20 @@ import com.example.iec.ui.theme.ColorPrimary
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
-    iecAppState: IECAppState
+    iecAppState: IECAppState,
+    hideBottomBar: () -> Unit,
+    showBottomBar: () -> Unit
 ) {
     NavHost(navController = navController, startDestination = "authentication") {
 
+
+        // Authenticate Route
         navigation(
             startDestination = DestinationRoute.Login.route,
             route = "authentication"
-        ){
+        ) {
             composable(route = DestinationRoute.Login.route) {
+                hideBottomBar()
                 LoginNavigation() {
                     iecAppState.navToHome("Ngo Tuan Anh")
                 }
@@ -42,22 +49,28 @@ fun NavigationGraph(
         }
 
 
+        // Main route
         navigation(
             startDestination = DestinationRoute.Home.route,
             route = "main",
             enterTransition = {
                 slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Up    ,
+                    AnimatedContentTransitionScope.SlideDirection.Left,
                     animationSpec = tween(700)
                 )
             }
         ) {
 
-
             composable(route = DestinationRoute.Home.route,
                 enterTransition = {
                     slideIntoContainer(
                         AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(700)
+                    )
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Right,
                         animationSpec = tween(700)
                     )
                 },
@@ -69,11 +82,13 @@ fun NavigationGraph(
                         defaultValue = ""
                     }
                 )) {
+                showBottomBar()
                 HomeNavigation(
                     appState = iecAppState
                 )
             }
-            composable(route = DestinationRoute.EditUserInfo.route,
+            composable(
+                route = DestinationRoute.EditUserInfo.route,
                 arguments = listOf(
                     navArgument(
                         name = DestinationRoute.AGR_HOME_USER_ID
@@ -89,6 +104,7 @@ fun NavigationGraph(
                     )
                 },
             ) {
+                hideBottomBar()
                 EditProfileScreen(
                     onBackPress = { iecAppState.navigateBack() }
                 ) {
@@ -96,12 +112,42 @@ fun NavigationGraph(
                 }
             }
             composable(route = DestinationRoute.Tools.route) {
+                showBottomBar()
                 ToolScreen()
             }
             composable(route = DestinationRoute.Message.route) {
-                ModernChatScreen()
+                showBottomBar()
+                ListChatScreen(
+                    navToMessageID = { userName ->
+                        iecAppState.navigateToMessagePersonal(userName)
+                    }
+                )
+            }
+
+            composable(route = DestinationRoute.MessagePersonal.route,
+                arguments = listOf(
+                    navArgument(
+                        name = DestinationRoute.AGR_MESS_ID
+                    ) {
+                        type = NavType.StringType
+                        defaultValue = ""
+                    }
+                ),
+                exitTransition = {
+                    slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Right,
+                        tween(300)
+                    )
+                }
+            ) {
+                hideBottomBar()
+                ModernChatScreen(
+                    onBackPress = { iecAppState.navigateBack() }
+                )
             }
             composable(route = DestinationRoute.FaceRecognition.route) {
+
+                showBottomBar()
                 ConstraintLayout() {
                     val (text) = createRefs()
                     Text(

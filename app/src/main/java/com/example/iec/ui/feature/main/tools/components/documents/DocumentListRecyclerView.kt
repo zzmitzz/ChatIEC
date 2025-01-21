@@ -1,10 +1,8 @@
-package com.example.iec.ui.feature.main.tools.components
+package com.example.iec.ui.feature.main.tools.components.documents
 
 import android.annotation.SuppressLint
-import android.content.ClipData.Item
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.appcompat.view.menu.MenuView.ItemView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.iec.databinding.ItemRcviewBinding
 

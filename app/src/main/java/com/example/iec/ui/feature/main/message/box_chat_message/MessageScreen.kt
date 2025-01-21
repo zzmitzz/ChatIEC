@@ -17,6 +17,8 @@ import com.example.iec.ui.theme.IECTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModernChatScreen(
+    userName: String = "",
+    onBackPress: () -> Unit
 ) {
     var messageText by remember { mutableStateOf("") }
     val messages = remember { mutableStateListOf<Message>() }
@@ -24,7 +26,6 @@ fun ModernChatScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(DarkGrayBg)
     ) {
         Box(
             modifier = Modifier
@@ -33,7 +34,7 @@ fun ModernChatScreen(
         ){
             TopAppBarMessage(
                 userStatus = if (onlineStatus) UserStatus.ONLINE else UserStatus.OFFLINE,
-                onBackPressed = {},
+                onBackPressed = onBackPress,
                 onCallPressed = {}
             )
         }
@@ -75,6 +76,6 @@ fun ModernChatScreen(
 @Composable
 fun ModernChatScreenPreview() {
     IECTheme  {
-        ModernChatScreen()
+        ModernChatScreen("John Doe"){}
     }
 }
