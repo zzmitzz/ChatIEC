@@ -10,6 +10,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.iec.ui.feature.main.message.ChatMessageVM
 import com.example.iec.ui.theme.DarkGrayBg
 import com.example.iec.ui.theme.IECTheme
 
@@ -20,8 +23,9 @@ fun ModernChatScreen(
     userName: String = "",
     onBackPress: () -> Unit
 ) {
+    val viewModel: ChatMessageVM = hiltViewModel()
     var messageText by remember { mutableStateOf("") }
-    val messages = remember { mutableStateListOf<Message>() }
+    val uiState = viewModel.uiMessage.collectAsStateWithLifecycle()
     val onlineStatus by remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
@@ -31,7 +35,7 @@ fun ModernChatScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 12.dp)
-        ){
+        ) {
             TopAppBarMessage(
                 userStatus = if (onlineStatus) UserStatus.ONLINE else UserStatus.OFFLINE,
                 onBackPressed = onBackPress,
@@ -45,21 +49,22 @@ fun ModernChatScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-        ){
-            ChattingComponent(messages)
+        ) {
+            ChattingComponent(uiState.value.chats)
         }
 
         Box(
             modifier = Modifier.fillMaxWidth()
-        ){
+        ) {
             MessageInput(
                 messageText = messageText,
                 onMessageChange = { messageText = it },
                 onMessageSent = {
-                    messages.add(0,
+
+                    viewModel.sendMessage(
                         Message(
                             message = messageText,
-                            isFromUser = messageText.startsWith("a"),
+                            isFromUser = true,
                             timestamp = System.currentTimeMillis()
                         )
                     )
@@ -75,7 +80,7 @@ fun ModernChatScreen(
 @Preview(showBackground = true)
 @Composable
 fun ModernChatScreenPreview() {
-    IECTheme  {
-        ModernChatScreen("John Doe"){}
+    IECTheme {
+        ModernChatScreen("John Doe", {})
     }
 }

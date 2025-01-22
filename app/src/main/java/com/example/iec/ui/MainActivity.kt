@@ -16,6 +16,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.navigation.compose.rememberNavController
+import com.example.iec.core.network.IECSocketManager
 import com.example.iec.service.NetworkService
 import com.example.iec.ui.feature.IECApp
 import com.example.iec.ui.feature.IECAppState
@@ -43,11 +44,13 @@ class MainActivity : ComponentActivity() {
 
         }
     }
+    @Inject
+    lateinit var iecSocketManager: IECSocketManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             val navController = rememberNavController()
-            val appState = IECAppState(navController, this)
+            val appState = IECAppState(navController, iecSocketManager)
             IECTheme  {
                 Scaffold(modifier = Modifier.fillMaxSize()) { _ ->
                     IECApp(appState, navController)
@@ -61,7 +64,7 @@ class MainActivity : ComponentActivity() {
                 Log.d("FCM Token", token)
             }
         }
-        setUpConnect()
+//        setUpConnect()
         startForegroundService(Intent(this, NetworkService::class.java))
     }
     private fun getNotificationPermission(){

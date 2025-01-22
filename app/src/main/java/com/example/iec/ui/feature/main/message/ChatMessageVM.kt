@@ -5,11 +5,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.uidata.ChatPreview
+import com.example.iec.core.network.IECSocketManager
 import com.example.iec.data.repository.MessageRepository
+import com.example.iec.ui.feature.main.message.box_chat_message.Message
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,19 +24,25 @@ data class ChatScreenState(
     val isLoading: Boolean = false,
     val errorMessage: Exception? = null,
     val stringQuery: String? = null,
-    val dataReady: List<ChatPreview> = listOf()
+    val dataReady: List<ChatPreview> = listOf(),
 )
 
+data class MessageScreenState(
+    val chats: List<Message> = listOf(),
+)
 
 @HiltViewModel
 class ChatMessageVM @Inject constructor(
-    val dataSource: MessageRepository
+    val dataSource: MessageRepository,
+    val iecSocketManager: IECSocketManager,
+
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
         ChatScreenState()
     )
-
+    private val _uiMessage = MutableStateFlow(MessageScreenState())
+    val uiMessage = _uiMessage.asStateFlow()
     val uiState = _uiState.asStateFlow()
 
 
@@ -40,8 +50,34 @@ class ChatMessageVM @Inject constructor(
         initState()
     }
 
+    fun joinMessageChannel(userID: String = ""){
+        iecSocketManager.establishConnection(userID)
+    }
 
+    fun sendMessage(message: Message){
+        viewModelScope.launch {
+            iecSocketManager.sendMessage(message)
+        }
+    }
+
+    fun onUpdateMessage(){
+        iecSocketManager.getStateStream().onEach { message ->
+            _uiMessage.update {
+                it.copy(
+                    chats = it.chats.plus(Message(
+                        isFromUser = true,
+                        message = message,
+                        timestamp = System.currentTimeMillis()
+                    ))
+                )
+            }.also {
+                Log.d("ChatMessageVM", _uiMessage.value.chats.joinToString { "" })
+            }
+        }.launchIn(viewModelScope)
+    }
     private fun initState(){
+
+        onUpdateMessage()
         viewModelScope.launch {
             onLoading()
             _uiState.update {
@@ -52,6 +88,7 @@ class ChatMessageVM @Inject constructor(
             Log.d("ChatMessageVM", _uiState.value.dataReady.toString())
             offLoading()
         }
+        joinMessageChannel("")
     }
 
     fun updateStringQuery(text: String){

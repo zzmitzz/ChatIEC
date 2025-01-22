@@ -2,12 +2,17 @@ package com.example.iec.ui.feature
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.iec.core.network.IECSocketManager
+import javax.inject.Inject
+import javax.inject.Singleton
 
 
 sealed class DestinationRoute(
@@ -51,15 +56,18 @@ sealed class DestinationRoute(
 }
 
 
-
-class IECAppState(
+@Singleton
+class IECAppState @Inject constructor(
     private val navController: NavController,
-    private val context: Context
+    private val iecSocketManager: IECSocketManager
 ) {
+
+
     private var isOnline by mutableStateOf(checkIfOnline())
 
     fun refreshOnlineStatus() {
         isOnline = checkIfOnline()
+        iecSocketManager.establishConnection()
     }
 
     private fun checkIfOnline(): Boolean {
@@ -67,7 +75,7 @@ class IECAppState(
         return true
     }
 
-
+    var webSocketState = iecSocketManager.establishConnection()
     // LOGIN
 
     fun navToLogin() {

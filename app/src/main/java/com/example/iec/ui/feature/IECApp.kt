@@ -1,11 +1,15 @@
 package com.example.iec.ui.feature
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,10 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.iec.core.network.ConnectionState
 import com.example.iec.ui.navigation.BottomBarNav
 import com.example.iec.ui.navigation.NavigationGraph
 import com.example.iec.ui.navigation.ScreenDestinationLevel
@@ -30,6 +36,12 @@ fun IECApp(
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route ?: DestinationRoute.Login.route
+    val connectionState =
+        iecAppState.webSocketState.collectAsStateWithLifecycle(ConnectionState.Idle)
+
+    SideEffect {
+        Log.d("IECApp", "onCreate entered ${connectionState.value}")
+    }
 
     ConstraintLayout(
         modifier = Modifier.fillMaxSize(),
@@ -76,5 +88,18 @@ fun IECApp(
         }
     }
 
-
+    if (connectionState.value is ConnectionState.Error) {
+        CustomDialog(
+            showDialog = true,
+            onDismissRequest = { iecAppState.refreshOnlineStatus() },
+            content = {
+                Box(
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Text(
+                        text = (connectionState.value as ConnectionState.Error).message
+                    )
+                }
+            })
+    }
 }

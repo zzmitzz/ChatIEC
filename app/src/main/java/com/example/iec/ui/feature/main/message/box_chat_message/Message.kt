@@ -1,5 +1,9 @@
 package com.example.iec.ui.feature.main.message.box_chat_message
 
+import kotlinx.serialization.Serializable
+
+
+@Serializable
 data class Message(
     val header: HEADER = HEADER.MESSAGE,
     val message: String,
