@@ -8,6 +8,7 @@ import com.example.iec.ui.feature.IECAppState
 
 @Composable
 fun HomeNavigation(
+    username: String,
     appState: IECAppState
 ){
     val homeVM: HomeVM = viewModel()

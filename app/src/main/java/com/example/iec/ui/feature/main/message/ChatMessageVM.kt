@@ -1,15 +1,13 @@
 package com.example.iec.ui.feature.main.message
 
 import android.util.Log
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.uidata.ChatPreview
 import com.example.iec.core.network.IECSocketManager
 import com.example.iec.data.repository.MessageRepository
-import com.example.iec.ui.feature.main.message.box_chat_message.Message
+import com.example.data.uidata.Message
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -64,11 +62,13 @@ class ChatMessageVM @Inject constructor(
         iecSocketManager.getStateStream().onEach { message ->
             _uiMessage.update {
                 it.copy(
-                    chats = it.chats.plus(Message(
+                    chats = it.chats.plus(
+                        Message(
                         isFromUser = true,
                         message = message,
                         timestamp = System.currentTimeMillis()
-                    ))
+                    )
+                    )
                 )
             }.also {
                 Log.d("ChatMessageVM", _uiMessage.value.chats.joinToString { "" })

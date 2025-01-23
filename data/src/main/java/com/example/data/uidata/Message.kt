@@ -1,4 +1,4 @@
-package com.example.iec.ui.feature.main.message.box_chat_message
+package com.example.data.uidata
 
 import kotlinx.serialization.Serializable
 

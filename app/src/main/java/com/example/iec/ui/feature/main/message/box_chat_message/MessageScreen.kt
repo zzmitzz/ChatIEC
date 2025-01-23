@@ -3,7 +3,6 @@ package com.example.iec.ui.feature.main.message.box_chat_message
 import androidx.compose.runtime.Composable
 
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -12,8 +11,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.data.uidata.Message
 import com.example.iec.ui.feature.main.message.ChatMessageVM
-import com.example.iec.ui.theme.DarkGrayBg
 import com.example.iec.ui.theme.IECTheme
 
 

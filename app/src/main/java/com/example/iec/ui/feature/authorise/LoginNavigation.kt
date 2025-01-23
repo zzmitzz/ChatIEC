@@ -1,6 +1,7 @@
 package com.example.iec.ui.feature.authorise
 
 import androidx.compose.runtime.Composable
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,9 +16,8 @@ enum class LoginRouteLink(val route: String) {
 
 @Composable
 fun LoginNavigation(
-    navigateToRegister: () -> Unit = {},
-    navigateToHome: () -> Unit = {}
+    navigateToHome: (String) -> Unit
 ) {
-    val viewModel : LoginViewModel = viewModel()
-    LoginRoute(viewModel, navigateToHome = navigateToHome)
+    val viewModel : LoginViewModel = hiltViewModel()
+    LoginScreenStateful(viewModel, navigateToHome = navigateToHome)
 }

@@ -51,6 +51,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.data.uidata.Message
 import com.example.iec.R
 import com.example.iec.ui.feature.main.message.convertTimeStamp
 import com.example.iec.ui.theme.ColorPrimary

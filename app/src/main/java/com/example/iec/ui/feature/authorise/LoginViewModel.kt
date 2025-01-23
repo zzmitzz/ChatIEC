@@ -2,7 +2,11 @@ package com.example.iec.ui.feature.authorise
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.iec.ui.feature.main.message.box_chat_message.Message
+import com.example.iec.DataStoreHelper
+import com.example.iec.PreferenceKeys
+import com.example.iec.data.APIResult
+import com.example.iec.data.remote.LoginResponse
+import com.example.iec.data.repository.AuthRepository
 import com.example.iec.ui.model.UserInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -16,38 +20,39 @@ import javax.inject.Inject
 
 data class LoginUIState(
     val isLoading: Boolean = false,
-    val userInfo: UserInfo? = null,
-    val errorMessage: Queue<String>
+    val loginResponse: LoginResponse? = null,
+    val errorMessage: Queue<String> = LinkedList()
 )
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-//    private val repository: RepositoryImpl
+    private val repository: AuthRepository,
+    private val dataStore: DataStoreHelper
 ) : ViewModel() {
     val uiState = MutableStateFlow(
-        LoginUIState(
-            false,
-            userInfo = null,
-            LinkedList<String>()
-        )
+        LoginUIState()
     )
-
-    fun doLogin(email: String, password: String) = viewModelScope.launch {
+    fun doLogin(username: String, password: String) = viewModelScope.launch {
 
         uiState.update { it.copy(isLoading = true) }
+        delay(1000L)
 
-        // Simulate Login phase, simply return true for success Login, fail for failed Login.
-        delay(2000)
-        val userInfo = UserInfo(
-            imageProfile = "NULL",
-            name = "NULL",
-            email = email,
-            birth = "06/12/2003",
-            currentJob = null,
-            quotes = null,
-            sessionToken = null
+        val status = repository.doLogin(
+            username, password
         )
-
-        uiState.update { it.copy(isLoading =  false, userInfo = userInfo) }
+        when(status){
+            is APIResult.Success -> {
+                dataStore.apply {
+                    clearData(PreferenceKeys.USER_NAME)
+                    clearData(PreferenceKeys.USER_PASSWORD)
+                    saveData(PreferenceKeys.USER_NAME, status.data.username)
+                    saveData(PreferenceKeys.USER_PASSWORD, status.data.password)
+                }
+                uiState.update { it.copy(loginResponse = status.data) }
+            }
+            is APIResult.Failure -> {
+                uiState.update { it.copy(errorMessage = LinkedList(listOf(status.exception))) }
+            }
+        }
     }
 }

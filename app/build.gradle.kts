@@ -78,6 +78,7 @@ dependencies {
     implementation(libs.androidx.coordinatorlayout)
     implementation(libs.androidx.cardview)
     implementation(project(":data"))
+    implementation(libs.play.services.vision.common)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -117,5 +118,13 @@ dependencies {
     implementation("io.ktor:ktor-client-websockets:$ktor_version")
     implementation("io.ktor:ktor-client-logging:$ktor_version")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.2")
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
+
+    // Datastore
+    implementation("androidx.datastore:datastore-preferences:1.1.2")
+
+    //Biometric
+    implementation(libs.androidx.biometric)
 }

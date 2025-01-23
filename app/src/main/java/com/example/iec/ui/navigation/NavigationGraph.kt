@@ -1,5 +1,6 @@
 package com.example.iec.ui.navigation
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.material3.Text
@@ -42,8 +43,8 @@ fun NavigationGraph(
         ) {
             composable(route = DestinationRoute.Login.route) {
                 hideBottomBar()
-                LoginNavigation() {
-                    iecAppState.navToHome("Ngo Tuan Anh")
+                LoginNavigation(){ it
+                    iecAppState.navToHome(it)
                 }
             }
         }
@@ -83,7 +84,10 @@ fun NavigationGraph(
                     }
                 )) {
                 showBottomBar()
+                val username = it.arguments?.getString(DestinationRoute.AGR_HOME_USER_ID)
+                Log.d("NavigationGraph", username.toString())
                 HomeNavigation(
+                    username = username ?: "Default",
                     appState = iecAppState
                 )
             }
