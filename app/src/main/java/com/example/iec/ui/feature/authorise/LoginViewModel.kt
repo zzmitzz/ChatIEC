@@ -21,7 +21,7 @@ import javax.inject.Inject
 data class LoginUIState(
     val isLoading: Boolean = false,
     val loginResponse: LoginResponse? = null,
-    val errorMessage: Queue<String> = LinkedList()
+    val errorMessage: String? = null
 )
 
 @HiltViewModel
@@ -51,7 +51,7 @@ class LoginViewModel @Inject constructor(
                 uiState.update { it.copy(loginResponse = status.data) }
             }
             is APIResult.Failure -> {
-                uiState.update { it.copy(errorMessage = LinkedList(listOf(status.exception))) }
+                uiState.update { it.copy(errorMessage = status.exception) }
             }
         }
     }

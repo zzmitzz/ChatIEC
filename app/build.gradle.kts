@@ -72,7 +72,7 @@ dependencies {
     implementation(libs.play.services.location)
     implementation(libs.play.services.mlkit.document.scanner)
     implementation(libs.firebase.messaging.ktx)
-    implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.constraintlayout:constraintlayout:2.2.0")
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.coordinatorlayout)

@@ -42,7 +42,7 @@ class NetworkService : Service() {
         (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
             .createNotificationChannel(
                 NotificationChannel(
-                    CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT
+                    CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_LOW
                 )
             )
     }
@@ -63,6 +63,7 @@ class NetworkService : Service() {
         val notification: Notification = notificationBuilder.setOngoing(true)
             .setSmallIcon(R.drawable.ptit_iec)
             .setContentTitle(resources.getString(R.string.app_name) + " đềm nè")
+            .setSound(null)
             .setContentText(timer.toString())
             .setCategory(Notification.CATEGORY_SERVICE)
             .build()

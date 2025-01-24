@@ -90,13 +90,13 @@ fun HomeScreenStateful(
 
     }
 
-    CustomDialog(
-        !checkLocationOn(LocalContext.current)
-    ) {
-        Text(
-            text = "You need to turn on the Location first to use this feature",
-        )
-    }
+//    CustomDialog(
+//        !checkLocationOn(LocalContext.current)
+//    ) {
+//        Text(
+//            text = "You need to turn on the Location first to use this feature",
+//        )
+//    }
 
     // 4. Launch the permission request on composition
     LaunchedEffect(Unit) {

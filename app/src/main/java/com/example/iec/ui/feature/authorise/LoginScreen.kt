@@ -2,6 +2,7 @@ package com.example.iec.ui.feature.authorise
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
@@ -52,6 +53,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.iec.DataStoreHelperImpl
 import com.example.iec.PreferenceKeys
 import com.example.iec.R
+import com.example.iec.ui.feature.CustomDialog
 import com.example.iec.ui.feature.CustomTextField
 import com.example.iec.ui.feature.LoadingDialog
 import com.example.iec.ui.feature.SimpleButton
@@ -59,6 +61,7 @@ import com.example.iec.ui.theme.ButtonBackground
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.zip
 import kotlinx.coroutines.launch
+import java.util.concurrent.Executor
 
 
 enum class LoginType{
@@ -103,17 +106,7 @@ fun onExitApp(){
 }
 
 
-@Preview(showBackground = true)
-@Composable
-fun LoginScreenPreview(){
-    LoginScreen(
-        uiState = LoginUIState(),
-        doLogin = { _, _ -> },
-        doOtherLogin = {},
-        onExitApp = {
-        },
-    )
-}
+
 
 @Composable
 fun LoginScreen(
@@ -123,37 +116,22 @@ fun LoginScreen(
     doOtherLogin: (LoginType) -> Unit,
     onExitApp: () -> Unit,
 ){
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf<String?>(null) }
+    var password by remember {mutableStateOf<String?>(null) }
+
+
     val lifecycleScope = LocalLifecycleOwner.current.lifecycleScope
-    val dataStore = DataStoreHelperImpl(LocalContext.current)
+    val context = LocalContext.current
+    val dataStore = DataStoreHelperImpl(context)
 
-    //Biometric authenticator
-    val biometricManager = BiometricManager.from(LocalContext.current)
-    val canAuthenticate = biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_WEAK)
-    var isBioValid by remember { mutableStateOf(false) }
-    val executor = ContextCompat.getMainExecutor(LocalContext.current)
-    val authCallback = object :  BiometricPrompt.AuthenticationCallback() {
-        override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-            super.onAuthenticationError(errorCode, errString)
-            println("Authentication error: $errString")
-            isBioValid = true
-        }
+    var showDialogAuthFail by remember { mutableStateOf<String?>(null) }
+    var isBiometricVerified by remember { mutableStateOf(false) }
 
-        override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
-            super.onAuthenticationSucceeded(result)
-            println("Authentication succeeded!")
-        }
+    var notifyEmailBlank by remember { mutableStateOf(false) }
+    var notifyPasswordBlank by remember { mutableStateOf(false) }
 
-        override fun onAuthenticationFailed() {
-            super.onAuthenticationFailed()
-            println("Authentication failed.")
-        }
-    }
-
-    val biometricPrompt = BiometricPrompt((LocalContext.current) as FragmentActivity, executor, authCallback)
-    LaunchedEffect(isBioValid) {
-        if(isBioValid){
+    LaunchedEffect(isBiometricVerified) {
+        if(isBiometricVerified){
             lifecycleScope.launch {
                 dataStore.readData(PreferenceKeys.USER_NAME)
                     .zip(
@@ -164,33 +142,11 @@ fun LoginScreen(
                         email = it.first ?: ""
                         password = it.second ?: ""
                     }
+
             }
         }
     }
 
-    LaunchedEffect(Unit) {
-        when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)) {
-            BiometricManager.BIOMETRIC_SUCCESS -> {
-                println("App can authenticate using biometrics or device credentials.")
-                val promptInfo = BiometricPrompt.PromptInfo.Builder()
-                    .setTitle("Biometric login")
-                    .setSubtitle("Log in using your biometric credential")
-                    .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
-                    .build()
-
-                biometricPrompt.authenticate(promptInfo)
-            }
-            BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
-                println("No biometric features available on this device.")
-            }
-            BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
-                println("Biometric features are currently unavailable.")
-            }
-            BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
-                println("The user hasn't enrolled any biometrics or device credentials.")
-            }
-        }
-    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -214,22 +170,36 @@ fun LoginScreen(
         )
         Spacer(Modifier.height(30.dp))
         CustomTextField(
-            value = email,
+            value = email ?: "",
             isBordered = true,
             onValueChange = {
                 email = it
+                notifyEmailBlank = false
             },
             placeholder = "Email || Phone number"
         )
-        Spacer(Modifier.height(30.dp))
+        if(notifyEmailBlank){
+            Text(
+                text = "Ewww email",
+                color = Color.Red
+            )
+        }
+        Spacer(Modifier.height(20.dp))
         CustomTextField(
-            value = password,
+            value = password ?: "",
             onValueChange = {
                 password = it
+                notifyPasswordBlank = false
             },
             placeholder = "Password"
         )
-        Spacer(Modifier.height(30.dp))
+        if(notifyPasswordBlank){
+        Text(
+            text = "Eww password",
+            color = Color.Red
+        )
+    }
+        Spacer(Modifier.height(20.dp))
         Text(
             text = "Forgot your password?",
             modifier = Modifier
@@ -252,6 +222,19 @@ fun LoginScreen(
                 modifier = Modifier
                     .size(32.dp)
                     .clickable {
+                        handleBiometric(
+                            context,
+                            ContextCompat.getMainExecutor(context),
+                            onSuccessVerified = {
+                                isBiometricVerified = true
+                            },
+                            onFailAuthentication = {
+                                showDialogAuthFail = it
+                            },
+                            onFailFingerprint = {
+                                showDialogAuthFail = it
+                            }
+                        )
                     },
                 painter = painterResource(R.drawable.fingerprint_24dp_000000_fill0_wght400_grad0_opsz24),
                 contentDescription = ""
@@ -263,7 +246,17 @@ fun LoginScreen(
                 elevation = CardDefaults.cardElevation()
             ){
                 SimpleButton(
-                    onClick = { doLogin(email, password) },
+                    onClick = {
+                        if(email.isNullOrEmpty()){
+
+                        }
+                        else if(password.isNullOrEmpty()){
+
+                        }
+                        else{
+                            doLogin(email ?: "", password ?: "")
+                        }
+                    },
                 ) {
                     Text(
                         text = "Sign in",
@@ -355,15 +348,89 @@ fun LoginScreen(
             }
         }
     }
+
+    CustomDialog(
+        showDialog = showDialogAuthFail != null,
+        onDismissRequest = {
+            showDialogAuthFail = null
+        }
+    ) {
+        Box(
+            modifier = Modifier.padding(8.dp)
+        ){
+            Text(
+                text = showDialogAuthFail ?: "Error",
+            )
+        }
+    }
 }
-//
-//
-//@Preview(
-//    showBackground = true,
-//    backgroundColor = android.graphics.Color.WHITE.toLong()
-//)
-//@Composable
-//
-//fun LoginScreenPreview() {
-//    LoginScreen({}, {})
-//}
+
+fun handleBiometric(
+    context: Context,
+    executor: Executor,
+    onSuccessVerified: () -> Unit,
+    onFailAuthentication: (String) -> Unit,
+    onFailFingerprint: (String) -> Unit
+    ){
+    //Biometric authenticator
+    val biometricManager = BiometricManager.from(context)
+    var isAbleToAuth = false
+    val authCallback = object :  BiometricPrompt.AuthenticationCallback() {
+        override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+            super.onAuthenticationError(errorCode, errString)
+            onFailAuthentication("Authenticate fail by $errorCode")
+        }
+
+        override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult) {
+            super.onAuthenticationSucceeded(result)
+            onSuccessVerified()
+        }
+
+        override fun onAuthenticationFailed() {
+            super.onAuthenticationFailed()
+            onFailAuthentication("Authentication Failed")
+        }
+    }
+    val biometricPrompt = BiometricPrompt((context) as FragmentActivity, executor, authCallback)
+    when (biometricManager.canAuthenticate(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)) {
+        BiometricManager.BIOMETRIC_SUCCESS -> {
+            Log.d("LoginScreen", "App can authenticate using biometrics or device credentials.")
+            isAbleToAuth = true
+        }
+        BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE -> {
+            Log.d("LoginScreen", "No biometric features available on this device.")
+            onFailFingerprint("No biometric features available on this device.")
+        }
+        BiometricManager.BIOMETRIC_ERROR_HW_UNAVAILABLE -> {
+            Log.d("LoginScreen", "Biometric features are currently unavailable.")
+
+            onFailFingerprint("Biometric features are currently unavailable.")
+        }
+        BiometricManager.BIOMETRIC_ERROR_NONE_ENROLLED -> {
+            Log.d("LoginScreen", "The user hasn't enrolled any biometrics or device credentials.")
+            onFailFingerprint("The user hasn't enrolled any biometrics or device credentials.")
+        }
+    }
+
+    if(isAbleToAuth){
+        val promptInfo = BiometricPrompt.PromptInfo.Builder()
+            .setTitle("Biometric login")
+            .setSubtitle("Log in using your biometric credential")
+            .setAllowedAuthenticators(BiometricManager.Authenticators.BIOMETRIC_STRONG or BiometricManager.Authenticators.DEVICE_CREDENTIAL)
+            .build()
+
+        biometricPrompt.authenticate(promptInfo)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LoginScreenPreview(){
+    LoginScreen(
+        uiState = LoginUIState(),
+        doLogin = { _, _ -> },
+        doOtherLogin = {},
+        onExitApp = {
+        },
+    )
+}

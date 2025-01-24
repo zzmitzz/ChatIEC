@@ -40,17 +40,17 @@ class IECSocketManager @Inject constructor(
         Log.d("IECSocketManager", "connect with $webSocket ${this.hashCode()}")
     }
     fun establishConnection(route: String = "") = flow<ConnectionState> {
-        emit(ConnectionState.Idle)
-        try {
-            withTimeout(3000){
-                connect(route)
-                Log.d("IECSocketManager", "Connected")
-                emit(ConnectionState.Connected(true))
-                Log.d("IECSocketManager", "Connect Successfully")
-            }
-        }catch (e: Exception){
-            emit(ConnectionState.Error(message = "Connect error"))
-        }
+//        emit(ConnectionState.Idle)
+//        try {
+//            withTimeout(3000){
+//                connect(route)
+//                Log.d("IECSocketManager", "Connected")
+//                emit(ConnectionState.Connected(true))
+//                Log.d("IECSocketManager", "Connect Successfully")
+//            }
+//        }catch (e: Exception){
+//            emit(ConnectionState.Error(message = "Connect error"))
+//        }
     }
 
     fun getStateStream(): Flow<String> {
