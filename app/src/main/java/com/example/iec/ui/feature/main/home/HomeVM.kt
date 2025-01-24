@@ -29,22 +29,20 @@ enum class ProfileType {
     PROFILE, CHECK
 }
 
-sealed interface HomeUIState {
-    data class Loading(val isLoading: Boolean = true) : HomeUIState
-    data class ErrorMessage(val message: String? = null) : HomeUIState
-    data class HomeReady(
-        val selectedHomeScreen: ProfileType = ProfileType.PROFILE,
-        val userInfoShow: UserInfo? = null,
-        val qrCodeReceive: Bitmap? = null,
-        val onNotificationMessage: Queue<String>? = null,
-        val checkedInStatus: Boolean = false,
-    ): HomeUIState
-}
+data class HomeUIState(
+    val isLoading: Boolean = false,
+    val onError: String? = null,
+    val selectedHomeScreen: ProfileType = ProfileType.PROFILE,
+    val userInfoShow: UserInfo? = null,
+    val qrCodeReceive: Bitmap? = null,
+    val onNotificationMessage: Queue<String>? = null,
+    val checkedInStatus: Boolean = false,
+)
 
 
 @HiltViewModel
 class HomeVM @Inject constructor() : ViewModel() {
-    private var _uiState = MutableStateFlow<HomeUIState>(HomeUIState.Loading(false))
+    private var _uiState = MutableStateFlow<HomeUIState>(HomeUIState())
     val uiState = _uiState
 
 
@@ -54,25 +52,34 @@ class HomeVM @Inject constructor() : ViewModel() {
 
     private suspend fun generateQRCode(userKey: String): Bitmap {
         return withContext(Dispatchers.Default) {
-            val qrCreator = QRCode.ofCircles()
-                .withColor(Colors.ORANGE_RED)
-                .withSize(25)
+            val qrCreator = QRCode.ofSquares()
+                .withColor(Colors.DEEP_SKY_BLUE)
+                .withSize(24)
                 .build(userKey)
             val imageByteArray = qrCreator.renderToBytes()
             BitmapFactory.decodeByteArray(imageByteArray, 0, imageByteArray.size)
         }
     }
-
+    fun changeScreenType(type: ProfileType) {
+        Log.d("HomeVM", type.name.toString())
+        _uiState.update { currentState ->
+            if(currentState.selectedHomeScreen == type){
+                currentState
+            }else{
+                currentState.copy(selectedHomeScreen = type)
+            }
+        }
+    }
     init {
         scopeException.launch {
             _uiState.update {
-                HomeUIState.Loading(true)
+                it.copy(
+                    isLoading = true
+                )
             }
             _uiState.update {
-                HomeUIState.Loading(false)
-                HomeUIState.HomeReady(qrCodeReceive = generateQRCode("XinChao"))
+                it.copy(isLoading = false, qrCodeReceive = generateQRCode(""), userInfoShow = )
             }
-
         }
     }
 }

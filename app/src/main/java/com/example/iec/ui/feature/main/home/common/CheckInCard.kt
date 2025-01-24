@@ -221,9 +221,9 @@ fun CheckInScreen(
                 )
                 .padding(8.dp)
                 .clickable {
-                    if (location != null && location?.getDistance(eventLocation)!! < 0.5) onCheckInClick.invoke()
+                    if (location != null && location?.getDistance(eventLocation)!! < 5) onCheckInClick.invoke()
                     else{
-                        Toast.makeText(context, "Can't get location or location is too far ${location?.getDistance(eventLocation) ?: 0}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "You are too far from the event location. Distance: ${location?.getDistance(eventLocation) ?: 0}", Toast.LENGTH_SHORT).show()
                     }
                 },
         ) {

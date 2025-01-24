@@ -198,7 +198,7 @@ fun ProfileComponent(
                 onCheckIn = {
                     onCheckInDialog = true
                 },
-                qrBitmap = (uiState as HomeUIState.HomeReady).qrCodeReceive)
+                qrBitmap = uiState.qrCodeReceive)
         }
     }
 

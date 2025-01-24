@@ -15,5 +15,5 @@ fun HomeNavigation(
     val navigateEditScreen: (String) -> Unit = { userID ->
         appState.navToEditProfile(userID)
     }
-    HomeScreenStateful(homeVM, navigateEditScreen)
+    HomeScreenStateful(homeVM, navigateEditScreen, username = username)
 }

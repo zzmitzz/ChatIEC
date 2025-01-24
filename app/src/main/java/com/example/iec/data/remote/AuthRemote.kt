@@ -1,5 +1,6 @@
 package com.example.iec.data.remote
 
+import com.example.iec.ui.model.UserInfo
 import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 import okhttp3.RequestBody
@@ -22,7 +23,7 @@ data class LoginResponse(
 )
 
 @Serializable
-data class  AuthResponse<T>(
+data class  IECResponse<T>(
     val isSuccess: Boolean,
     val result: T
 )
@@ -31,5 +32,8 @@ interface AuthRemote {
     @POST("validateauth")
     suspend fun validateAuth(
         @Body requestBody: LoginRequest
-    ): AuthResponse<LoginResponse>
+    ): IECResponse<LoginResponse>
+
+    @POST
+    suspend fun getDetailUserInfo(@Body userID: String): IECResponse<UserInfo>
 }

@@ -1,5 +1,9 @@
 package com.example.iec.ui.model
 
+import kotlinx.serialization.Serializable
+
+
+@Serializable
 data class UserInfo(
     val imageProfile: String? = null,
     val userName: String? = null,

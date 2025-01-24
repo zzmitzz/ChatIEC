@@ -36,6 +36,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -75,10 +76,12 @@ import kotlinx.coroutines.plus
 fun HomeScreenStateful(
     viewModel: HomeVM,
     navToEditProfile: (String) -> Unit,
-    backPressed: () -> Unit = {}
+    backPressed: () -> Unit = {},
+    username: String
 ) {
-    var screenType by remember { mutableStateOf(ProfileType.PROFILE) }
+    val context = LocalContext.current
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+
 
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -87,16 +90,15 @@ fun HomeScreenStateful(
         val arePermissionsGranted = permissionsMap.values.reduce { acc, next ->
             acc && next
         }
-
     }
 
-//    CustomDialog(
-//        !checkLocationOn(LocalContext.current)
-//    ) {
-//        Text(
-//            text = "You need to turn on the Location first to use this feature",
-//        )
-//    }
+    CustomDialog(
+        !checkLocationOn(context)
+    ) {
+        Text(
+            text = "You need to turn on the Location first to use this feature",
+        )
+    }
 
     // 4. Launch the permission request on composition
     LaunchedEffect(Unit) {
@@ -111,13 +113,9 @@ fun HomeScreenStateful(
 
 
     HomeScreen(
-        screenType = screenType,
-        onScreenTypeChange = {
-            screenType = if (screenType == ProfileType.PROFILE) {
-                ProfileType.CHECK
-            } else {
-                ProfileType.PROFILE
-            }
+        screenType = uiState.value.selectedHomeScreen,
+        onScreenTypeChange = { type ->
+            viewModel.changeScreenType(type)
         },
         uiState = uiState.value,
         onEditProfile = navToEditProfile,
@@ -129,8 +127,8 @@ fun HomeScreenStateful(
 
 @Composable
 fun HomeScreen(
-    screenType: ProfileType = ProfileType.PROFILE,
-    onScreenTypeChange: () -> Unit = {},
+    screenType: ProfileType,
+    onScreenTypeChange: (ProfileType) -> Unit = {},
     onGetLocation: () -> Location,
     onActionCheckIn: () -> Unit = {},
     onEditProfile : (String) -> Unit = {},
@@ -250,8 +248,7 @@ fun HomeScreen(
                     .padding(8.dp)
                     .clickable(
                         onClick = {
-                            if (screenType == ProfileType.CHECK)
-                                onScreenTypeChange.invoke()
+                            onScreenTypeChange(ProfileType.PROFILE)
                         }
                     )
             ) {
@@ -277,8 +274,7 @@ fun HomeScreen(
                     .padding(8.dp)
                     .clickable(
                         onClick = {
-                            if (screenType == ProfileType.PROFILE)
-                                onScreenTypeChange.invoke()
+                            onScreenTypeChange(ProfileType.CHECK)
                         }
                     )
             ) {
