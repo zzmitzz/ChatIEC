@@ -1,5 +1,6 @@
 package com.example.iec.ui.feature
 
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,7 +27,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -210,15 +223,122 @@ fun CustomDialog(
     }
 }
 
+@Composable
+fun Canvas1(){
+    val listOffset = listOf(
+        Offset(0f,0f),
+        Offset(50f,150f),
+        Offset(0f,200f),
+        Offset(0f,300f),
+    )
+    Canvas(
+        modifier = Modifier.size(200.dp)
+    ) {
+        drawRect(
+            color = Color.Red,
+            topLeft = listOffset[0],
+            size = Size(100f, 100f),
+        )
+        drawCircle(
+            color = Color.Blue,
+            center = listOffset[1],
+            radius = 50f
+        )
+        drawLine(
+            color = Color.Green,
+            start = Offset(0f, 0f),
+            end = Offset(size.width, size.height),
+            strokeWidth = 5f,
+            cap = StrokeCap.Round
+        )
 
+        drawArc(
+            color = Color.Yellow,
+            startAngle = 0f,
+            sweepAngle = 270f,
+            useCenter = true,
+            topLeft = Offset(50f, 50f),
+            size = Size(100f, 100f)
+        )
+    }
+}
+@Composable
+fun Canvas2(){
+    Canvas(
+        modifier = Modifier.size(300.dp)
+    ) {
+        val path = Path().apply {
+            moveTo(200f, 200f)
+            lineTo(100f, 100f)
+            quadraticTo(200f, 0f, 300f, 100f)
+            close()
+        }
+
+        drawPath(
+            path = path,
+            color = Color.Red,
+            style = Stroke(
+                width = 5f,
+                cap = StrokeCap.Round,
+                join = StrokeJoin.Round
+            ),
+        )
+
+        rotate(45f) {
+            drawRect(Color.Red, Offset(100f, 100f), Size(100f, 100f))
+        }
+
+        scale(0.5f) {
+            drawCircle(Color.Blue, radius = 100f)
+        }
+
+        translate(left = 100f, top = 100f) {
+            drawCircle(Color.Green, radius = 50f)
+        }
+    }
+
+    Canvas(modifier = Modifier.size(200.dp)) {
+        // Clipping
+        clipRect(left = 0f, top = 0f, right = 300f, bottom = 300f) {
+            drawCircle(Color.Red, radius = 100f)
+        }
+
+        // Blend Modes
+        drawCircle(
+            color = Color.Gray,
+            radius = 50f,
+            blendMode = BlendMode.Screen
+        )
+
+//        // Gradients
+//        val gradient = Brush.linearGradient(
+//            colors = listOf(Color.Red, Color.Blue),
+//            start = Offset(0f, 0f),
+//            end = Offset(size.width, size.height)
+//        )
+//
+//        drawRect(brush = gradient)
+    }
+}
+
+@Composable
+fun ChipCard(){
+    Canvas(
+        modifier = Modifier.size(50.dp)
+    ) {
+        drawCircle(
+            color = Color.Cyan,
+            radius = 50f,
+            center = Offset(50f, 50f)
+        )
+    }
+}
 @Preview(
     backgroundColor = android.graphics.Color.WHITE.toLong(), showBackground = true
 )
 @Composable
 fun AllPreview() {
-    CustomDialog(true) {
-        Box(
-            modifier = Modifier.size(300.dp)
-        )
-    }
+//    Canvas1()
+    ChipCard()
+//    Canvas2()
 }

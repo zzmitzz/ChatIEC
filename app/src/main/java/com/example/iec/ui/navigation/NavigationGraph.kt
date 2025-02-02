@@ -43,8 +43,8 @@ fun NavigationGraph(
         ) {
             composable(route = DestinationRoute.Login.route) {
                 hideBottomBar()
-                LoginNavigation(){ it
-                    iecAppState.navToHome(it)
+                LoginNavigation(){
+                    iecAppState.navToHome()
                 }
             }
         }
@@ -84,10 +84,9 @@ fun NavigationGraph(
                     }
                 )) {
                 showBottomBar()
-                val username = it.arguments?.getString(DestinationRoute.AGR_HOME_USER_ID)
-                Log.d("NavigationGraph", username.toString())
+//                val username = it.arguments?.getString(DestinationRoute.AGR_HOME_USER_ID)
+//                Log.d("NavigationGraph", username.toString())
                 HomeNavigation(
-                    username = username ?: "Default",
                     appState = iecAppState
                 )
             }

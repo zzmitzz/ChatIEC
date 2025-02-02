@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.sp
 import com.example.iec.R
 import com.example.iec.ui.feature.CustomDialog
 
-enum class Gender(val text: String){
+enum class Gender(val text: String) {
     Male("Male"),
     Female("Female"),
     Other("Other")
@@ -72,7 +72,7 @@ fun EditProfileScreen(
     onBackPress: () -> Unit = {},
     onSaveProfile: (ProfileData) -> Unit,
 ) {
-    var userProfile by remember{
+    var userProfile by remember {
         mutableStateOf(defaultProfileData)
     }
     var showCancelDialog by remember { mutableStateOf(false) }
@@ -111,7 +111,9 @@ fun EditProfileScreen(
                     .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                RoundedAvatar() // Your existing composable
+                RoundedAvatar(
+                    imagePathURL = null
+                ) // Your existing composable
 
                 Column(
                     modifier = Modifier
@@ -151,17 +153,25 @@ fun EditProfileScreen(
             color = Color.DarkGray
         )
         Box(
-            modifier = Modifier.padding(vertical = 8.dp).fillMaxWidth()
-        ){
+            modifier = Modifier
+                .padding(vertical = 8.dp)
+                .fillMaxWidth()
+        ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
-            ){
+            ) {
                 Box() {
                     Row(
                         modifier = Modifier.align(Alignment.Center)
                     ) {
-                        Text(text = "Male", modifier = Modifier.wrapContentSize().align(Alignment.CenterVertically), color = Color.DarkGray)
+                        Text(
+                            text = "Male",
+                            modifier = Modifier
+                                .wrapContentSize()
+                                .align(Alignment.CenterVertically),
+                            color = Color.DarkGray
+                        )
                         RadioButton(
                             selected = userProfile.gender == Gender.Male,
                             onClick = { userProfile = userProfile.copy(gender = Gender.Male) },
@@ -173,9 +183,15 @@ fun EditProfileScreen(
                     Row(
                         modifier = Modifier.align(Alignment.Center)
                     ) {
-                        Text(text = "Female", modifier = Modifier.wrapContentSize().align(Alignment.CenterVertically), color = Color.DarkGray)
+                        Text(
+                            text = "Female",
+                            modifier = Modifier
+                                .wrapContentSize()
+                                .align(Alignment.CenterVertically),
+                            color = Color.DarkGray
+                        )
                         RadioButton(
-                            selected = userProfile.gender ==  Gender.Female,
+                            selected = userProfile.gender == Gender.Female,
                             onClick = { userProfile = userProfile.copy(gender = Gender.Female) },
                             modifier = Modifier.wrapContentSize()
                         )
@@ -185,7 +201,13 @@ fun EditProfileScreen(
                     Row(
                         modifier = Modifier.align(Alignment.Center)
                     ) {
-                        Text(text = "Other", modifier = Modifier.wrapContentSize().align(Alignment.CenterVertically), color = Color.DarkGray)
+                        Text(
+                            text = "Other",
+                            modifier = Modifier
+                                .wrapContentSize()
+                                .align(Alignment.CenterVertically),
+                            color = Color.DarkGray
+                        )
                         RadioButton(
                             selected = userProfile.gender == Gender.Other,
                             onClick = { userProfile = userProfile.copy(gender = Gender.Other) },
@@ -246,7 +268,7 @@ fun EditProfileScreen(
     }
 
 
-    if(showCancelDialog){
+    if (showCancelDialog) {
         AlertDialog(
             onDismissRequest = { showCancelDialog = false },
             title = { Text("Cancel Edit") },
@@ -271,17 +293,18 @@ fun EditProfileScreen(
     ) {
         Box(
             modifier = Modifier.padding(8.dp)
-        ){
+        ) {
             Text("Profile saved successfully!")
         }
     }
 }
 
 fun checkInput(userProfile: ProfileData): Boolean {
-    return userProfile.name.isNotEmpty() && userProfile.alias.isNotEmpty()}
+    return userProfile.name.isNotEmpty() && userProfile.alias.isNotEmpty()
+}
 
 @Preview(showBackground = true)
 @Composable
 fun EditProfileCardPreview() {
-    EditProfileScreen() {  }
+    EditProfileScreen() { }
 }

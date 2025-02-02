@@ -24,8 +24,8 @@ sealed class DestinationRoute(
 
     // It should be split into lower level destinations
     // 1. Home
-    data object Home : DestinationRoute("home/{$AGR_HOME_USER_ID}") {
-        fun createRoute(usrID: String) = "home/$usrID"
+    data object Home : DestinationRoute("home") {
+        fun createRoute() = "home"
     }
 
     data object EditUserInfo : DestinationRoute("home/editUserInfo/{$AGR_HOME_USER_ID}") {
@@ -85,8 +85,8 @@ class IECAppState @Inject constructor(
     }
 
     // 1. Home
-    fun navToHome(userID: String) {
-        navController.navigate(DestinationRoute.Home.createRoute(userID)) {
+    fun navToHome() {
+        navController.navigate(DestinationRoute.Home.createRoute()) {
             launchSingleTop = true
             restoreState = true
         }

@@ -35,8 +35,6 @@ class LoginViewModel @Inject constructor(
     fun doLogin(username: String, password: String) = viewModelScope.launch {
 
         uiState.update { it.copy(isLoading = true) }
-        delay(1000L)
-
         val status = repository.doLogin(
             username, password
         )

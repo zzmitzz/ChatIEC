@@ -61,6 +61,7 @@ import com.example.camera.QRReaderML
 import com.example.camera.QRResult
 import com.example.iec.R
 import com.example.iec.ui.feature.CustomDialog
+import com.example.iec.ui.feature.LoadingDialog
 import com.example.iec.ui.feature.main.home.common.Location
 import com.example.iec.ui.feature.main.home.common.OtherPPInfoCard
 import com.example.iec.ui.feature.main.home.common.ProfileComponent
@@ -76,8 +77,7 @@ import kotlinx.coroutines.plus
 fun HomeScreenStateful(
     viewModel: HomeVM,
     navToEditProfile: (String) -> Unit,
-    backPressed: () -> Unit = {},
-    username: String
+    backPressed: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
@@ -110,6 +110,9 @@ fun HomeScreenStateful(
         )
     }
 
+    LaunchedEffect(Unit) {
+        viewModel.updateUserInfo()
+    }
 
 
     HomeScreen(
@@ -122,17 +125,18 @@ fun HomeScreenStateful(
         backPressed = backPressed,
         onGetLocation = { Location(0.0, 0.0) },
     )
+    if(uiState.value.isLoading) LoadingDialog()
 }
 
 
 @Composable
 fun HomeScreen(
-    screenType: ProfileType,
+    screenType: ProfileType = ProfileType.PROFILE,
     onScreenTypeChange: (ProfileType) -> Unit = {},
-    onGetLocation: () -> Location,
+    onGetLocation: () -> Location = { Location(0.0, 0.0) },
     onActionCheckIn: () -> Unit = {},
     onEditProfile : (String) -> Unit = {},
-    uiState: HomeUIState? = null,
+    uiState: HomeUIState = HomeUIState(),
     backPressed: () -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -296,7 +300,8 @@ fun HomeScreen(
                 ProfileComponent(
                     screenType = screenType,
                     navigateEditProfile = onEditProfile,
-                    uiState = uiState!!,
+                    qrCodeReceive = uiState.qrCodeReceive,
+                    userInfo = uiState.userInfoShow ,
                     onGetLocation = {onGetLocation()},
                 )
             }
@@ -432,8 +437,8 @@ fun GetLocation(){
 
 }
 
-//@Preview
-//@Composable
-//fun HomeScreenPreview() {
-//    HomeScreen()
-//}
+@Preview
+@Composable
+fun HomeScreenPreview() {
+    HomeScreen()
+}

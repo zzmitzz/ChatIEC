@@ -6,7 +6,7 @@ import com.example.iec.data.remote.AuthRemote
 import com.example.iec.data.remote.LoginRequest
 import com.example.iec.data.remote.LoginResponse
 import com.example.iec.ui.model.UserInfo
-import com.google.android.gms.vision.clearcut.LogUtils
+import com.google.gson.JsonObject
 import javax.inject.Inject
 
 
@@ -33,7 +33,9 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getInfoUser(userID: String): APIResult<UserInfo> {
-        val response  =  authRemote.getDetailUserInfo(userID)
+        val jsonBody = JsonObject()
+        jsonBody.addProperty("user", userID)
+        val response  =  authRemote.getDetailUserInfo(jsonBody)
         if(response.isSuccess){
             return APIResult.Success(response.result)
         }else{

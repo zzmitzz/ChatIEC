@@ -5,7 +5,6 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.serialization.Serializable
 import okhttp3.RequestBody
 import retrofit2.http.Body
-import retrofit2.http.GET
 import retrofit2.http.POST
 
 @Serializable
@@ -34,6 +33,6 @@ interface AuthRemote {
         @Body requestBody: LoginRequest
     ): IECResponse<LoginResponse>
 
-    @POST
-    suspend fun getDetailUserInfo(@Body userID: String): IECResponse<UserInfo>
+    @POST("userdetail")
+    suspend fun getDetailUserInfo(@Body user: com.google.gson.JsonObject): IECResponse<UserInfo>
 }

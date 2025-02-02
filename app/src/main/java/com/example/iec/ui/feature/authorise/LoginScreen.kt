@@ -73,12 +73,12 @@ enum class LoginType{
 @Composable
 fun LoginScreenStateful(
     viewModel: LoginViewModel,
-    navigateToHome: (String) -> Unit
+    navigateToHome: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     if(uiState.loginResponse != null){
-        navigateToHome(uiState.loginResponse!!.username)
+        navigateToHome()
     }
     LoginScreen(
         uiState = uiState,

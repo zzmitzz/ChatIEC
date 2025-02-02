@@ -78,7 +78,7 @@ fun IECApp(
                     .wrapContentHeight()
             ) {
                 BottomBarNav(
-                    homeScreen = { iecAppState.navToHome("Ngo Anh") },
+                    homeScreen = { iecAppState.navToHome() },
                     toolsScreen = { iecAppState.navigateToTools() },
                     messageScreen = { iecAppState.navigateToMessage() },
                     faceRecognitionScreen = { iecAppState.navigateToFaceRecognition() },
