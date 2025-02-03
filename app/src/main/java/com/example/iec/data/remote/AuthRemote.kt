@@ -22,15 +22,17 @@ data class LoginResponse(
 )
 
 @Serializable
-data class LoginRequest(
-    @SerializedName("user") val username: String,
+data class RegisterRequest(
+    val username: String,
+    val email: String,
     val password: String
 )
 
 
 @Serializable
 data class RegisterResponse(
-
+    @SerializedName("_id") val id: String,
+    val username: String
 )
 
 

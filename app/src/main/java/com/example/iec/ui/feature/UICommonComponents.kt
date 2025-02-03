@@ -43,6 +43,8 @@ import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,7 +60,8 @@ fun CustomTextField(
     value: String = "",
     onValueChange: ((String) -> Unit),
     placeholder: String,
-    isBordered: Boolean = false
+    isBordered: Boolean = false,
+    isHidden: Boolean = false
 ) {
     TextField(
         value = value,
@@ -84,6 +87,7 @@ fun CustomTextField(
             )
         },
         singleLine = true,
+        visualTransformation = if(isHidden) PasswordVisualTransformation() else VisualTransformation.None,
 //        colors = TextFieldDefaults.textFieldColors(
 //            disabledTextColor = Color.Transparent,
 //            focusedIndicatorColor = Color.Transparent,

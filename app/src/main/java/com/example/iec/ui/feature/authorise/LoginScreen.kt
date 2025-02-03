@@ -73,7 +73,8 @@ enum class LoginType{
 @Composable
 fun LoginScreenStateful(
     viewModel: LoginViewModel,
-    navigateToHome: () -> Unit
+    navigateToHome: () -> Unit,
+    navigateRegister: () -> Unit
 ) {
     val scope = rememberCoroutineScope()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -81,11 +82,9 @@ fun LoginScreenStateful(
         navigateToHome()
     }
     LoginScreen(
-        uiState = uiState,
         doLogin = viewModel::doLogin,
         doOtherLogin = {},
-        onExitApp = {
-        }
+        onRegisterAction = navigateRegister
     )
     if(uiState.isLoading){
         Box(
@@ -99,22 +98,11 @@ fun LoginScreenStateful(
     }
 }
 
-fun onExitApp(){
-    val timeInterval = 2000L
-    val currentTime = System.currentTimeMillis()
-
-}
-
-
-
-
 @Composable
 fun LoginScreen(
-    uiState: LoginUIState,
     doLogin: (String, String) -> Unit  = { _, _ -> },
-    @SuppressLint("ShowToast") onRegisterAction: Toast = Toast.makeText(LocalContext.current, "On Develop", Toast.LENGTH_SHORT),
+    @SuppressLint("ShowToast") onRegisterAction: () -> Unit = {},
     doOtherLogin: (LoginType) -> Unit,
-    onExitApp: () -> Unit,
 ){
     var email by remember { mutableStateOf<String?>(null) }
     var password by remember {mutableStateOf<String?>(null) }
@@ -176,7 +164,7 @@ fun LoginScreen(
                 email = it
                 notifyEmailBlank = false
             },
-            placeholder = "Email || Phone number"
+            placeholder = "Username"
         )
         if(notifyEmailBlank){
             Text(
@@ -191,7 +179,8 @@ fun LoginScreen(
                 password = it
                 notifyPasswordBlank = false
             },
-            placeholder = "Password"
+            placeholder = "Password",
+            isHidden = true
         )
         if(notifyPasswordBlank){
         Text(
@@ -248,10 +237,10 @@ fun LoginScreen(
                 SimpleButton(
                     onClick = {
                         if(email.isNullOrEmpty()){
-
+                            notifyEmailBlank = true
                         }
                         else if(password.isNullOrEmpty()){
-
+                            notifyPasswordBlank = true
                         }
                         else{
                             doLogin(email ?: "", password ?: "")
@@ -280,7 +269,7 @@ fun LoginScreen(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .clickable {
-                    onRegisterAction.show()
+                    onRegisterAction()
                 }
         )
         Spacer(Modifier.height(30.dp))
@@ -427,10 +416,7 @@ fun handleBiometric(
 @Composable
 fun LoginScreenPreview(){
     LoginScreen(
-        uiState = LoginUIState(),
         doLogin = { _, _ -> },
         doOtherLogin = {},
-        onExitApp = {
-        },
     )
 }

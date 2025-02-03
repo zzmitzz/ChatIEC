@@ -7,6 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -17,6 +18,7 @@ import com.example.iec.ui.feature.DestinationRoute
 import com.example.iec.ui.feature.IECAppState
 import com.example.iec.ui.feature.authorise.LoginNavigation
 import com.example.iec.ui.feature.authorise.LoginScreen
+import com.example.iec.ui.feature.authorise.RegisterScreen
 import com.example.iec.ui.feature.main.home.HomeNavigation
 import com.example.iec.ui.feature.main.home.common.EditProfileScreen
 import com.example.iec.ui.feature.main.message.ChatMessageVM
@@ -43,9 +45,15 @@ fun NavigationGraph(
         ) {
             composable(route = DestinationRoute.Login.route) {
                 hideBottomBar()
-                LoginNavigation(){
-                    iecAppState.navToHome()
-                }
+                LoginNavigation(
+                    navigateToHome = { iecAppState.navToHome() },
+                    navigateToRegister = { iecAppState.navToRegister() })
+            }
+            composable(route = DestinationRoute.Register.route) {
+                hideBottomBar()
+                RegisterScreen(
+                    viewModel = hiltViewModel()
+                )
             }
         }
 

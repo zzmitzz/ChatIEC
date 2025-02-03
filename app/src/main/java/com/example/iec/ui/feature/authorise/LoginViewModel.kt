@@ -6,6 +6,8 @@ import com.example.iec.DataStoreHelper
 import com.example.iec.PreferenceKeys
 import com.example.iec.data.APIResult
 import com.example.iec.data.remote.LoginResponse
+import com.example.iec.data.remote.RegisterRequest
+import com.example.iec.data.remote.RegisterResponse
 import com.example.iec.data.repository.AuthRepository
 import com.example.iec.ui.model.UserInfo
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,6 +20,13 @@ import java.util.Queue
 import javax.inject.Inject
 
 
+
+enum class RegisterStatus(val code: Int, val message: String? = null) {
+    SUCCESS(1),
+    FAILURE(2, "Something went wrong"),
+}
+
+
 data class LoginUIState(
     val isLoading: Boolean = false,
     val loginResponse: LoginResponse? = null,
@@ -25,7 +34,7 @@ data class LoginUIState(
 )
 data class RegisterUIState(
     val isLoading: Boolean = false,
-    val registerResponse: LoginResponse? = null,
+    val registerStatus: RegisterStatus? = null,
     val errorMessage: String? = null
 )
 
@@ -37,9 +46,22 @@ class LoginViewModel @Inject constructor(
     val uiState = MutableStateFlow(
         LoginUIState()
     )
-    val registerState = MutableStateFlow(
 
+    val registerUIState = MutableStateFlow(
+        RegisterUIState()
     )
+
+
+    fun doRegister(data: RegisterRequest) = viewModelScope.launch {
+
+        uiState.update { it.copy(isLoading = true) }
+        delay(2000L)
+
+        uiState.update { it.copy(isLoading = false) }
+    }
+
+
+
     fun doLogin(username: String, password: String) = viewModelScope.launch {
 
         uiState.update { it.copy(isLoading = true) }
@@ -54,10 +76,10 @@ class LoginViewModel @Inject constructor(
                     saveData(PreferenceKeys.USER_NAME, status.data.username)
                     saveData(PreferenceKeys.USER_PASSWORD, status.data.password)
                 }
-                uiState.update { it.copy(loginResponse = status.data) }
+                uiState.update { it.copy(loginResponse = status.data, isLoading = false) }
             }
             is APIResult.Failure -> {
-                uiState.update { it.copy(errorMessage = status.exception) }
+                uiState.update { it.copy(errorMessage = status.exception, isLoading = false) }
             }
         }
     }

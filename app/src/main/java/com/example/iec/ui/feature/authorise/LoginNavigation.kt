@@ -16,8 +16,9 @@ enum class LoginRouteLink(val route: String) {
 
 @Composable
 fun LoginNavigation(
-    navigateToHome: () -> Unit
+    navigateToHome: () -> Unit,
+    navigateToRegister: () -> Unit
 ) {
     val viewModel : LoginViewModel = hiltViewModel()
-    LoginScreenStateful(viewModel, navigateToHome = navigateToHome)
+    LoginScreenStateful(viewModel, navigateToHome = navigateToHome, navigateToRegister)
 }

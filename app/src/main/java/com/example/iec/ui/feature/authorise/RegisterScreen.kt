@@ -17,7 +17,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.iec.R
+import com.example.iec.data.remote.LoginRequest
+import com.example.iec.data.remote.RegisterRequest
 
 
 @Preview(showBackground = true, backgroundColor = android.graphics.Color.WHITE.toLong())
@@ -28,26 +31,50 @@ private fun RegisterPreview() {
 
 
 @Composable
-fun RegisterScreen() {
+fun RegisterScreen(
+    viewModel: LoginViewModel
+) {
 
+    val state = viewModel.registerUIState.collectAsStateWithLifecycle()
 
-
+    RegistrationScreen(
+        onRegisterClick = viewModel::doRegister,
+        onGoogleSignInClick = {},
+        onFacebookSignInClick = {},
+        onAppleSignInClick = {},
+        registerState = state.value.registerStatus
+    )
 }
-
 
 
 @Composable
 fun RegistrationScreen(
-    onRegisterClick: () -> Unit = {},
+    onRegisterClick: (
+        RegisterRequest
+    ) -> Unit = {},
     onGoogleSignInClick: () -> Unit = {},
     onFacebookSignInClick: () -> Unit = {},
-    onAppleSignInClick: () -> Unit = {}
+    onAppleSignInClick: () -> Unit = {},
+    registerState: RegisterStatus? = null,
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
 
+    LaunchedEffect(key1 = registerState) {
+        when (registerState) {
+            RegisterStatus.SUCCESS -> {
+                // TODO: show success dialog
+            }
+
+            RegisterStatus.FAILURE -> {
+
+            }
+
+            else -> {}
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -77,7 +104,7 @@ fun RegistrationScreen(
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
-            label = { Text("Full Name") },
+            label = { Text("Username") },
             modifier = Modifier.fillMaxWidth(),
             colors = TextFieldDefaults.colors()
         )
@@ -123,7 +150,15 @@ fun RegistrationScreen(
 
         // Register Button
         Button(
-            onClick = onRegisterClick,
+            onClick = {
+                onRegisterClick(
+                    RegisterRequest(
+                        email = email,
+                        password = password,
+                        username = name
+                    )
+                )
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp),
@@ -149,7 +184,7 @@ fun RegistrationScreen(
                     Alignment.CenterHorizontally
                 )
                 .padding(top = 8.dp)
-        ){
+        ) {
             Box(
                 modifier = Modifier
                     .wrapContentSize()
