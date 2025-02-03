@@ -10,10 +10,10 @@ import com.example.iec.ui.feature.IECAppState
 @Composable
 fun HomeNavigation(
     appState: IECAppState
-){
+) {
     val homeVM: HomeVM = hiltViewModel()
     val navigateEditScreen: (String) -> Unit = { userID ->
         appState.navToEditProfile(userID)
     }
-    HomeScreenStateful(homeVM, navigateEditScreen)
+    HomeScreenStateful(homeVM, navigateEditScreen, logoutAction = { appState.navToLogin() })
 }

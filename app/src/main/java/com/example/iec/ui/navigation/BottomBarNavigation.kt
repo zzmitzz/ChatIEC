@@ -1,5 +1,8 @@
 package com.example.iec.ui.navigation
 
+import android.graphics.Shader
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -22,8 +25,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RenderEffect
+import androidx.compose.ui.graphics.asComposeRenderEffect
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,8 +40,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import com.example.iec.ui.theme.colorOnPrimary
+//import com.skydoves.cloudy.cloudy
 
 
+@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun BottomBarNav(
     homeScreen: () -> Unit,
@@ -46,13 +56,28 @@ fun BottomBarNav(
         modifier = Modifier
             .wrapContentHeight()
             .fillMaxWidth()
-            .clip(RoundedCornerShape(topEnd = 16.dp))
-            .padding(vertical = 2.dp)
+            .background(color = Color.Transparent)
+            .padding(2.dp)
     ) {
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .graphicsLayer {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        val blurRadius = 25f
+                        renderEffect = android.graphics.RenderEffect.createBlurEffect(
+                            blurRadius,
+                            blurRadius,
+                            Shader.TileMode.MIRROR
+                        ).asComposeRenderEffect()
+                    }
+                }
+                .blur(radius = 10.dp)  // Add blur effect
+        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(colorOnPrimary),
+                .background(color = Color.White.copy(alpha = 0.7f)),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -115,7 +140,8 @@ fun ItemBottomBar(
                 },
                 indication = null,
                 interactionSource = interactionSource
-            ),
+            )
+            .background(color = Color.Transparent),
     ) {
         Column(
             modifier = Modifier
@@ -157,8 +183,8 @@ fun ItemBottomBar(
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun BottomView() {
-//    BottomBarNav(navController = null, currentScreen = "")
-//}
+@Preview(showBackground = true, backgroundColor = android.graphics.Color.CYAN.toLong())
+@Composable
+fun BottomView() {
+    BottomBarNav({}, {}, {}, {}, "")
+}

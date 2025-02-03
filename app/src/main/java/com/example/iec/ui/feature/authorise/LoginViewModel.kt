@@ -23,6 +23,11 @@ data class LoginUIState(
     val loginResponse: LoginResponse? = null,
     val errorMessage: String? = null
 )
+data class RegisterUIState(
+    val isLoading: Boolean = false,
+    val registerResponse: LoginResponse? = null,
+    val errorMessage: String? = null
+)
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
@@ -31,6 +36,9 @@ class LoginViewModel @Inject constructor(
 ) : ViewModel() {
     val uiState = MutableStateFlow(
         LoginUIState()
+    )
+    val registerState = MutableStateFlow(
+
     )
     fun doLogin(username: String, password: String) = viewModelScope.launch {
 

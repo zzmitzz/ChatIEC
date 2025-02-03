@@ -22,6 +22,19 @@ data class LoginResponse(
 )
 
 @Serializable
+data class LoginRequest(
+    @SerializedName("user") val username: String,
+    val password: String
+)
+
+
+@Serializable
+data class RegisterResponse(
+
+)
+
+
+@Serializable
 data class  IECResponse<T>(
     val isSuccess: Boolean,
     val result: T

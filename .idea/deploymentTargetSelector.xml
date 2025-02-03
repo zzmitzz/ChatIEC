@@ -16,7 +16,7 @@
       <SelectionState runConfigName="camera">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="ProfileCompPreview">
+      <SelectionState runConfigName="PreviewGradient">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
     </selectionStates>

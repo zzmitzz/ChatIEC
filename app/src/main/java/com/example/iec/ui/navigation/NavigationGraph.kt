@@ -84,8 +84,6 @@ fun NavigationGraph(
                     }
                 )) {
                 showBottomBar()
-//                val username = it.arguments?.getString(DestinationRoute.AGR_HOME_USER_ID)
-//                Log.d("NavigationGraph", username.toString())
                 HomeNavigation(
                     appState = iecAppState
                 )

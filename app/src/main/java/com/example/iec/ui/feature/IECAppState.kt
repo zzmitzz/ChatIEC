@@ -20,7 +20,9 @@ sealed class DestinationRoute(
 ) {
 
     // 0. Login
-    data object Login : DestinationRoute("login")
+    data object Login : DestinationRoute("login"){
+        fun createRoute() = "login"
+    }
 
     // It should be split into lower level destinations
     // 1. Home
@@ -79,8 +81,11 @@ class IECAppState @Inject constructor(
     // LOGIN
 
     fun navToLogin() {
-        navController.navigate(DestinationRoute.Login.route) {
+        navController.navigate(DestinationRoute.Login.createRoute()) {
             launchSingleTop = true
+            popUpTo(0){
+                inclusive = true
+            }
         }
     }
 

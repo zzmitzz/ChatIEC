@@ -1,12 +1,19 @@
 package com.example.iec.ui.feature
 
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CardElevation
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
@@ -15,6 +22,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -29,6 +39,7 @@ import com.example.iec.ui.navigation.NavigationGraph
 import com.example.iec.ui.navigation.ScreenDestinationLevel
 
 
+@RequiresApi(Build.VERSION_CODES.S)
 @Composable
 fun IECApp(
     iecAppState: IECAppState,
@@ -52,9 +63,10 @@ fun IECApp(
             .height(0.dp)
             .constrainAs(content) {
                 top.linkTo(parent.top)
-                bottom.linkTo(if (isShowBottomBar.value) bottomBar.top else parent.bottom)
+                bottom.linkTo(parent.bottom)
                 height = Dimension.fillToConstraints
-            }) {
+            }
+            .padding(bottom = 16.dp)) {
             NavigationGraph(
                 navController = navController,
                 iecAppState = iecAppState,
@@ -68,14 +80,18 @@ fun IECApp(
         }
 
         if (isShowBottomBar.value) {
-            Box(
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .constrainAs(bottomBar) {
                         start.linkTo(parent.start)
                         bottom.linkTo(parent.bottom)
                     }
-                    .wrapContentHeight()
+                    .clip(RoundedCornerShape(12.dp))
+                    .padding(16.dp)
+                    .wrapContentHeight(),
+                elevation = CardDefaults.cardElevation(),
+                colors = CardDefaults.cardColors(containerColor = Color.Transparent),
             ) {
                 BottomBarNav(
                     homeScreen = { iecAppState.navToHome() },

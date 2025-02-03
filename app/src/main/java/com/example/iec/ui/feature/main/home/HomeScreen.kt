@@ -59,6 +59,8 @@ import androidx.navigation.NavController
 import com.example.camera.QRReader
 import com.example.camera.QRReaderML
 import com.example.camera.QRResult
+import com.example.iec.DataStoreHelperImpl
+import com.example.iec.PreferenceKeys
 import com.example.iec.R
 import com.example.iec.ui.feature.CustomDialog
 import com.example.iec.ui.feature.LoadingDialog
@@ -77,7 +79,8 @@ import kotlinx.coroutines.plus
 fun HomeScreenStateful(
     viewModel: HomeVM,
     navToEditProfile: (String) -> Unit,
-    backPressed: () -> Unit = {}
+    backPressed: () -> Unit = {},
+    logoutAction: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
@@ -124,6 +127,7 @@ fun HomeScreenStateful(
         onEditProfile = navToEditProfile,
         backPressed = backPressed,
         onGetLocation = { Location(0.0, 0.0) },
+        onLogOutAction = logoutAction
     )
     if(uiState.value.isLoading) LoadingDialog()
 }
@@ -137,7 +141,8 @@ fun HomeScreen(
     onActionCheckIn: () -> Unit = {},
     onEditProfile : (String) -> Unit = {},
     uiState: HomeUIState = HomeUIState(),
-    backPressed: () -> Unit = {}
+    backPressed: () -> Unit = {},
+    onLogOutAction: () -> Unit = {}
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -146,6 +151,11 @@ fun HomeScreen(
     var qrContentResult by remember { mutableStateOf("") }
     val scopeContext =
         CoroutineScope(coroutineScope.coroutineContext) + CoroutineExceptionHandler { coroutineContext, throwable -> }
+    val dataStore = DataStoreHelperImpl(context)
+
+
+
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -423,7 +433,12 @@ fun HomeScreen(
                     fontWeight = FontWeight.Medium,
                     color = Color.Red,
                     modifier = Modifier.clickable {
-                        Toast.makeText(context, "Logout", Toast.LENGTH_SHORT).show()
+                        onLogOutAction()
+
+                        coroutineScope.launch {
+                            dataStore.clearData(PreferenceKeys.USER_PASSWORD, PreferenceKeys.USER_NAME)
+                        }
+
                     }
                 )
             }
@@ -431,11 +446,6 @@ fun HomeScreen(
     }
 }
 
-@Composable
-fun GetLocation(){
-    val context = LocalContext.current
-
-}
 
 @Preview
 @Composable

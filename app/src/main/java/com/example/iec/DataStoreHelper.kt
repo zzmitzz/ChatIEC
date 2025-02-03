@@ -27,7 +27,7 @@ object PreferenceKeys {
 interface DataStoreHelper {
     suspend fun saveData(key: Preferences.Key<String>, value: String)
     fun readData(key: Preferences.Key<String>): Flow<String?>
-    suspend fun clearData(key: Preferences.Key<String>)
+    suspend fun clearData(vararg key: Preferences.Key<String>)
 }
 
 
@@ -52,9 +52,9 @@ class DataStoreHelperImpl @Inject constructor(
         }
     }
 
-    override suspend fun clearData(key: Preferences.Key<String>) {
-        dataStore.edit {
-            it.remove(key)
+    override suspend fun clearData(vararg keys: Preferences.Key<String>) {
+        keys.forEach { key ->
+            dataStore.edit { it.remove(key) }
         }
     }
 
