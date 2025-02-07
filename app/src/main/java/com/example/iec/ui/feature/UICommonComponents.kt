@@ -1,7 +1,18 @@
 package com.example.iec.ui.feature
 
+import android.graphics.BlurMaskFilter
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.EaseIn
+import androidx.compose.animation.core.EaseInOut
+import androidx.compose.animation.core.InfiniteRepeatableSpec
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
@@ -13,6 +24,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,9 +37,12 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,16 +50,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.LinearGradientShader
+import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shader
+import androidx.compose.ui.graphics.ShaderBrush
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
@@ -54,16 +77,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.iec.R
 import com.example.iec.ui.theme.ButtonBackground
+import com.google.android.datatransport.runtime.scheduling.jobscheduling.SchedulerConfig.Flag
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -99,7 +125,7 @@ fun CustomTextField(
             )
         },
         singleLine = true,
-        visualTransformation = if(isHidden) PasswordVisualTransformation() else VisualTransformation.None,
+        visualTransformation = if (isHidden) PasswordVisualTransformation() else VisualTransformation.None,
 //        colors = TextFieldDefaults.textFieldColors(
 //            disabledTextColor = Color.Transparent,
 //            focusedIndicatorColor = Color.Transparent,
@@ -112,8 +138,8 @@ fun CustomTextField(
 
 @Composable
 fun LoadingDialog(isLoading: Boolean = true, isCritical: Boolean = false) {
-    if(isCritical){
-        BackHandler(enabled = true){}
+    if (isCritical) {
+        BackHandler(enabled = true) {}
     }
     AnimatedVisibility(
         visible = isLoading,
@@ -132,9 +158,10 @@ fun LoadingDialog(isLoading: Boolean = true, isCritical: Boolean = false) {
                     )
                     .padding(12.dp)
                     // Block unintended taps behind the full-screen Box
-                    .pointerInput(Unit){
+                    .pointerInput(Unit) {
                         detectTapGestures { }
-                    }.semantics {
+                    }
+                    .semantics {
                         contentDescription = "Processing..."
                         stateDescription = "Please wait"
                     }
@@ -144,12 +171,14 @@ fun LoadingDialog(isLoading: Boolean = true, isCritical: Boolean = false) {
         }
     }
 }
+
 @Preview
 @Composable
 private fun LoadingPreview() {
     val openLoading by remember { mutableStateOf(true) }
     LoadingDialog()
 }
+
 @Composable
 fun SimpleButton(
     onClick: () -> Unit,
@@ -260,12 +289,12 @@ fun CustomDialog(
 }
 
 @Composable
-fun Canvas1(){
+fun Canvas1() {
     val listOffset = listOf(
-        Offset(0f,0f),
-        Offset(50f,150f),
-        Offset(0f,200f),
-        Offset(0f,300f),
+        Offset(0f, 0f),
+        Offset(50f, 150f),
+        Offset(0f, 200f),
+        Offset(0f, 300f),
     )
     Canvas(
         modifier = Modifier.size(200.dp)
@@ -298,8 +327,9 @@ fun Canvas1(){
         )
     }
 }
+
 @Composable
-fun Canvas2(){
+fun Canvas2() {
     Canvas(
         modifier = Modifier.size(300.dp)
     ) {
@@ -358,7 +388,7 @@ fun Canvas2(){
 }
 
 @Composable
-fun ChipCard(){
+fun ChipCard() {
     Canvas(
         modifier = Modifier.size(50.dp)
     ) {
@@ -369,12 +399,109 @@ fun ChipCard(){
         )
     }
 }
+
+
+@Composable
+fun Modifier.dropShadow(
+    shape: Shape,
+    color: Color,
+    offsetX: Dp,
+    offsetY: Dp,
+    blur: Dp,
+    spread: Dp,
+) = this.drawBehind {
+    val shadowSize = Size(size.width + spread.toPx(), size.height + spread.toPx())
+    val outlineShadow = shape.createOutline(shadowSize, layoutDirection, this)
+    // Create a Paint object
+    val paint = Paint()
+// Apply specified color
+    paint.color = color
+
+// Check for valid blur radius
+    if (blur.toPx() > 0) {
+        paint.asFrameworkPaint().apply {
+            // Apply blur to the Paint
+            maskFilter = BlurMaskFilter(blur.toPx(), BlurMaskFilter.Blur.NORMAL)
+        }
+    }
+    drawIntoCanvas { canvas ->
+        // Save the canvas state
+        canvas.save()
+        // Translate to specified offsets
+        canvas.translate(offsetX.toPx(), offsetY.toPx())
+        // Draw the shadow
+        canvas.drawOutline(outlineShadow, paint)
+        // Restore the canvas state
+        canvas.restore()
+    }
+}
+
+@Composable
+fun ShimmerText(
+    text: String = "Ngo Tuan Anh",
+    textStyle: TextStyle = TextStyle.Default.copy(color = Color.Black),
+    shimmerColors: List<Color> = listOf(
+        Color.Black,
+        Color.DarkGray.copy(0.5f)
+    ),
+    animationSpec: State<Float> = rememberInfiniteTransition(label = "shimmer").animateFloat(
+        initialValue = 0f,
+        targetValue = 1000f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(
+                durationMillis = 2000,
+                easing = EaseInOut
+            ),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
+) {
+    val brush = remember(animationSpec) {
+        object : ShaderBrush(){
+            override fun createShader(size: Size): Shader {
+                // Define the starting X offset, beginning outside the left edge of the text
+                val initialXOffset = -size.width
+                // Total distance the shimmer will sweep across (double the text width for full coverage)
+                val totalSweepDistance = size.width * 2
+                // Calculate the current position of the shimmer based on the animation progress
+                val currentPosition = initialXOffset + totalSweepDistance * animationSpec.value
+
+                return LinearGradientShader(
+                    colors = shimmerColors,
+                    from = Offset(0f, 0f),
+                    to = Offset( animationSpec.value , 0f)
+                )
+            }
+
+        }
+    }
+    Text(
+        text = text,
+        modifier = Modifier.wrapContentSize(),
+        style = textStyle.copy(brush),
+    )
+}
+
 @Preview(
     backgroundColor = android.graphics.Color.WHITE.toLong(), showBackground = true
 )
 @Composable
 fun AllPreview() {
 //    Canvas1()
-    ChipCard()
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White),
+        contentAlignment = Alignment.Center
+    ) {
+        ShimmerText(
+            text = "LOADING",
+            textStyle = LocalTextStyle.current.copy(
+                fontSize = 20.sp,
+                letterSpacing = 5.sp,
+                fontWeight = FontWeight.Bold
+            )
+        )
+    }
 //    Canvas2()
 }
