@@ -79,6 +79,7 @@ dependencies {
     implementation(libs.androidx.cardview)
     implementation(project(":data"))
     implementation(libs.play.services.vision.common)
+    implementation(libs.androidx.paging.common.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

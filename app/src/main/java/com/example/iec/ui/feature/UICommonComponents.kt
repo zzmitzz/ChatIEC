@@ -1,10 +1,15 @@
 package com.example.iec.ui.feature
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,6 +28,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -40,8 +48,12 @@ import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -99,25 +111,45 @@ fun CustomTextField(
 }
 
 @Composable
-fun LoadingDialog() {
-
-    Dialog(
-        onDismissRequest = {}
+fun LoadingDialog(isLoading: Boolean = true, isCritical: Boolean = false) {
+    if(isCritical){
+        BackHandler(enabled = true){}
+    }
+    AnimatedVisibility(
+        visible = isLoading,
+        enter = fadeIn(),
+        exit = fadeOut()
     ) {
-        Box(
-            modifier = Modifier
-                .wrapContentSize()
-                .clip(RoundedCornerShape(4.dp))
-                .background(
-                    color = Color.White
-                )
-                .padding(12.dp)
+        Dialog(
+            onDismissRequest = {}
         ) {
-            CircularProgressIndicator()
+            Box(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(
+                        color = Color.White
+                    )
+                    .padding(12.dp)
+                    // Block unintended taps behind the full-screen Box
+                    .pointerInput(Unit){
+                        detectTapGestures { }
+                    }.semantics {
+                        contentDescription = "Processing..."
+                        stateDescription = "Please wait"
+                    }
+            ) {
+                CircularProgressIndicator()
+            }
         }
     }
 }
-
+@Preview
+@Composable
+private fun LoadingPreview() {
+    val openLoading by remember { mutableStateOf(true) }
+    LoadingDialog()
+}
 @Composable
 fun SimpleButton(
     onClick: () -> Unit,

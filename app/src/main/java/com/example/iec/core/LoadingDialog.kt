@@ -9,6 +9,8 @@ import android.os.Handler
 import android.view.Gravity
 import android.view.Window
 import android.view.WindowManager
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.tooling.preview.Preview
 import com.example.iec.R
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -68,3 +70,4 @@ class LoadingDialogView @Inject constructor(
     }
 
 }
+

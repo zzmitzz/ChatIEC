@@ -1,9 +1,12 @@
 package com.example.iec.core
 
 import android.content.Context
-import android.os.Handler
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import android.util.DisplayMetrics
+import android.util.TypedValue
+import androidx.activity.ComponentActivity
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+
 
 //@Composable
 //fun doubleClickDismiss(action: () -> Unit){
@@ -17,3 +20,23 @@ import androidx.compose.ui.platform.LocalContext
 //        lastClickTime = currentTime
 //    }
 //}
+
+
+fun Float.toDP(context: Context): Dp{
+    val displayMetrics = context.resources.displayMetrics
+    return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,  this, displayMetrics).dp
+}
+
+
+fun Dp.toFloat(context: Context): Float {
+    val displayMetrics = context.resources.displayMetrics
+    return this.value * (displayMetrics.densityDpi / 160f)
+}
+
+
+fun ComponentActivity.pixelToDp(px: Float): Float{
+    val metric: DisplayMetrics = DisplayMetrics()
+    val metrics = this.windowManager.defaultDisplay.getMetrics(metric)
+
+    return px / (metric.densityDpi / 160f)
+}

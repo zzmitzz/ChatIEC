@@ -129,7 +129,7 @@ fun HomeScreenStateful(
         onGetLocation = { Location(0.0, 0.0) },
         onLogOutAction = logoutAction
     )
-    if(uiState.value.isLoading) LoadingDialog()
+    if (uiState.value.isLoading) LoadingDialog()
 }
 
 
@@ -139,7 +139,7 @@ fun HomeScreen(
     onScreenTypeChange: (ProfileType) -> Unit = {},
     onGetLocation: () -> Location = { Location(0.0, 0.0) },
     onActionCheckIn: () -> Unit = {},
-    onEditProfile : (String) -> Unit = {},
+    onEditProfile: (String) -> Unit = {},
     uiState: HomeUIState = HomeUIState(),
     backPressed: () -> Unit = {},
     onLogOutAction: () -> Unit = {}
@@ -300,7 +300,14 @@ fun HomeScreen(
             }
 
         }
-        Box(modifier = Modifier.padding(horizontal = 8.dp)) {
+        Box(
+            modifier = Modifier
+                .padding(
+                    bottom = 16.dp,
+                    start = 16.dp,
+                    end = 16.dp
+                )
+        ) {
             Card(
                 colors = CardDefaults.cardColors(
                     containerColor = Color.White
@@ -311,8 +318,8 @@ fun HomeScreen(
                     screenType = screenType,
                     navigateEditProfile = onEditProfile,
                     qrCodeReceive = uiState.qrCodeReceive,
-                    userInfo = uiState.userInfoShow ,
-                    onGetLocation = {onGetLocation()},
+                    userInfo = uiState.userInfoShow,
+                    onGetLocation = { onGetLocation() },
                 )
             }
         }
@@ -320,27 +327,28 @@ fun HomeScreen(
 
 
     if (qrContentResult.isNotEmpty()) {
-        if(URLUtil.isValidUrl(qrContentResult)){
+        if (URLUtil.isValidUrl(qrContentResult)) {
             CustomDialog(showDialog = true,
                 onDismissRequest = {
                     qrContentResult = ""
                 }) {
                 var uriIntent: Intent? = null
-                try{
+                try {
                     uriIntent = Intent(Intent.ACTION_VIEW, Uri.parse(qrContentResult))
-                }catch (e: Exception){
+                } catch (e: Exception) {
                 }
                 Text(
                     text = qrContentResult,
-                    modifier = Modifier.padding(16.dp).clickable {
-                        uriIntent?.let {
-                            context.startActivity(it)
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .clickable {
+                            uriIntent?.let {
+                                context.startActivity(it)
+                            }
                         }
-                    }
                 )
             }
-        }
-        else{
+        } else {
             CustomDialog(showDialog = true,
                 onDismissRequest = {
                     qrContentResult = ""
@@ -436,7 +444,10 @@ fun HomeScreen(
                         onLogOutAction()
 
                         coroutineScope.launch {
-                            dataStore.clearData(PreferenceKeys.USER_PASSWORD, PreferenceKeys.USER_NAME)
+                            dataStore.clearData(
+                                PreferenceKeys.USER_PASSWORD,
+                                PreferenceKeys.USER_NAME
+                            )
                         }
 
                     }
