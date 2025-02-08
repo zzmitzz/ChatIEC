@@ -10,6 +10,7 @@ import androidx.compose.animation.core.InfiniteRepeatableSpec
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
@@ -409,8 +410,19 @@ fun Modifier.dropShadow(
     offsetY: Dp,
     blur: Dp,
     spread: Dp,
+    animateFloat: State<Float> = rememberInfiniteTransition().animateFloat(
+        initialValue = -30f,
+        targetValue = 30f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(
+                durationMillis = 2000,
+                easing = EaseInOut
+            ),
+            repeatMode = RepeatMode.Reverse
+        )
+    )
 ) = this.drawBehind {
-    val shadowSize = Size(size.width + spread.toPx(), size.height + spread.toPx())
+    val shadowSize = Size(size.width + spread.toPx() + animateFloat.value, size.height + spread.toPx() + animateFloat.value)
     val outlineShadow = shape.createOutline(shadowSize, layoutDirection, this)
     // Create a Paint object
     val paint = Paint()

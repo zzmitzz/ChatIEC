@@ -65,8 +65,7 @@ fun IECApp(
                 top.linkTo(parent.top)
                 bottom.linkTo(parent.bottom)
                 height = Dimension.fillToConstraints
-            }
-            .padding(bottom = 16.dp)) {
+            }) {
             NavigationGraph(
                 navController = navController,
                 iecAppState = iecAppState

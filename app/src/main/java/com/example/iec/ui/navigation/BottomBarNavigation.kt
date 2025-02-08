@@ -162,11 +162,11 @@ fun ItemBottomBar(
         if(isSelected){
             Box(
                 modifier = Modifier
-                    .size(60.dp, 40.dp)
+                    .size(60.dp, 60.dp)
                     .background(
                         brush = Brush.radialGradient(
                             colors = listOf(
-                                Color.White.copy(alpha = 0.8f),
+                                Color.White.copy(alpha = 0.5f),
                                 Color.Transparent
                             ),
                         )

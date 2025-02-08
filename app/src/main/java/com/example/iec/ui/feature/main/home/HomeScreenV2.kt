@@ -331,7 +331,7 @@ fun MainComponents() {
                 ShimmerText(
                     text = "Ngo Hao Nhan",
                     textStyle = LocalTextStyle.current.copy(
-                        fontSize = 20.sp,
+                        fontSize = 22.sp,
                         fontFamily = FontFamily.Default,
                         letterSpacing = 3.sp,
                         fontWeight = FontWeight.Bold
@@ -417,7 +417,7 @@ fun CardHolder(type: String, isChosen: Boolean = false) {
     Card(
         modifier = Modifier
             .width(90.dp)
-            .wrapContentHeight()
+            .height(30.dp)
             .shadow(
                 elevation = 8.dp, // Adjust the elevation as needed
                 shape = CardDefaults.shape, // Use the same shape as the card
@@ -436,10 +436,10 @@ fun CardHolder(type: String, isChosen: Boolean = false) {
                 )
                 .align(Alignment.CenterHorizontally)
                 .padding(horizontal = 12.dp, vertical = 4.dp)
-                .fillMaxWidth(),
+                .fillMaxSize(),
             textAlign = TextAlign.Center,
             text = type,
-            fontSize = 12.sp,
+            fontSize = 16.sp,
             fontFamily = FontFamily.SansSerif,
             fontWeight = FontWeight.Bold,
             color = if (isChosen) Color.White else Color.DarkGray
