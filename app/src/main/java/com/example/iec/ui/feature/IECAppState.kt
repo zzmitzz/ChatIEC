@@ -11,6 +11,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.iec.core.network.IECSocketManager
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -32,10 +34,6 @@ sealed class DestinationRoute(
     // 1. Home
     data object Home : DestinationRoute("home") {
         fun createRoute() = "home"
-    }
-
-    data object EditUserInfo : DestinationRoute("home/editUserInfo/{$AGR_HOME_USER_ID}") {
-        fun createRoute(usrID: String) = "home/editUserInfo/$usrID"
     }
 
 
@@ -70,6 +68,14 @@ class IECAppState @Inject constructor(
 
 
     private var isOnline by mutableStateOf(checkIfOnline())
+
+
+    private var _isShowBottomBar =  MutableStateFlow(false)
+    val isShowBottomBar = _isShowBottomBar.asStateFlow()
+
+    fun setBottomBarVisible(isVisible: Boolean) {
+        _isShowBottomBar.value = isVisible
+    }
 
     fun refreshOnlineStatus() {
         isOnline = checkIfOnline()
@@ -108,12 +114,7 @@ class IECAppState @Inject constructor(
         }
     }
 
-    fun navToEditProfile(userID: String) {
-        navController.navigate(DestinationRoute.EditUserInfo.createRoute(userID)) {
-            launchSingleTop = true
-            restoreState = true
-        }
-    }
+
 
     fun navigateToTools() {
         navController.navigate(DestinationRoute.Tools.route) {

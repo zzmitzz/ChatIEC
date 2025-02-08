@@ -22,12 +22,6 @@
       <SelectionState runConfigName="HomePreview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
-      <SelectionState runConfigName="AllPreview">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
-      <SelectionState runConfigName="Home3Preview">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="Home2Preview">
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>

@@ -84,6 +84,17 @@ data class FakeData(
 )
 
 
+@Composable
+fun HomeScreenStateful(
+    viewModel: HomeVM,
+    navToEditProfile: (String) -> Unit,
+    backPressed: () -> Unit = {},
+    logoutAction: () -> Unit = {}
+) {
+    HomeScreenStateless()
+}
+
+
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun HomeScreenStateless() {
@@ -271,16 +282,19 @@ fun MainComponents() {
 //
 //            )
 //    }
-    ConstraintLayout (
+    ConstraintLayout(
         modifier = Modifier.fillMaxSize()
     ) {
         val (common, middle) = createRefs()
         ConstraintLayout(
-            modifier = Modifier.fillMaxWidth().padding(top = 9.dp).constrainAs(common){
-                top.linkTo(parent.top)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            }
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 9.dp)
+                .constrainAs(common) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
         ) {
             val (avatar, divider, name, place, quotes) = createRefs()
             Box(
@@ -313,14 +327,16 @@ fun MainComponents() {
                         start.linkTo(divider.end)
                     }
                     .padding(start = 8.dp, top = 4.dp)
-            ){
+            ) {
                 ShimmerText(
                     text = "Ngo Hao Nhan",
                     textStyle = LocalTextStyle.current.copy(
                         fontSize = 20.sp,
                         fontFamily = FontFamily.Default,
                         letterSpacing = 3.sp,
-                        fontWeight = FontWeight.Bold))
+                        fontWeight = FontWeight.Bold
+                    )
+                )
             }
             Text(
                 text = "Ha Noi",
@@ -359,11 +375,14 @@ fun MainComponents() {
             )
         }
         Image(
-            modifier = Modifier.scale(4f).constrainAs(middle) {
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                bottom.linkTo(parent.bottom)
-            }.padding(bottom = 50.dp),
+            modifier = Modifier
+                .scale(4f)
+                .constrainAs(middle) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
+                }
+                .padding(bottom = 50.dp),
             painter = painterResource(R.drawable.wallet),
             contentDescription = "Wallet",
         )
@@ -413,7 +432,7 @@ fun CardHolder(type: String, isChosen: Boolean = false) {
         Text(
             modifier = Modifier
                 .background(
-                    color = if(!isChosen) Color(0xFFD1D1D1) else Color.Black.copy(alpha = 0.9f)
+                    color = if (!isChosen) Color(0xFFD1D1D1) else Color.Black.copy(alpha = 0.9f)
                 )
                 .align(Alignment.CenterHorizontally)
                 .padding(horizontal = 12.dp, vertical = 4.dp)
@@ -422,7 +441,7 @@ fun CardHolder(type: String, isChosen: Boolean = false) {
             text = type,
             fontSize = 12.sp,
             fontFamily = FontFamily.SansSerif,
-            fontWeight = FontWeight.Bold ,
+            fontWeight = FontWeight.Bold,
             color = if (isChosen) Color.White else Color.DarkGray
         )
     }

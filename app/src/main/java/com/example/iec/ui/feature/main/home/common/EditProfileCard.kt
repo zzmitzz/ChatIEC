@@ -45,6 +45,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.iec.R
 import com.example.iec.ui.feature.CustomDialog
+import com.example.iec.ui.feature.main.home.HomeVM
+import com.example.iec.ui.model.UserInfo
 
 enum class Gender(val text: String) {
     Male("Male"),
@@ -67,7 +69,7 @@ data class ProfileData(
 
 @Composable
 fun EditProfileScreen(
-    modifier: Modifier = Modifier,
+    userInfo: UserInfo = UserInfo(),
     defaultProfileData: ProfileData = ProfileData(),
     onBackPress: () -> Unit = {},
     onSaveProfile: (ProfileData) -> Unit,
@@ -78,7 +80,7 @@ fun EditProfileScreen(
     var showCancelDialog by remember { mutableStateOf(false) }
     var showOnSaveDialog by remember { mutableStateOf(false) }
     Column(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(16.dp),

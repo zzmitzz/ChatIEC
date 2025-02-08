@@ -79,7 +79,7 @@ import kotlinx.coroutines.plus
 fun HomeScreenStateful(
     viewModel: HomeVM,
     navToEditProfile: (String) -> Unit,
-    backPressed: () -> Unit = {},
+//    backPressed: () -> Unit = {},
     logoutAction: () -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -125,7 +125,7 @@ fun HomeScreenStateful(
         },
         uiState = uiState.value,
         onEditProfile = navToEditProfile,
-        backPressed = backPressed,
+        backPressed = {},
         onGetLocation = { Location(0.0, 0.0) },
         onLogOutAction = logoutAction
     )

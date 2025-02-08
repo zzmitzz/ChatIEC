@@ -1,6 +1,7 @@
 package com.example.iec.ui
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -48,6 +49,7 @@ class MainActivity : FragmentActivity() {
     }
     @Inject
     lateinit var iecSocketManager: IECSocketManager
+    @SuppressLint("NewApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {

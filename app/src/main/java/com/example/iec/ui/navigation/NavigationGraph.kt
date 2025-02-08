@@ -31,9 +31,7 @@ import com.example.iec.ui.theme.ColorPrimary
 @Composable
 fun NavigationGraph(
     navController: NavHostController,
-    iecAppState: IECAppState,
-    hideBottomBar: () -> Unit,
-    showBottomBar: () -> Unit
+    iecAppState: IECAppState
 ) {
     NavHost(navController = navController, startDestination = "authentication") {
 
@@ -44,19 +42,18 @@ fun NavigationGraph(
             route = "authentication"
         ) {
             composable(route = DestinationRoute.Login.route) {
-                hideBottomBar()
+                iecAppState.setBottomBarVisible(false)
                 LoginNavigation(
                     navigateToHome = { iecAppState.navToHome() },
                     navigateToRegister = { iecAppState.navToRegister() })
             }
             composable(route = DestinationRoute.Register.route) {
-                hideBottomBar()
+                iecAppState.setBottomBarVisible(false)
                 RegisterScreen(
                     viewModel = hiltViewModel()
                 )
             }
         }
-
 
         // Main route
         navigation(
@@ -69,7 +66,6 @@ fun NavigationGraph(
                 )
             }
         ) {
-
             composable(route = DestinationRoute.Home.route,
                 enterTransition = {
                     slideIntoContainer(
@@ -91,41 +87,17 @@ fun NavigationGraph(
                         defaultValue = ""
                     }
                 )) {
-                showBottomBar()
+                iecAppState.setBottomBarVisible(true)
                 HomeNavigation(
                     appState = iecAppState
                 )
             }
-            composable(
-                route = DestinationRoute.EditUserInfo.route,
-                arguments = listOf(
-                    navArgument(
-                        name = DestinationRoute.AGR_HOME_USER_ID
-                    ) {
-                        type = NavType.StringType
-                        defaultValue = ""
-                    }
-                ),
-                enterTransition = {
-                    slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Left,
-                        animationSpec = tween(700)
-                    )
-                },
-            ) {
-                hideBottomBar()
-                EditProfileScreen(
-                    onBackPress = { iecAppState.navigateBack() }
-                ) {
-
-                }
-            }
             composable(route = DestinationRoute.Tools.route) {
-                showBottomBar()
+                iecAppState.setBottomBarVisible(true)
                 ToolScreen()
             }
             composable(route = DestinationRoute.Message.route) {
-                showBottomBar()
+                iecAppState.setBottomBarVisible(true)
                 ListChatScreen(
                     navToMessageID = { userName ->
                         iecAppState.navigateToMessagePersonal(userName)
@@ -149,14 +121,14 @@ fun NavigationGraph(
                     )
                 }
             ) {
-                hideBottomBar()
+                iecAppState.setBottomBarVisible(false)
                 ModernChatScreen(
                     onBackPress = { iecAppState.navigateBack() }
                 )
             }
             composable(route = DestinationRoute.FaceRecognition.route) {
 
-                showBottomBar()
+                iecAppState.setBottomBarVisible(true)
                 ConstraintLayout() {
                     val (text) = createRefs()
                     Text(

@@ -58,7 +58,7 @@ fun IECApp(
         modifier = Modifier.fillMaxSize(),
     ) {
         val (content, bottomBar) = createRefs()
-        val isShowBottomBar = remember { mutableStateOf(true) }
+        val isShowBottomBar = iecAppState.isShowBottomBar.collectAsState()
         Box(modifier = Modifier
             .height(0.dp)
             .constrainAs(content) {
@@ -69,13 +69,7 @@ fun IECApp(
             .padding(bottom = 16.dp)) {
             NavigationGraph(
                 navController = navController,
-                iecAppState = iecAppState,
-                hideBottomBar = {
-                    isShowBottomBar.value = false
-                },
-                showBottomBar = {
-                    isShowBottomBar.value = true
-                }
+                iecAppState = iecAppState
             )
         }
 

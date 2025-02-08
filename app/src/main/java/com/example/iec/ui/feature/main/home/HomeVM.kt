@@ -53,7 +53,7 @@ class HomeVM @Inject constructor(
 ) : ViewModel() {
     private var _uiState = MutableStateFlow<HomeUIState>(HomeUIState())
     val uiState = _uiState
-
+    var userInfo: UserInfo? = null
 
     private val scopeException = viewModelScope + CoroutineExceptionHandler() { _, throwable ->
         Log.d("Error", throwable.message.toString())
@@ -97,9 +97,9 @@ class HomeVM @Inject constructor(
     fun updateUserInfo() = scopeException.launch {
         loading(true)
         val username = dataStore.readData(PreferenceKeys.USER_NAME).first() ?: "johndoe"
-        val user = getUser(username)
+        userInfo = getUser(username)
         val qrCode = generateQRCode(username)
-        if (user == null) {
+        if (userInfo == null) {
             _uiState.update {
                 it.copy(onError = "User not found")
             }
