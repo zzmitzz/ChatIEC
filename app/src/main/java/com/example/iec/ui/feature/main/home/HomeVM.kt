@@ -32,13 +32,13 @@ import javax.inject.Inject
 
 
 enum class ProfileType {
-    PROFILE, CHECK
+    MY_WALLET, BIO, CHECK
 }
 
 data class HomeUIState(
     val isLoading: Boolean = false,
     val onError: String? = null,
-    val selectedHomeScreen: ProfileType = ProfileType.PROFILE,
+    val selectedHomeScreen: ProfileType = ProfileType.MY_WALLET,
     val userInfoShow: UserInfo? = null,
     val qrCodeReceive: Bitmap? = null,
     val onNotificationMessage: Queue<String>? = null,

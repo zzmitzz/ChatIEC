@@ -6,6 +6,8 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.EaseInOut
+import androidx.compose.animation.core.EaseInOutBack
+import androidx.compose.animation.core.Easing
 import androidx.compose.animation.core.InfiniteRepeatableSpec
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -35,6 +37,9 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -211,11 +216,17 @@ fun SimpleButton(
     }
 }
 
+@Preview
+@Composable
+private fun CustomDialogPreview() {
+    CustomDialog(showDialog = true) {}
+}
 @Composable
 fun CustomDialog(
     showDialog: Boolean,
     onDismissRequest: () -> Unit = {},
-    content: @Composable () -> Unit
+    title: String = "Note",
+    content: @Composable () -> Unit,
 ) {
     val localConfig = LocalConfiguration.current
     val widthScreen = localConfig.screenWidthDp
@@ -223,67 +234,77 @@ fun CustomDialog(
 
     if (showDialog) {
 
-        Dialog(
-            onDismissRequest = onDismissRequest,
+        Card(
+            colors = CardDefaults.cardColors().copy(
+                containerColor = Color.White
+            )
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp, horizontal = 4.dp)
-                    .background(color = Color.White),
-                horizontalAlignment = Alignment.CenterHorizontally
+            Dialog(
+                onDismissRequest = onDismissRequest,
             ) {
-                ConstraintLayout(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp)
+                        .padding(vertical = 8.dp, horizontal = 4.dp)
+                        .background(color = Color.White),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    val (close, iconBrand) = createRefs()
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Close",
+                    ConstraintLayout(
                         modifier = Modifier
-                            .padding(start = 16.dp, top = 16.dp, bottom = 8.dp)
-                            .clickable {
-                                onDismissRequest()
-                            }
-                            .constrainAs(close) {
-                                start.linkTo(parent.start)
-                                top.linkTo(parent.top)
-                            },
-                        tint = Color.DarkGray
-                    )
-                    Image(
-                        painter = painterResource(R.drawable.ptit_iec),
-                        modifier = Modifier
-                            .size(45.dp)
-                            .constrainAs(iconBrand) {
-                                start.linkTo(parent.start)
-                                top.linkTo(parent.top)
-                                end.linkTo(parent.end)
-                            },
-                        contentDescription = "PTIT",
-                    )
-                }
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Box(
-                    modifier = Modifier
-                        .clip(
-                            RoundedCornerShape(8.dp)
+                            .fillMaxWidth()
+                    ) {
+                        val (close, iconBrand) = createRefs()
+                        Text(
+                            text = title,
+                            modifier = Modifier
+                                .padding(top = 8.dp, bottom = 8.dp)
+                                .constrainAs(iconBrand) {
+                                    start.linkTo(parent.start)
+                                    top.linkTo(parent.top)
+                                    end.linkTo(parent.end)
+                                },
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold
                         )
-                        .background(color = Color(0xFFEDEEF3))
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Close",
+                            modifier = Modifier
+                                .padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
+                                .clickable {
+                                    onDismissRequest()
+                                }
+                                .constrainAs(close) {
+                                    start.linkTo(parent.start)
+                                    top.linkTo(parent.top)
+                                },
+                            tint = Color.DarkGray
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
 
-                ) {
-                    content.invoke()
+                    Card(
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .background(color = Color(0xFFEDEEF3)),
+                        shape = RoundedCornerShape(8.dp),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 4.dp
+                        )
+                    ) {
+                        content.invoke()
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    ShimmerText(
+                        text = "Made with ❤ by PTIT IEC",
+                        textStyle = TextStyle.Default.copy(
+                            color = Color.DarkGray,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold
+                        ),
+                        easing = EaseInOutBack
+                    )
                 }
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Made with ❤️ by PTIT",
-                    fontSize = 12.sp,
-                    color = Color.DarkGray,
-                    fontWeight = FontWeight.Bold
-                )
             }
         }
     }
@@ -410,7 +431,7 @@ fun Modifier.dropShadow(
     offsetY: Dp,
     blur: Dp,
     spread: Dp,
-    animateFloat: State<Float> = rememberInfiniteTransition().animateFloat(
+    animateFloat: State<Float> = rememberInfiniteTransition(label = "").animateFloat(
         initialValue = -30f,
         targetValue = 30f,
         animationSpec = infiniteRepeatable(
@@ -419,7 +440,7 @@ fun Modifier.dropShadow(
                 easing = EaseInOut
             ),
             repeatMode = RepeatMode.Reverse
-        )
+        ), label = ""
     )
 ) = this.drawBehind {
     val shadowSize = Size(size.width + spread.toPx() + animateFloat.value, size.height + spread.toPx() + animateFloat.value)
@@ -456,16 +477,17 @@ fun ShimmerText(
         Color.Black,
         Color.DarkGray.copy(0.5f)
     ),
+    easing: Easing = EaseInOut,
     animationSpec: State<Float> = rememberInfiniteTransition(label = "shimmer").animateFloat(
         initialValue = 0f,
         targetValue = 1000f,
         animationSpec = infiniteRepeatable(
             animation = tween(
                 durationMillis = 2000,
-                easing = EaseInOut
+                easing = easing
             ),
             repeatMode = RepeatMode.Reverse
-        )
+        ), label = ""
     )
 ) {
     val brush = remember(animationSpec) {

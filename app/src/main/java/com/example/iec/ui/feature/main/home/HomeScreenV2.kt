@@ -31,6 +31,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Card
@@ -38,19 +39,25 @@ import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CardElevation
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -67,21 +74,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.constraintlayout.motion.widget.MotionScene.Transition.TransitionOnClick
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil3.compose.AsyncImage
+import com.example.camera.QRReader
+import com.example.camera.QRReaderML
 import com.example.camera.QRResult
+import com.example.iec.DataStoreHelper
+import com.example.iec.DataStoreHelperImpl
+import com.example.iec.PreferenceKeys
 import com.example.iec.R
+import com.example.iec.ui.feature.CustomDialog
 import com.example.iec.ui.feature.ShimmerText
 import com.example.iec.ui.feature.dropShadow
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.plus
 import kotlin.math.roundToInt
-
-
-data class FakeData(
-    val name: String = "Ngo Tuan \n Anh",
-    val live: String = "Ha Noi",
-    val quotes: String = "Meme Meme"
-)
 
 
 @Composable
@@ -89,15 +101,172 @@ fun HomeScreenStateful(
     viewModel: HomeVM,
     navToEditProfile: (String) -> Unit,
     backPressed: () -> Unit = {},
-    logoutAction: () -> Unit = {}
+    logoutAction: () -> Unit = {},
+    setBottomBar: (Boolean) -> Unit = {}
 ) {
-    HomeScreenStateless()
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+
+    var overlayMenuVisibility by remember {
+        mutableStateOf(false)
+    }
+    val context = LocalContext.current
+
+    val coroutineScope = rememberCoroutineScope() + CoroutineExceptionHandler { _, throwable ->
+        Log.d("HomeScreen: Coroutine exception", throwable.message.toString())
+    }
+
+    val qrScanner = QRReaderML(context)
+    val dataStore = context.DataStoreHelper()
+
+    var dialogShown by remember{
+        mutableStateOf(
+            false to ""
+        )
+    }
+    LaunchedEffect(overlayMenuVisibility) {
+        setBottomBar(!overlayMenuVisibility)
+    }
+    HomeScreenStateless(
+        screenType = uiState.value.selectedHomeScreen,
+        changeScreenType = viewModel::changeScreenType,
+        onMenuOpen = {
+            overlayMenuVisibility = !overlayMenuVisibility
+        },
+        onScanAction = {
+            qrScanner.startScanCode().onEach {
+                when (it) {
+                    is QRResult.Success -> {
+                        val result = it.result
+                        dialogShown = (true to result)
+                    }
+
+                    is QRResult.Failed -> {
+                        Toast.makeText(context, "Failed to scan QR Code", Toast.LENGTH_SHORT).show()
+                    }
+
+                    QRResult.Canceled -> {}
+                }
+            }.launchIn(coroutineScope)
+        }
+    )
+    // Menu Home Action
+    if (overlayMenuVisibility) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .alpha(0.95f)
+                .clickable {
+                    // Do nothing, just for consume the click of overlay.
+                    overlayMenuVisibility = false
+                }
+                .background(color = Color.White),
+        )
+        ConstraintLayout(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            val closeIcon = createRef()
+
+            // Close Icon
+            IconButton(
+                onClick = { /* Handle close click */ },
+                modifier = Modifier.constrainAs(closeIcon) {
+                    top.linkTo(parent.top, margin = 16.dp)
+                    start.linkTo(parent.start, margin = 16.dp)
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Close",
+                    modifier = Modifier.clickable {
+                        overlayMenuVisibility = false
+                    }
+                )
+            }
+
+            // Column with text elements and spacers
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center
+            ) {
+                Text(
+                    text = "Join Conference",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = "Quit Conference",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = "Help",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = "Delete Account",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Red,
+                    modifier = Modifier.clickable {
+                        Toast.makeText(context, "Delete Account", Toast.LENGTH_SHORT).show()
+                    }
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Text(
+                    text = "Log out",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = Color.Red,
+                    modifier = Modifier.clickable {
+                        logoutAction()
+                        coroutineScope.launch {
+                            dataStore.clearData(
+                                PreferenceKeys.USER_PASSWORD,
+                                PreferenceKeys.USER_NAME
+                            )
+                        }
+
+                    }
+                )
+            }
+        }
+    }
+
+    CustomDialog(
+        dialogShown.first,
+        title = "IEC Scanner",
+        onDismissRequest = {
+            dialogShown = (false to "")
+        }
+    ) {
+        Text(
+            text = dialogShown.second,
+            fontSize = 14.sp
+        )
+    }
 }
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun HomeScreenStateless() {
+fun HomeScreenStateless(
+    screenType: ProfileType = ProfileType.MY_WALLET,
+    changeScreenType: (ProfileType) -> Unit = {},
+    onMenuOpen: () -> Unit = {},
+    onScanAction: () -> Unit = {}
+) {
     Scaffold(
         backgroundColor = Color(0xFF1C1C1C),
         topBar = {
@@ -117,7 +286,7 @@ fun HomeScreenStateless() {
                             contentDescription = "Menu",
                             tint = Color.White,
                             modifier = Modifier.clickable {
-//                            onMenuOpened = true
+                                onMenuOpen.invoke()
                             }
                         )
                         Spacer(
@@ -139,46 +308,9 @@ fun HomeScreenStateless() {
                                 .clickable(
                                     interactionSource = remember { MutableInteractionSource() },
                                     indication = null,
-                                    onClick = {}
-//                                    onClick = {
-//                                        qrScanner
-//                                            .startScanCode()
-//                                            .onEach {
-//                                                when (it) {
-//                                                    is QRResult.Success -> {
-//                                                        qrContentResult = it.result
-//                                                        Toast
-//                                                            .makeText(
-//                                                                context,
-//                                                                "QR Code Scanned",
-//                                                                Toast.LENGTH_SHORT
-//                                                            )
-//                                                            .show()
-//                                                    }
-//
-//                                                    is QRResult.Canceled -> {
-//                                                        Toast
-//                                                            .makeText(
-//                                                                context,
-//                                                                "QR Code Scanning Cancelled",
-//                                                                Toast.LENGTH_SHORT
-//                                                            )
-//                                                            .show()
-//                                                    }
-//
-//                                                    is QRResult.Failed -> {
-//                                                        Toast
-//                                                            .makeText(
-//                                                                context,
-//                                                                "QR Code Scanning Failed",
-//                                                                Toast.LENGTH_SHORT
-//                                                            )
-//                                                            .show()
-//                                                    }
-//                                                }
-//                                            }
-//                                            .launchIn(scope = scopeContext)
-//                                    }
+                                    onClick = {
+                                        onScanAction()
+                                    }
                                 ),
                             painter = painterResource(R.drawable.sdf),
                             contentDescription = "",
@@ -198,7 +330,7 @@ fun HomeScreenStateless() {
             modifier = Modifier.padding(innerpadding)
         ) {
             Spacer(modifier = Modifier.height(12.dp))
-            ComposablePickUp()
+            ComposablePickUp(screenType, changeScreenType)
             Spacer(modifier = Modifier.height(12.dp))
             Box(
                 modifier = Modifier.padding(horizontal = 32.dp, vertical = 32.dp)
@@ -232,7 +364,18 @@ fun HomeScreenStateless() {
                     ),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    MainComponents()
+                    when(screenType){
+                        ProfileType.MY_WALLET -> {
+                            MainComponents()
+                        }
+
+                        ProfileType.BIO -> {
+
+                        }
+                        ProfileType.CHECK -> {
+
+                        }
+                    }
                 }
             }
 
@@ -243,45 +386,6 @@ fun HomeScreenStateless() {
 
 @Composable
 fun MainComponents() {
-    val infiniteTransition = rememberInfiniteTransition(label = "infiniteTransition")
-    val progress = infiniteTransition.animateFloat(
-        initialValue = -1f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(
-                durationMillis = 1000,
-                easing = EaseInOut
-            ),
-            repeatMode = RepeatMode.Reverse
-        ), label = ""
-    )
-    LaunchedEffect(progress.value) {
-        Log.d("Progress", progress.value.toString())
-    }
-    val offsetPx = with(LocalDensity.current) {
-        50.dp.toPx()
-    }
-    val color by animateColorAsState(
-        targetValue = when (progress.value) {
-            in -1f..0f -> Color.Cyan
-            in 0f..1f -> Color.Red
-            else -> Color.Cyan
-        }, label = ""
-    )
-//    Box(
-//        modifier = Modifier.fillMaxWidth(),
-//        contentAlignment = Alignment.Center,
-//    ) {
-//        Box(
-//            modifier = Modifier
-//                .size(100.dp)
-//                .offset {
-//                    IntOffset((offsetPx * progress.value).roundToInt(), 0)
-//                }
-//                .background(color, RoundedCornerShape(10.dp)),
-//
-//            )
-//    }
     ConstraintLayout(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -391,24 +495,43 @@ fun MainComponents() {
 
 
 @Composable
-fun ComposablePickUp() {
+fun ComposablePickUp(
+    screenType: ProfileType,
+    onClick: (ProfileType) -> Unit
+) {
+
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        CardHolder("My Wallet", true)
+        Box(
+            modifier = Modifier.clickable {
+                onClick(ProfileType.MY_WALLET)
+            }
+        ) { CardHolder("My Wallet", screenType == ProfileType.MY_WALLET) }
         Text(
             text = "•",
             fontSize = 23.sp,
             color = Color.DarkGray
         )
-        CardHolder("Bio", false)
+        Box(
+            modifier = Modifier.clickable {
+                onClick(ProfileType.BIO)
+            }
+        ) { CardHolder("Bio", screenType == ProfileType.BIO) }
         Text(
             text = "•",
             fontSize = 23.sp,
             color = Color.DarkGray
         )
-        CardHolder("Contact", false)
+        Box(
+            modifier = Modifier.clickable {
+                onClick(ProfileType.CHECK)
+            }
+        ) {
+            CardHolder("Check-in", screenType == ProfileType.CHECK)
+        }
     }
 }
 
@@ -429,21 +552,25 @@ fun CardHolder(type: String, isChosen: Boolean = false) {
             defaultElevation = 4.dp
         ),
     ) {
-        Text(
-            modifier = Modifier
-                .background(
-                    color = if (!isChosen) Color(0xFFD1D1D1) else Color.Black.copy(alpha = 0.9f)
-                )
-                .align(Alignment.CenterHorizontally)
-                .padding(horizontal = 12.dp, vertical = 4.dp)
-                .fillMaxSize(),
-            textAlign = TextAlign.Center,
-            text = type,
-            fontSize = 16.sp,
-            fontFamily = FontFamily.SansSerif,
-            fontWeight = FontWeight.Bold,
-            color = if (isChosen) Color.White else Color.DarkGray
-        )
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                modifier = Modifier
+                    .background(
+                        color = if (!isChosen) Color(0xFFD1D1D1) else Color.Black.copy(alpha = 0.9f)
+                    )
+                    .padding(horizontal = 12.dp, vertical = 4.dp)
+                    .fillMaxSize(),
+                textAlign = TextAlign.Center,
+                text = type,
+                fontSize = 13.sp,
+                fontFamily = FontFamily.SansSerif,
+                fontWeight = FontWeight.Bold,
+                color = if (isChosen) Color.White else Color.DarkGray
+            )
+        }
     }
 }
 
@@ -451,7 +578,7 @@ fun CardHolder(type: String, isChosen: Boolean = false) {
 @Composable
 fun RoundedAvatarCard(
     remoteImageUrl: String? = null,
-    localImage: Int = R.drawable.ptit_iec,
+    localImage: Int = R.drawable.wallpaperflare_com_wallpaper,
     size: Dp = 80.dp
 ) {
     Card(
@@ -484,7 +611,7 @@ fun RoundedAvatarCard(
                 modifier = Modifier
                     .size(size)
                     .clip(CircleShape),
-                contentScale = ContentScale.Fit
+                contentScale = ContentScale.Crop,
             )
 
         }

@@ -41,7 +41,7 @@ class QRReaderML @Inject constructor(
         scanner?.let {
             it.startScan()
                 .addOnSuccessListener { barcode ->
-                    trySend(QRResult.Success(barcode.rawValue ?: "Nothing found"))
+                    trySend(QRResult.Success(barcode.rawValue ?: "Null Content"))
                 }
                 .addOnCanceledListener {
                     trySend(QRResult.Canceled)

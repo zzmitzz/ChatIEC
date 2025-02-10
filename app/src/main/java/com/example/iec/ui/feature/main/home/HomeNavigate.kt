@@ -30,8 +30,7 @@ sealed class HomeNavRoute(val route: String){
 
 @Composable
 fun HomeNavigation(
-    appState: IECAppState,
-    userID: String = "zzmitzz"
+    appState: IECAppState
 ) {
     val homeVM: HomeVM = hiltViewModel()
     val homeNavController = rememberNavController()
@@ -69,8 +68,9 @@ fun HomeNavigation(
                 HomeScreenStateful(
                     viewModel = homeVM,
                     navToEditProfile = navigateToEditProfile,
-                    backPressed = { appState.navigateBack() },
-                    logoutAction = { appState.navToLogin()}
+                    backPressed = appState::navigateBack,
+                    logoutAction = appState::navToLogin,
+                    setBottomBar = appState::setBottomBarVisible
                 )
             }
 

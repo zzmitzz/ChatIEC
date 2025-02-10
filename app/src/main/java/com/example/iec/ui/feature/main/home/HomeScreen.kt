@@ -135,7 +135,7 @@ fun HomeScreenStateful(
 
 @Composable
 fun HomeScreen(
-    screenType: ProfileType = ProfileType.PROFILE,
+    screenType: ProfileType = ProfileType.MY_WALLET,
     onScreenTypeChange: (ProfileType) -> Unit = {},
     onGetLocation: () -> Location = { Location(0.0, 0.0) },
     onActionCheckIn: () -> Unit = {},
@@ -258,17 +258,17 @@ fun HomeScreen(
                     .wrapContentWidth()
                     .wrapContentHeight()
                     .clip(RoundedCornerShape(20.dp))
-                    .background(color = if (screenType == ProfileType.PROFILE) Color.White else Color.Transparent)
+                    .background(color = if (screenType == ProfileType.MY_WALLET) Color.White else Color.Transparent)
                     .padding(8.dp)
                     .clickable(
                         onClick = {
-                            onScreenTypeChange(ProfileType.PROFILE)
+                            onScreenTypeChange(ProfileType.MY_WALLET)
                         }
                     )
             ) {
                 Text(
                     text = "Profile",
-                    color = if (screenType == ProfileType.PROFILE) Color.Blue else Color.Black,
+                    color = if (screenType == ProfileType.MY_WALLET) Color.Blue else Color.Black,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -359,102 +359,6 @@ fun HomeScreen(
 
     }
 
-
-
-    if (onMenuOpened) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .alpha(0.95f)
-                .clickable {
-                    // Do nothing, just for consume the click of overlay.
-                    onMenuOpened = false
-                }
-                .background(color = Color.White),
-        )
-        ConstraintLayout(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            val closeIcon = createRef()
-
-            // Close Icon
-            IconButton(
-                onClick = { /* Handle close click */ },
-                modifier = Modifier.constrainAs(closeIcon) {
-                    top.linkTo(parent.top, margin = 16.dp)
-                    start.linkTo(parent.start, margin = 16.dp)
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Close",
-                    modifier = Modifier.clickable {
-                        onMenuOpened = false
-                    }
-                )
-            }
-
-            // Column with text elements and spacers
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center
-            ) {
-                Text(
-                    text = "Join Conference",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Text(
-                    text = "Quit Conference",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Text(
-                    text = "Help",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Text(
-                    text = "Delete Account",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Red,
-                    modifier = Modifier.clickable {
-                        Toast.makeText(context, "Delete Account", Toast.LENGTH_SHORT).show()
-                    }
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Text(
-                    text = "Log out",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Red,
-                    modifier = Modifier.clickable {
-                        onLogOutAction()
-
-                        coroutineScope.launch {
-                            dataStore.clearData(
-                                PreferenceKeys.USER_PASSWORD,
-                                PreferenceKeys.USER_NAME
-                            )
-                        }
-
-                    }
-                )
-            }
-        }
-    }
 }
 
 

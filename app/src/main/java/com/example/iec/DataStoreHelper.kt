@@ -58,5 +58,8 @@ class DataStoreHelperImpl @Inject constructor(
         }
     }
 
+}
 
+fun Context.DataStoreHelper(): DataStoreHelper {
+    return DataStoreHelperImpl(this)
 }

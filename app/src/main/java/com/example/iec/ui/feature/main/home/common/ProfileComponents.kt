@@ -96,7 +96,7 @@ private fun ProfileCompPreview() {
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun ProfileComponent(
-    screenType: ProfileType = ProfileType.PROFILE,
+    screenType: ProfileType = ProfileType.CHECK,
     qrCodeReceive: Bitmap? = null,
     userInfo: UserInfo? = null,
     navigateEditProfile: (String) -> Unit = {},
@@ -110,7 +110,7 @@ fun ProfileComponent(
 
     Log.d("ScreenType", screenType.toString())
     when (screenType) {
-        ProfileType.PROFILE -> {
+        ProfileType.CHECK -> {
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -283,6 +283,9 @@ fun ProfileComponent(
                 qrBitmap = qrCodeReceive
             )
         }
+
+        ProfileType.MY_WALLET -> TODO()
+        ProfileType.BIO -> TODO()
     }
 
 
