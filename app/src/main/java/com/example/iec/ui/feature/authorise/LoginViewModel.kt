@@ -46,7 +46,8 @@ class LoginViewModel @Inject constructor(
     val uiState = MutableStateFlow(
         LoginUIState()
     )
-
+    var emailInput: String = ""
+    var passwordInput: String = ""
     val registerUIState = MutableStateFlow(
         RegisterUIState()
     )

@@ -25,6 +25,7 @@ import com.example.iec.ui.feature.main.message.ChatMessageVM
 import com.example.iec.ui.feature.main.message.box_chat_message.ModernChatScreen
 import com.example.iec.ui.feature.main.message.list_chat.ListChatScreen
 import com.example.iec.ui.feature.main.tools.ToolScreen
+import com.example.iec.ui.feature.main.tools.ToolScreenStateful
 import com.example.iec.ui.theme.ColorPrimary
 
 
@@ -94,7 +95,7 @@ fun NavigationGraph(
             }
             composable(route = DestinationRoute.Tools.route) {
                 iecAppState.setBottomBarVisible(true)
-                ToolScreen()
+                ToolScreenStateful()
             }
             composable(route = DestinationRoute.Message.route) {
                 iecAppState.setBottomBarVisible(true)

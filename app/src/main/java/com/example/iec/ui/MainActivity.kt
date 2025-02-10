@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.rememberNavController
 import com.example.iec.core.network.IECSocketManager
 import com.example.iec.service.NetworkService
@@ -33,7 +35,12 @@ import com.pusher.client.connection.ConnectionState
 import com.pusher.client.connection.ConnectionStateChange
 import dagger.Component
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
+import kotlin.math.sqrt
+import kotlin.system.measureTimeMillis
 
 @AndroidEntryPoint
 class MainActivity : FragmentActivity() {
@@ -69,6 +76,7 @@ class MainActivity : FragmentActivity() {
             }
         }
 //        setUpConnect()
+
         startForegroundService(Intent(this, NetworkService::class.java))
     }
     private fun getNotificationPermission(){
