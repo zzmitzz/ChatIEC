@@ -68,6 +68,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -107,6 +108,7 @@ import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
+import kotlin.math.abs
 import kotlin.math.roundToInt
 
 
@@ -419,20 +421,6 @@ fun MainComponents() {
         CardType.ZaloPay
     )
     val pagerState = rememberPagerState(pageCount = { (listBank.size) })
-    val inFloatAnimate = animateFloatAsState(
-        targetValue = 1f,
-        animationSpec = tween(
-            durationMillis = 1000,
-            easing = FastOutSlowInEasing
-        )
-    )
-    val outFloatAnimate = animateFloatAsState(
-        targetValue = 0f,
-        animationSpec = tween(
-            durationMillis = 1000,
-            easing = FastOutSlowInEasing
-        )
-    )
     ConstraintLayout(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -538,37 +526,21 @@ fun MainComponents() {
                     end.linkTo(parent.end)
                 }
         ) { index ->
+            var pageOffset = pagerState.currentPageOffsetFraction
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
             ) {
-
+                var animate = -2*abs(pageOffset )+ 1
                 Box(
-                    modifier = Modifier
-                        .height(120.dp)
-                        .width(80.dp)
-                        .padding(horizontal = 4.dp)
-                ) {
-                    if (index > 0) {
-                        BankCard(cardType = listBank[index - 1],0.5f)
-                    }
+                    modifier = Modifier.fillMaxWidth().scale(animate).alpha(animate).graphicsLayer {
 
-                }
-                Box(
-                    modifier = Modifier
+                    },
+                    contentAlignment = Alignment.Center
                 ) {
                     BankCard(cardType = listBank[index])
                 }
-
-                Box(
-                    modifier = Modifier
-                        .height(120.dp)
-                        .width(200.dp)
-                        .padding(horizontal = 4.dp)
-                ) {
-                    if (index < listBank.size - 1) {
-                        BankCard(cardType = listBank[index + 1],0.5f)
-                    }
-                }
+                Log.d("HomeScreenV2", pageOffset.toString() + pagerState.currentPage.toString())
             }
         }
         Image(

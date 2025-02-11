@@ -1,18 +1,13 @@
 package com.example.iec.ui.feature
 
 import android.graphics.BlurMaskFilter
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.EaseIn
 import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.EaseInOutBack
 import androidx.compose.animation.core.Easing
-import androidx.compose.animation.core.InfiniteRepeatableSpec
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
@@ -40,7 +35,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,7 +43,6 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -63,7 +56,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.LinearGradientShader
 import androidx.compose.ui.graphics.Paint
@@ -81,6 +73,7 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.drawscope.scale
 import androidx.compose.ui.graphics.drawscope.translate
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
@@ -98,7 +91,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.iec.R
 import com.example.iec.ui.theme.ButtonBackground
-import com.google.android.datatransport.runtime.scheduling.jobscheduling.SchedulerConfig.Flag
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -430,16 +422,17 @@ fun ChipCard() {
 enum class CardType(
     val color: Color,
     val linkQR: String,
+    val localLogo: Int = 0,
     val localImage: Int = 0
 ) {
     MBBank(
-        Color(0xFF1F41BB), "1", R.drawable.logo_mb_new
+        Color(0xFF1F41BB), "1", R.drawable.logo_mb_new, com.example.camera_ml.R.drawable.mb
     ),
     Momo(
-        Color(0xFFA50064), "2", R.drawable.unnamed
+        Color(0xFFA50064), "2", R.drawable.unnamed, R.drawable.unnamed
     ),
     ZaloPay(
-        Color(0xFF013ED0), "3", R.drawable.zalo
+        Color(0xFF013ED0), "3", R.drawable.zalo, com.example.camera_ml.R.drawable.zalo_pay
     )
 }
 
@@ -465,7 +458,7 @@ fun BankCard(
             contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = painterResource(id = cardType.localImage),
+                painter = painterResource(id = cardType.localLogo),
                 contentDescription = null,
                 modifier = Modifier
                     .size(100.dp))
@@ -487,7 +480,7 @@ fun Modifier.dropShadow(
     offsetY: Dp,
     blur: Dp,
     spread: Dp,
-    animateFloat: State<Float> = rememberInfiniteTransition(label = "").animateFloat(
+    animateFloat: State<Float>? = rememberInfiniteTransition(label = "").animateFloat(
         initialValue = -30f,
         targetValue = 30f,
         animationSpec = infiniteRepeatable(
@@ -500,8 +493,8 @@ fun Modifier.dropShadow(
     )
 ) = this.drawBehind {
     val shadowSize = Size(
-        size.width + spread.toPx() + animateFloat.value,
-        size.height + spread.toPx() + animateFloat.value
+        size.width + spread.toPx() + (animateFloat?.value ?: 0f),
+        size.height + spread.toPx() + (animateFloat?.value ?: 0f)
     )
     val outlineShadow = shape.createOutline(shadowSize, layoutDirection, this)
     // Create a Paint object

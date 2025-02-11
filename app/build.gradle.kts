@@ -135,4 +135,7 @@ dependencies {
 
     implementation("androidx.compose.material:material:1.7.7")
 
+    // Gemini SDK
+    implementation("com.google.ai.client.generativeai:generativeai:0.7.0")
+
 }

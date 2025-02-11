@@ -89,7 +89,7 @@ fun IECApp(
                 BottomBarNav(
                     homeScreen = { iecAppState.navToHome() },
                     toolsScreen = { iecAppState.navigateToTools() },
-                    messageScreen = { iecAppState.navigateToMessage() },
+                    messageScreen = { iecAppState.navigateToMessagePersonal("gemini") },
                     faceRecognitionScreen = { iecAppState.navigateToFaceRecognition() },
                     currentScreen = currentRoute
                 )

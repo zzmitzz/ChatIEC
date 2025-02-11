@@ -100,7 +100,8 @@ fun NavigationGraph(
             composable(route = DestinationRoute.Message.route) {
                 iecAppState.setBottomBarVisible(true)
                 ListChatScreen(
-                    navToMessageID = { userName ->
+                    navToMessageID = {
+                            userName ->
                         iecAppState.navigateToMessagePersonal(userName)
                     }
                 )

@@ -110,9 +110,6 @@ class TextImageAnalyzer: ImageAnalysis.Analyzer {
 
     @OptIn(ExperimentalGetImage::class)
     override fun analyze(image: ImageProxy){
-//        image.toBitmap()?.let {
-//            listener?.onImageReady(it)
-//        }
         val mediaImage = image.image
         mediaImage?.let {
             val inputImage = InputImage.fromMediaImage(mediaImage, image.imageInfo.rotationDegrees)

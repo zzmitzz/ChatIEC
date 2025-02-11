@@ -1,6 +1,9 @@
 package com.example.camera_ml
 
 import android.Manifest
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -20,6 +23,7 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.example.camera_ml.adapter.TextExtractAdapter
 import com.example.camera_ml.customviews.OverlayView
 import com.example.camera_ml.databinding.ActivityCameraBinding
 import com.example.camera_ml.utils.RationalDialog
@@ -43,7 +47,8 @@ class CameraActivity : AppCompatActivity() {
     private var cameraSide = CameraSelector.DEFAULT_BACK_CAMERA
 
     private lateinit var overlayView: OverlayView
-
+    private lateinit var textListAdapter: TextExtractAdapter
+    private lateinit var clipBoard: ClipboardManager
     private val imageAnalyzerListener = object : TextImageAnalyzer.TextImageAnalyzerListener {
         override fun onImageReady(image: Bitmap) {
         }
@@ -58,6 +63,8 @@ class CameraActivity : AppCompatActivity() {
                 })
             }
             overlayView.setRectangles(result)
+
+            textListAdapter.setData(result.map { it.second })
         }
     }
 
@@ -108,6 +115,7 @@ class CameraActivity : AppCompatActivity() {
             requestPermissions()
         }
         setupView()
+        clipBoard = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
     }
 
     private fun checkPermissionsGranted(): Boolean {
@@ -129,6 +137,22 @@ class CameraActivity : AppCompatActivity() {
         binding.root.addView(
             overlayView
         )
+
+        textListAdapter = TextExtractAdapter().apply {
+            selectToCopy = {
+                clipBoard.setPrimaryClip(
+                    ClipData.newPlainText(
+                        "text",
+                        it
+                    )
+                )
+                Toast.makeText(this@CameraActivity, "Copied", Toast.LENGTH_SHORT).show()
+            }
+        }
+        binding.recyclerView.apply {
+            adapter = textListAdapter
+
+        }
     }
 
     private val cameraListener = Runnable {

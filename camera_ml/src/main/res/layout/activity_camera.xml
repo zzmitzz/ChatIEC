@@ -9,6 +9,15 @@
     android:background="@android:color/white"
     tools:context=".CameraActivity">
 
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/controller"
+        app:layout_constraintBottom_toTopOf="@id/controller"
+        android:layout_width="match_parent"
+        android:layout_height="300dp"/>
+
     <androidx.camera.view.PreviewView
         android:id="@+id/preview_view"
         android:layout_width="match_parent"
@@ -25,6 +34,7 @@
         android:src="@drawable/arrow_back_ios_24px"
         app:tint="@android:color/white" />
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/controller"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent">
@@ -43,10 +53,23 @@
             android:src="@drawable/circle_24px"
             app:tint="@android:color/white"
             android:backgroundTint="@android:color/white"
-            android:layout_marginBottom="50dp"
+            android:layout_margin="50dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/recycler_view"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="32dp"
+            android:layout_marginStart="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+
+            app:layout_constraintStart_toEndOf="@+id/capture"
+            app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

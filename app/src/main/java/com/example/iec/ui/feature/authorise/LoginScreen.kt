@@ -118,6 +118,24 @@ fun LoginScreen(
     var notifyEmailBlank by remember { mutableStateOf(false) }
     var notifyPasswordBlank by remember { mutableStateOf(false) }
 
+    LaunchedEffect(Unit) {
+        val autoLoginConfig: Boolean = true
+        if(autoLoginConfig){
+            dataStore.readData(PreferenceKeys.USER_NAME)
+                .zip(
+                    dataStore.readData(PreferenceKeys.USER_PASSWORD)
+                ){ first, second ->
+                    first to second
+                }.collect{
+                    email = it.first ?: ""
+                    password = it.second ?: ""
+                    if(!email.isNullOrEmpty() && !password.isNullOrEmpty()){
+                        Log.d("LoginScreen", "doLogin: ${email} ${password}")
+                        doLogin(email!!, password!!)
+                    }
+                }
+        }
+    }
     LaunchedEffect(isBiometricVerified) {
         if(isBiometricVerified){
             lifecycleScope.launch {
@@ -129,6 +147,10 @@ fun LoginScreen(
                     }.collect{
                         email = it.first ?: ""
                         password = it.second ?: ""
+                        if(!email.isNullOrEmpty() && !password.isNullOrEmpty()){
+                            Log.d("LoginScreen", "doLogin: ${email} ${password}")
+                            doLogin(email!!, password!!)
+                        }
                     }
 
             }

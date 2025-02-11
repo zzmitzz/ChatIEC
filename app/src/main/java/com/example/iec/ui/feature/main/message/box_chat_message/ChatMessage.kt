@@ -27,6 +27,9 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -46,13 +49,17 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.uidata.Message
 import com.example.iec.R
+import com.example.iec.ui.feature.ShimmerText
+import com.example.iec.ui.feature.dropShadow
 import com.example.iec.ui.feature.main.message.convertTimeStamp
 import com.example.iec.ui.theme.ColorPrimary
 import com.example.iec.ui.theme.colorOnPrimary
@@ -60,10 +67,14 @@ import com.example.iec.ui.theme.colorOnPrimary
 
 @Composable
 fun ChattingComponent(
-    messages: List<Message>
+    messages: List<Message>,
+    modelGen: Boolean = false,
+    newTextGen: String = ""
 ) {
     Box(
         modifier = Modifier
+
+            .background(ColorPrimary)
             .fillMaxWidth()
             .padding(
                 horizontal = 8.dp,
@@ -78,7 +89,8 @@ fun ChattingComponent(
             reverseLayout = true
         ) {
 
-            itemsIndexed(messages) { index, chatMessage ->
+            itemsIndexed(messages.reversed()) { index, chatMessage ->
+
                 MessageBubble(
                     (index == 0) || (index > 0 && messages[index - 1].isFromUser),
                     chatMessage
@@ -98,12 +110,14 @@ fun MessageInput(
 ) {
     Surface(
         modifier = Modifier
+            .background(ColorPrimary)
             .fillMaxWidth(),
         tonalElevation = 2.dp
     ) {
 
         Row(
             modifier = Modifier
+                .background(ColorPrimary)
                 .padding(16.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
@@ -122,28 +136,52 @@ fun MessageInput(
                 onValueChange = onMessageChange,
                 modifier = Modifier
                     .weight(1f)
-                    .wrapContentHeight()
+                    .height(50.dp)
                     .padding(end = 4.dp),
-                placeholder = { Text("Type a message...", color = Color.Black) },
+                placeholder = {
+                    Text("Type a message...", color = Color.Black, fontSize = 11.sp)
+
+                },
                 colors = TextFieldDefaults.colors().copy(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
                 ),
-                shape = RoundedCornerShape(24.dp)
+                shape = RoundedCornerShape(18.dp)
             )
 
-            FloatingActionButton(
+            Button(
                 onClick = {
                     if (messageText.isNotBlank()) {
                         onMessageSent(messageText)
                     }
                 },
-                containerColor = ColorPrimary,
-                modifier = Modifier.size(50.dp),
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            ) {
-                Icon(Icons.Default.Send, contentDescription = "Send")
-            }
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors().copy(
+                    containerColor = Color.White.copy(
+                        alpha = 0.9f
+                    )
+                ),
+                modifier = Modifier
+                    .background(color = Color.DarkGray)
+                    .dropShadow(
+                        shape = RoundedCornerShape(4.dp),
+                        spread = 4.dp,
+                        color = colorOnPrimary,
+                        blur = 4.dp,
+                        offsetX = -2.dp,
+                        offsetY = -2.dp,
+                        animateFloat = null
+                    )
+                    .size(40.dp),
+                content = {
+                    Image(
+                        imageVector = Icons.Default.Send,
+                        colorFilter = ColorFilter.tint(ColorPrimary),
+                        contentDescription = "Send",
+                        modifier = Modifier.size(6.dp)
+                    )
+                }
+            )
         }
     }
 }
@@ -232,19 +270,22 @@ enum class UserStatus {
 
 @Composable
 fun TopAppBarMessage(
-    userStatus: UserStatus = UserStatus.OFFLINE,
+    userStatus: UserStatus = UserStatus.ONLINE,
     onBackPressed: () -> Unit,
     onCallPressed: () -> Unit
 ) {
     Row(
         modifier = Modifier
+            .background(
+                color = ColorPrimary
+            )
             .padding(horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Image(
             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-            colorFilter = ColorFilter.tint(Color.Black),
+            colorFilter = ColorFilter.tint(colorOnPrimary),
             modifier = Modifier
                 .wrapContentSize()
                 .clickable {
@@ -257,23 +298,28 @@ fun TopAppBarMessage(
             modifier = Modifier
                 .size(40.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary)
+                .background(color = Color.Transparent)
         ) {
-            Text(
-                "J",
-                color = Color.White,
-                modifier = Modifier.align(Alignment.Center)
+            Image(
+                painter = painterResource(R.drawable.bard),
+                contentDescription = ""
             )
         }
 
         Column(
             modifier = Modifier.weight(1f)
         ) {
-            Text(
-                "John Doe",
-                fontSize = 16.sp,
-                color = Color.Black,
-                fontWeight = FontWeight.Bold
+            ShimmerText(
+                "Gemini",
+                textStyle = TextStyle(
+                    fontSize = 20.sp,
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold
+                ),
+                shimmerColors = listOf(
+                    Color.DarkGray,
+                    Color.White
+                )
             )
             when (userStatus) {
                 UserStatus.ONLINE -> {
@@ -296,7 +342,7 @@ fun TopAppBarMessage(
 
         Icon(
             imageVector = Icons.Default.Call,
-            tint = ColorPrimary,
+            tint = colorOnPrimary,
             contentDescription = null,
             modifier = Modifier
                 .align(Alignment.CenterVertically)
@@ -309,7 +355,7 @@ fun TopAppBarMessage(
 }
 
 
-@Preview(showBackground = true, backgroundColor = android.graphics.Color.BLACK.toLong())
+@Preview(showBackground = true)
 @Composable
 fun PreviewUI() {
     MessageBubble(
@@ -323,7 +369,7 @@ fun PreviewUI() {
 
 }
 
-@Preview(showBackground = true, backgroundColor = android.graphics.Color.BLACK.toLong())
+@Preview(showBackground = true)
 @Composable
 fun PreviewUI1() {
     TopAppBarMessage(userStatus = UserStatus.OFFLINE,
@@ -332,7 +378,7 @@ fun PreviewUI1() {
 
 }
 
-@Preview(showBackground = true, backgroundColor = android.graphics.Color.BLACK.toLong())
+@Preview(showBackground = true)
 @Composable
 fun PreviewUI3() {
     MessageInput(
@@ -342,7 +388,7 @@ fun PreviewUI3() {
     )
 }
 
-@Preview(showBackground = true, backgroundColor = android.graphics.Color.BLACK.toLong())
+@Preview(showBackground = true)
 @Composable
 fun PreviewUI2() {
     ChattingComponent(
