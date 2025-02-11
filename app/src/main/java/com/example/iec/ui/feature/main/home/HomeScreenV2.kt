@@ -1,12 +1,17 @@
 package com.example.iec.ui.feature.main.home
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
+import android.webkit.URLUtil
 import android.widget.Toast
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.EaseInOut
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
@@ -27,6 +32,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.VerticalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
@@ -84,6 +96,8 @@ import com.example.iec.DataStoreHelper
 import com.example.iec.DataStoreHelperImpl
 import com.example.iec.PreferenceKeys
 import com.example.iec.R
+import com.example.iec.ui.feature.BankCard
+import com.example.iec.ui.feature.CardType
 import com.example.iec.ui.feature.CustomDialog
 import com.example.iec.ui.feature.ShimmerText
 import com.example.iec.ui.feature.dropShadow
@@ -118,7 +132,7 @@ fun HomeScreenStateful(
     val qrScanner = QRReaderML(context)
     val dataStore = context.DataStoreHelper()
 
-    var dialogShown by remember{
+    var dialogShown by remember {
         mutableStateOf(
             false to ""
         )
@@ -244,17 +258,29 @@ fun HomeScreenStateful(
         }
     }
 
-    CustomDialog(
-        dialogShown.first,
-        title = "IEC Scanner",
-        onDismissRequest = {
-            dialogShown = (false to "")
+    if (URLUtil.isValidUrl(dialogShown.second)) {
+        CustomDialog(
+            showDialog = dialogShown.first,
+            title = "IEC message",
+            onDismissRequest = {
+                dialogShown = (false to "")
+            }) {
+            var uriIntent: Intent? = null
+            try {
+                uriIntent = Intent(Intent.ACTION_VIEW, Uri.parse(dialogShown.second))
+            } catch (e: Exception) {
+            }
+            Text(
+                text = dialogShown.second,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .clickable {
+                        uriIntent?.let {
+                            context.startActivity(it)
+                        }
+                    }
+            )
         }
-    ) {
-        Text(
-            text = dialogShown.second,
-            fontSize = 14.sp
-        )
     }
 }
 
@@ -364,7 +390,7 @@ fun HomeScreenStateless(
                     ),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    when(screenType){
+                    when (screenType) {
                         ProfileType.MY_WALLET -> {
                             MainComponents()
                         }
@@ -372,6 +398,7 @@ fun HomeScreenStateless(
                         ProfileType.BIO -> {
 
                         }
+
                         ProfileType.CHECK -> {
 
                         }
@@ -386,10 +413,31 @@ fun HomeScreenStateless(
 
 @Composable
 fun MainComponents() {
+    val listBank: List<CardType> = listOf(
+        CardType.MBBank,
+        CardType.Momo,
+        CardType.ZaloPay
+    )
+    val pagerState = rememberPagerState(pageCount = { (listBank.size) })
+    val inFloatAnimate = animateFloatAsState(
+        targetValue = 1f,
+        animationSpec = tween(
+            durationMillis = 1000,
+            easing = FastOutSlowInEasing
+        )
+    )
+    val outFloatAnimate = animateFloatAsState(
+        targetValue = 0f,
+        animationSpec = tween(
+            durationMillis = 1000,
+            easing = FastOutSlowInEasing
+        )
+    )
     ConstraintLayout(
         modifier = Modifier.fillMaxSize()
     ) {
-        val (common, middle) = createRefs()
+        val (common, cards, middle) = createRefs()
+
         ConstraintLayout(
             modifier = Modifier
                 .fillMaxWidth()
@@ -478,15 +526,59 @@ fun MainComponents() {
                 overflow = TextOverflow.Visible // Ensures no truncation
             )
         }
+
+
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(cards) {
+                    top.linkTo(common.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+        ) { index ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Box(
+                    modifier = Modifier
+                        .height(120.dp)
+                        .width(80.dp)
+                        .padding(horizontal = 4.dp)
+                ) {
+                    if (index > 0) {
+                        BankCard(cardType = listBank[index - 1],0.5f)
+                    }
+
+                }
+                Box(
+                    modifier = Modifier
+                ) {
+                    BankCard(cardType = listBank[index])
+                }
+
+                Box(
+                    modifier = Modifier
+                        .height(120.dp)
+                        .width(200.dp)
+                        .padding(horizontal = 4.dp)
+                ) {
+                    if (index < listBank.size - 1) {
+                        BankCard(cardType = listBank[index + 1],0.5f)
+                    }
+                }
+            }
+        }
         Image(
             modifier = Modifier
-                .scale(4f)
                 .constrainAs(middle) {
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     bottom.linkTo(parent.bottom)
                 }
-                .padding(bottom = 50.dp),
+                .padding(bottom = 80.dp),
             painter = painterResource(R.drawable.wallet),
             contentDescription = "Wallet",
         )
