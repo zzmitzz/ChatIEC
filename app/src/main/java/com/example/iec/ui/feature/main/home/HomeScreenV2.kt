@@ -102,6 +102,7 @@ import com.example.iec.ui.feature.CardType
 import com.example.iec.ui.feature.CustomDialog
 import com.example.iec.ui.feature.ShimmerText
 import com.example.iec.ui.feature.dropShadow
+import com.example.iec.ui.model.UserInfo
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.launchIn
@@ -290,7 +291,7 @@ fun HomeScreenStateful(
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun HomeScreenStateless(
-    screenType: ProfileType = ProfileType.MY_WALLET,
+    screenType: ProfileType = ProfileType.BIO,
     changeScreenType: (ProfileType) -> Unit = {},
     onMenuOpen: () -> Unit = {},
     onScanAction: () -> Unit = {}
@@ -398,7 +399,7 @@ fun HomeScreenStateless(
                         }
 
                         ProfileType.BIO -> {
-
+                            ProfileScreen(UserInfo())
                         }
 
                         ProfileType.CHECK -> {

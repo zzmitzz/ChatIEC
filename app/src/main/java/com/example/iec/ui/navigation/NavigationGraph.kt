@@ -59,25 +59,19 @@ fun NavigationGraph(
         // Main route
         navigation(
             startDestination = DestinationRoute.Home.route,
-            route = "main",
-            enterTransition = {
-                slideIntoContainer(
-                    AnimatedContentTransitionScope.SlideDirection.Left,
-                    animationSpec = tween(700)
-                )
-            }
+            route = "main"
         ) {
             composable(route = DestinationRoute.Home.route,
                 enterTransition = {
                     slideIntoContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Left,
-                        animationSpec = tween(700)
+                        AnimatedContentTransitionScope.SlideDirection.Right,
+                        animationSpec = tween(180)
                     )
                 },
                 exitTransition = {
                     slideOutOfContainer(
-                        AnimatedContentTransitionScope.SlideDirection.Right,
-                        animationSpec = tween(700)
+                        AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(180)
                     )
                 },
                 arguments = listOf(
@@ -93,15 +87,42 @@ fun NavigationGraph(
                     appState = iecAppState
                 )
             }
-            composable(route = DestinationRoute.Tools.route) {
+            composable(
+                route = DestinationRoute.Tools.route,
+                enterTransition = {
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Right,
+                        animationSpec = tween(180)
+                    )
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(180)
+                    )
+                },
+            ) {
                 iecAppState.setBottomBarVisible(true)
                 ToolScreenStateful()
             }
-            composable(route = DestinationRoute.Message.route) {
+            composable(
+                route = DestinationRoute.Message.route,
+                enterTransition = {
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Right,
+                        animationSpec = tween(180)
+                    )
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(180)
+                    )
+                },
+            ) {
                 iecAppState.setBottomBarVisible(true)
                 ListChatScreen(
-                    navToMessageID = {
-                            userName ->
+                    navToMessageID = { userName ->
                         iecAppState.navigateToMessagePersonal(userName)
                     }
                 )
@@ -119,7 +140,7 @@ fun NavigationGraph(
                 exitTransition = {
                     slideOutOfContainer(
                         AnimatedContentTransitionScope.SlideDirection.Right,
-                        tween(300)
+                        tween(180)
                     )
                 }
             ) {
@@ -128,7 +149,21 @@ fun NavigationGraph(
                     onBackPress = { iecAppState.navigateBack() }
                 )
             }
-            composable(route = DestinationRoute.FaceRecognition.route) {
+            composable(
+                route = DestinationRoute.FaceRecognition.route,
+                enterTransition = {
+                    slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Right,
+                        animationSpec = tween(180)
+                    )
+                },
+                exitTransition = {
+                    slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Left,
+                        animationSpec = tween(180)
+                    )
+                },
+            ) {
 
                 iecAppState.setBottomBarVisible(true)
                 ConstraintLayout() {
