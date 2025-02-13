@@ -17,6 +17,7 @@ import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.generationConfig
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +25,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
@@ -44,7 +47,8 @@ data class ChatScreenState(
 
 data class MessageScreenState(
     val chats: SnapshotStateList<Message> = mutableStateListOf(),
-    val modelIsGenerating: Boolean = false
+    val modelIsGenerating: Boolean = false,
+    val i: Int = 0
 )
 
 @HiltViewModel
@@ -64,8 +68,6 @@ class ChatMessageVM @Inject constructor(
     private val scope = viewModelScope + CoroutineExceptionHandler { _, error ->
     }
 
-    private var observeMessage = MutableStateFlow<String>("")
-
     init {
 //        initState()
         setupGemini()
@@ -73,7 +75,7 @@ class ChatMessageVM @Inject constructor(
 
     private fun setupGemini() {
         model = GenerativeModel(
-            "gemini-1.5-pro",
+            "gemini-1.5-flash",
             apiKey = "AIzaSyBPfXNUtrzoY8TGAnjjMBBP447Er7sDAeU"
         )
     }
@@ -82,15 +84,12 @@ class ChatMessageVM @Inject constructor(
 //        iecSocketManager.establishConnection(userID)
 //    }
 
-    private fun geminiAsking(message: String) = callbackFlow<String> {
+    private fun geminiAsking(message: String) = flow<String> {
         var output: String = ""
         model.generateContentStream(message)
             .collect {
                 output += it.text
-                observeMessage.tryEmit(output)
-                trySend(
-                    output
-                )
+                emit(output)
             }
     }
 
@@ -109,6 +108,7 @@ class ChatMessageVM @Inject constructor(
             }
             _uiMessage.update {
                 it.copy(
+                    modelIsGenerating = true,
                     chats = it.chats.plus(
                         Message(
                             isFromUser = false,
@@ -119,17 +119,17 @@ class ChatMessageVM @Inject constructor(
                 )
             }
         }
+        var i = 0
         geminiAsking(
             content
         ).onEach { mess ->
             _uiMessage.update {
                 it.copy(
-                    modelIsGenerating = true,
                     chats = it.chats.apply {
-
                         Log.d("ChatMessageVM", mess)
                         last().message = mess
-                    }
+                    },
+                    i = i++
                 )
             }
         }
@@ -140,7 +140,9 @@ class ChatMessageVM @Inject constructor(
                     )
                 }
             }
+            .flowOn(Dispatchers.IO)
             .launchIn(scope)
+
     }
 
 //    fun onUpdateMessage() {

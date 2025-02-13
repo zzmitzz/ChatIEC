@@ -1,6 +1,9 @@
 package com.example.iec.ui.feature.main.message.box_chat_message
 
+import android.content.Context
 import android.os.Build
+import android.util.Log
+import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.runtime.Composable
@@ -11,6 +14,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -27,6 +32,9 @@ fun ModernChatScreen(
     userName: String = "",
     onBackPress: () -> Unit
 ) {
+
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     val viewModel: ChatMessageVM = hiltViewModel()
     var messageText by remember { mutableStateOf("") }
     val uiState = viewModel.uiMessage.collectAsState(
@@ -72,13 +80,15 @@ fun ModernChatScreen(
                 messageText = messageText,
                 onMessageChange = { messageText = it },
                 onMessageSent = {
+                    keyboardController?.hide()
                     if (!uiState.value.modelIsGenerating) {
                         viewModel.sendMessage(
                             messageText
                         )
                         messageText = ""
                     }
-                }
+                },
+                ableType = !uiState.value.modelIsGenerating
             )
         }
 

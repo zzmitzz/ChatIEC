@@ -1,5 +1,7 @@
 package com.example.iec.ui.feature.main.message.box_chat_message
 
+import android.util.Log
+import android.view.inputmethod.InputMethodManager
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -31,6 +33,7 @@ import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -58,14 +61,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.data.uidata.Message
 import com.example.iec.R
 import com.example.iec.ui.feature.ShimmerText
 import com.example.iec.ui.feature.dropShadow
+import com.example.iec.ui.feature.main.message.ChatMessageVM
 import com.example.iec.ui.feature.main.message.convertTimeStamp
 import com.example.iec.ui.theme.ColorPrimary
 import com.example.iec.ui.theme.colorOnPrimary
+import kotlinx.coroutines.flow.asStateFlow
 
 
 @Composable
@@ -75,8 +81,14 @@ fun ChattingComponent(
 ) {
 
     val listState = rememberLazyListState()
+//    LaunchedEffect(messages.last()) {
+//        Log.d("ChatMessage", messages.last().message)
+//    }
     LaunchedEffect(messages.size) {
-        listState.animateScrollToItem(messages.size-1)
+        listState.scrollToItem(messages.size - 1)
+    }
+    LaunchedEffect(key1 = messages.lastOrNull()?.message) {
+        Log.d("ChatMessage", if (messages.isNotEmpty()) messages.last().message else "No")
     }
     Box(
         modifier = Modifier
@@ -95,22 +107,17 @@ fun ChattingComponent(
             reverseLayout = true
         ) {
 
-            itemsIndexed(messages.reversed(), key = { _, chatMessage -> chatMessage.hashCode()}) { index, chatMessage ->
+            itemsIndexed(
+                messages.reversed(),
+                key = { _, chatMessage -> chatMessage.hashCode() }) { index, chatMessage ->
                 MessageBubble(
+                    modelGen && index == 0,
                     (index == 0) || (index > 0 && messages[index - 1].isFromUser),
                     chatMessage
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }
-        MessageBubble(
-            true,
-            Message(
-                isFromUser = false,
-                message = ,
-                timestamp = 0
-            )
-        )
     }
 }
 
@@ -119,8 +126,10 @@ fun ChattingComponent(
 fun MessageInput(
     messageText: String,
     onMessageChange: (String) -> Unit,
-    onMessageSent: (String) -> Unit
+    onMessageSent: (String) -> Unit,
+    ableType: Boolean = true,
 ) {
+
     Surface(
         modifier = Modifier
             .background(ColorPrimary)
@@ -133,7 +142,8 @@ fun MessageInput(
                 .background(ColorPrimary)
                 .padding(16.dp)
                 .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+
         ) {
             Box(
                 modifier = Modifier.padding(end = 4.dp)
@@ -159,40 +169,18 @@ fun MessageInput(
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent
                 ),
-                shape = RoundedCornerShape(18.dp)
+                shape = RoundedCornerShape(18.dp),
+                maxLines = Int.MAX_VALUE
             )
 
-            Button(
-                onClick = {
+            Image(
+                imageVector = Icons.Default.Send,
+                colorFilter = if(ableType) ColorFilter.tint(Color.White) else ColorFilter.tint(Color.Black),
+                contentDescription = "Send",
+                modifier = Modifier.size(24.dp).clickable {
                     if (messageText.isNotBlank()) {
                         onMessageSent(messageText)
                     }
-                },
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors().copy(
-                    containerColor = Color.White.copy(
-                        alpha = 0.9f
-                    )
-                ),
-                modifier = Modifier
-                    .background(color = Color.DarkGray)
-                    .dropShadow(
-                        shape = RoundedCornerShape(4.dp),
-                        spread = 4.dp,
-                        color = colorOnPrimary,
-                        blur = 4.dp,
-                        offsetX = -2.dp,
-                        offsetY = -2.dp,
-                        animateFloat = null
-                    )
-                    .size(40.dp),
-                content = {
-                    Image(
-                        imageVector = Icons.Default.Send,
-                        colorFilter = ColorFilter.tint(ColorPrimary),
-                        contentDescription = "Send",
-                        modifier = Modifier.size(6.dp)
-                    )
                 }
             )
         }
@@ -201,6 +189,7 @@ fun MessageInput(
 
 @Composable
 fun MessageBubble(
+    modelGen: Boolean = true,
     showAvatar: Boolean,
     message: Message
 ) {
@@ -252,10 +241,10 @@ fun MessageBubble(
 
                     Text(
                         modifier = Modifier.wrapContentWidth(),
-                        text = message.message,
+                        text = message.message + (if (modelGen) "..." else ""),
                         color = ColorPrimary
 
-                        )
+                    )
                     if (onShowTimeStamp) {
                         Text(
                             text = convertTimeStamp(System.currentTimeMillis() - message.timestamp),
@@ -369,6 +358,8 @@ fun TopAppBarMessage(
 @Composable
 fun PreviewUI() {
     MessageBubble(
+
+        modelGen = true,
         true,
         Message(
             isFromUser = false,
