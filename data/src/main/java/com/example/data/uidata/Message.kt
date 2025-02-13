@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Message(
     val header: HEADER = HEADER.MESSAGE,
-    val message: String,
+    var message: String,
     val isFromUser: Boolean,
     val timestamp: Long
 )

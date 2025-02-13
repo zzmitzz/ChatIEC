@@ -3,6 +3,9 @@ package com.example.iec.ui.feature.main.message
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -18,8 +21,11 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.buffer
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -37,9 +43,8 @@ data class ChatScreenState(
 
 
 data class MessageScreenState(
-    val chats: List<Message> = listOf(),
-    val modelIsGenerating: Boolean = false,
-    val newGenerateMessage: String = ""
+    val chats: SnapshotStateList<Message> = mutableStateListOf(),
+    val modelIsGenerating: Boolean = false
 )
 
 @HiltViewModel
@@ -58,6 +63,8 @@ class ChatMessageVM @Inject constructor(
     private lateinit var model: GenerativeModel
     private val scope = viewModelScope + CoroutineExceptionHandler { _, error ->
     }
+
+    private var observeMessage = MutableStateFlow<String>("")
 
     init {
 //        initState()
@@ -80,25 +87,11 @@ class ChatMessageVM @Inject constructor(
         model.generateContentStream(message)
             .collect {
                 output += it.text
+                observeMessage.tryEmit(output)
                 trySend(
                     output
                 )
             }
-        awaitClose{
-            _uiMessage.update {
-                it.copy(
-                    newGenerateMessage = "",
-                    modelIsGenerating = false,
-                    chats = it.chats.plus(
-                        Message(
-                            message = output,
-                            isFromUser = false,
-                            timestamp = System.currentTimeMillis()
-                        )
-                    )
-                )
-            }
-        }
     }
 
     fun sendMessage(content: String) {
@@ -111,7 +104,18 @@ class ChatMessageVM @Inject constructor(
                             message = content,
                             timestamp = System.currentTimeMillis()
                         )
-                    )
+                    ).toMutableStateList()
+                )
+            }
+            _uiMessage.update {
+                it.copy(
+                    chats = it.chats.plus(
+                        Message(
+                            isFromUser = false,
+                            message = "",
+                            timestamp = System.currentTimeMillis()
+                        )
+                    ).toMutableStateList()
                 )
             }
         }
@@ -120,11 +124,23 @@ class ChatMessageVM @Inject constructor(
         ).onEach { mess ->
             _uiMessage.update {
                 it.copy(
-                    newGenerateMessage = mess,
-                    modelIsGenerating = true
+                    modelIsGenerating = true,
+                    chats = it.chats.apply {
+
+                        Log.d("ChatMessageVM", mess)
+                        last().message = mess
+                    }
                 )
             }
-        }.launchIn(scope)
+        }
+            .onCompletion {
+                _uiMessage.update {
+                    it.copy(
+                        modelIsGenerating = false
+                    )
+                }
+            }
+            .launchIn(scope)
     }
 
 //    fun onUpdateMessage() {

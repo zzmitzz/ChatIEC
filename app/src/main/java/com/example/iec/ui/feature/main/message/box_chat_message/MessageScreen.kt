@@ -17,6 +17,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.data.uidata.Message
 import com.example.iec.ui.feature.main.message.ChatMessageVM
+import com.example.iec.ui.feature.main.message.MessageScreenState
 import com.example.iec.ui.theme.ColorPrimary
 import com.example.iec.ui.theme.IECTheme
 
@@ -28,7 +29,9 @@ fun ModernChatScreen(
 ) {
     val viewModel: ChatMessageVM = hiltViewModel()
     var messageText by remember { mutableStateOf("") }
-    val uiState = viewModel.uiMessage.collectAsStateWithLifecycle()
+    val uiState = viewModel.uiMessage.collectAsState(
+        initial = MessageScreenState()
+    )
     val onlineStatus by remember { mutableStateOf(true) }
     Column(
         modifier = Modifier
@@ -58,8 +61,7 @@ fun ModernChatScreen(
         ) {
             ChattingComponent(
                 uiState.value.chats,
-                uiState.value.modelIsGenerating,
-                uiState.value.newGenerateMessage
+                uiState.value.modelIsGenerating
             )
         }
 

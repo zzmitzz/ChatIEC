@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -39,6 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -56,6 +58,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.data.uidata.Message
 import com.example.iec.R
 import com.example.iec.ui.feature.ShimmerText
@@ -69,8 +72,12 @@ import com.example.iec.ui.theme.colorOnPrimary
 fun ChattingComponent(
     messages: List<Message>,
     modelGen: Boolean = false,
-    newTextGen: String = ""
 ) {
+
+    val listState = rememberLazyListState()
+    LaunchedEffect(messages.size) {
+        listState.animateScrollToItem(messages.size-1)
+    }
     Box(
         modifier = Modifier
 
@@ -85,12 +92,10 @@ fun ChattingComponent(
             modifier = Modifier
                 .imePadding()
                 .fillMaxSize(),
-
             reverseLayout = true
         ) {
 
-            itemsIndexed(messages.reversed()) { index, chatMessage ->
-
+            itemsIndexed(messages.reversed(), key = { _, chatMessage -> chatMessage.hashCode()}) { index, chatMessage ->
                 MessageBubble(
                     (index == 0) || (index > 0 && messages[index - 1].isFromUser),
                     chatMessage
@@ -98,6 +103,14 @@ fun ChattingComponent(
                 Spacer(modifier = Modifier.height(8.dp))
             }
         }
+        MessageBubble(
+            true,
+            Message(
+                isFromUser = false,
+                message = ,
+                timestamp = 0
+            )
+        )
     }
 }
 
@@ -208,9 +221,9 @@ fun MessageBubble(
                     modifier = Modifier
                         .padding(end = 6.dp)
                         .alpha(if (showAvatar) 1f else 0f)
-                        .background(color = colorOnPrimary, shape = CircleShape)
+                        .background(color = Color.Transparent, shape = CircleShape)
                         .size(30.dp),
-                    painter = painterResource(R.drawable.ic_launcher_foreground),
+                    painter = painterResource(R.drawable.bard),
                     contentDescription = "Profile Picture",
                 )
             }
@@ -222,7 +235,7 @@ fun MessageBubble(
                     bottomStart = if (message.isFromUser) 20.dp else 4.dp,
                     bottomEnd = if (message.isFromUser) 4.dp else 20.dp
                 ),
-                color = ColorPrimary
+                color = colorOnPrimary
             ) {
 
                 Column(
@@ -240,10 +253,7 @@ fun MessageBubble(
                     Text(
                         modifier = Modifier.wrapContentWidth(),
                         text = message.message,
-                        color = if (message.isFromUser)
-                            MaterialTheme.colorScheme.onSecondary
-                        else
-                            MaterialTheme.colorScheme.onSecondary,
+                        color = ColorPrimary
 
                         )
                     if (onShowTimeStamp) {
