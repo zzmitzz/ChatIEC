@@ -72,10 +72,10 @@ class LoginViewModel @Inject constructor(
         when(status){
             is APIResult.Success -> {
                 dataStore.apply {
-                    clearData(PreferenceKeys.USER_NAME)
-                    clearData(PreferenceKeys.USER_PASSWORD)
-                    saveData(PreferenceKeys.USER_NAME, status.data.username)
-                    saveData(PreferenceKeys.USER_PASSWORD, status.data.password)
+                    clearData(PreferenceKeys.USER_NAME, scope = viewModelScope )
+                    clearData(PreferenceKeys.USER_PASSWORD, scope = viewModelScope )
+                    saveData(PreferenceKeys.USER_NAME, status.data.username, scope = viewModelScope )
+                    saveData(PreferenceKeys.USER_PASSWORD, status.data.password, scope = viewModelScope )
                 }
                 uiState.update { it.copy(loginResponse = status.data, isLoading = false) }
             }

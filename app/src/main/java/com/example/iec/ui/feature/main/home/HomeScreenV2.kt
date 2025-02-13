@@ -1,11 +1,15 @@
 package com.example.iec.ui.feature.main.home
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.util.Log
 import android.webkit.URLUtil
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.EaseInOut
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -42,6 +46,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Snackbar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
@@ -100,8 +105,11 @@ import com.example.iec.R
 import com.example.iec.ui.feature.BankCard
 import com.example.iec.ui.feature.CardType
 import com.example.iec.ui.feature.CustomDialog
+import com.example.iec.ui.feature.LoadingDialog
 import com.example.iec.ui.feature.ShimmerText
 import com.example.iec.ui.feature.dropShadow
+import com.example.iec.ui.feature.main.home.common.CheckInScreen
+import com.example.iec.ui.feature.main.home.common.QRDisplayScreen
 import com.example.iec.ui.model.UserInfo
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.last
@@ -122,179 +130,152 @@ fun HomeScreenStateful(
     setBottomBar: (Boolean) -> Unit = {}
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
-
-    var overlayMenuVisibility by remember {
-        mutableStateOf(false)
-    }
+    var dialogShown by remember { mutableStateOf(false to "") }
+    var overlayMenuVisibility by remember { mutableStateOf(false) }
     val context = LocalContext.current
-
     val coroutineScope = rememberCoroutineScope() + CoroutineExceptionHandler { _, throwable ->
         Log.d("HomeScreen: Coroutine exception", throwable.message.toString())
     }
-
-    val qrScanner = QRReaderML(context)
     val dataStore = context.DataStoreHelper()
 
-    var dialogShown by remember {
-        mutableStateOf(
-            false to ""
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissionsMap ->
+        // 2. Check if all requested permissions are granted
+        val arePermissionsGranted = permissionsMap.values.reduce { acc, next ->
+            acc && next
+        }
+    }
+    var onCheckInDialog by remember { mutableStateOf(false) }
+    CustomDialog(
+        !checkLocationOn(context)
+    ) {
+        Text(
+            text = "You need to turn on the Location first to use this feature",
         )
     }
-    LaunchedEffect(overlayMenuVisibility) {
+
+    LaunchedEffect(Unit) {
+        locationPermissionLauncher.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
+        viewModel.updateUserInfo()
+    }
+
+    LaunchedEffect(key1 = overlayMenuVisibility) {
         setBottomBar(!overlayMenuVisibility)
     }
-    HomeScreenStateless(
-        screenType = uiState.value.selectedHomeScreen,
-        changeScreenType = viewModel::changeScreenType,
-        onMenuOpen = {
-            overlayMenuVisibility = !overlayMenuVisibility
-        },
-        onScanAction = {
-            qrScanner.startScanCode().onEach {
-                when (it) {
-                    is QRResult.Success -> {
-                        val result = it.result
-                        dialogShown = (true to result)
-                    }
 
-                    is QRResult.Failed -> {
-                        Toast.makeText(context, "Failed to scan QR Code", Toast.LENGTH_SHORT).show()
-                    }
-
-                    QRResult.Canceled -> {}
+    LaunchedEffect(uiState.value.qrScannerResult) {
+        val result = uiState.value.qrScannerResult
+        if (result != null) {
+            when(result) {
+                is QRResult.Success -> {
+                    dialogShown = (true to result.result)
                 }
-            }.launchIn(coroutineScope)
+                is QRResult.Failed -> {
+                    Toast.makeText(context, "Scan QR Failed", Toast.LENGTH_SHORT).show()
+                }
+                else -> {
+
+                    Toast.makeText(context, "Scan QR Canceled", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
-    )
-    // Menu Home Action
-    if (overlayMenuVisibility) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .alpha(0.95f)
-                .clickable {
-                    // Do nothing, just for consume the click of overlay.
-                    overlayMenuVisibility = false
-                }
-                .background(color = Color.White),
-        )
-        ConstraintLayout(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            val closeIcon = createRef()
+    }
 
-            // Close Icon
-            IconButton(
-                onClick = { /* Handle close click */ },
-                modifier = Modifier.constrainAs(closeIcon) {
-                    top.linkTo(parent.top, margin = 16.dp)
-                    start.linkTo(parent.start, margin = 16.dp)
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Close",
-                    modifier = Modifier.clickable {
-                        overlayMenuVisibility = false
-                    }
+    HomeScreenStateless(
+        uiStateValue = uiState.value,
+        changeScreenType = viewModel::changeScreenType, // No need
+        onMenuOpen = { overlayMenuVisibility = !overlayMenuVisibility },
+        onScanAction = viewModel::starScanQRCode,
+        onCheckIn = { onCheckInDialog = true }
+
+    )
+    // Showing Menu Option
+    if (overlayMenuVisibility) {
+        OverlayMainMenu(
+            onChangeMenuOverlayVisibility = { overlayMenuVisibility = !overlayMenuVisibility },
+            logoutAction = logoutAction,
+            clearLoginDataStore = {
+                dataStore.clearData(
+                    PreferenceKeys.USER_PASSWORD,
+                    PreferenceKeys.USER_NAME,
+                    scope = coroutineScope
                 )
             }
-
-            // Column with text elements and spacers
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center
+        )
+    }
+    // Showing Scanner Result Dialog
+    if (dialogShown.first) {
+        if( URLUtil.isValidUrl(dialogShown.second) ) {
+            CustomDialog(
+                showDialog = true,
+                title = "IEC message",
+                onDismissRequest = {
+                    dialogShown = (false to "")
+                }
+            ) {
+                val uriIntent = Intent(Intent.ACTION_VIEW, Uri.parse(dialogShown.second))
+                Text(
+                    text = dialogShown.second,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .clickable {
+                            uriIntent.let {
+                                context.startActivity(it)
+                            }
+                        }
+                )
+            }
+        }
+        else if( dialogShown.second.isNotEmpty() ) {
+            CustomDialog(
+                showDialog = true,
+                title = "IEC message",
+                onDismissRequest = {
+                    dialogShown = (false to "")
+                }
             ) {
                 Text(
-                    text = "Join Conference",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Text(
-                    text = "Quit Conference",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Text(
-                    text = "Help",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Text(
-                    text = "Delete Account",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Red,
-                    modifier = Modifier.clickable {
-                        Toast.makeText(context, "Delete Account", Toast.LENGTH_SHORT).show()
-                    }
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-
-                Text(
-                    text = "Log out",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium,
-                    color = Color.Red,
-                    modifier = Modifier.clickable {
-                        logoutAction()
-                        coroutineScope.launch {
-                            dataStore.clearData(
-                                PreferenceKeys.USER_PASSWORD,
-                                PreferenceKeys.USER_NAME
-                            )
-                        }
-
-                    }
+                    text = dialogShown.second,
+                    modifier = Modifier.padding(16.dp)
                 )
             }
         }
     }
 
-    if (URLUtil.isValidUrl(dialogShown.second)) {
+    // Show Check-in Dialog
+    if(onCheckInDialog) {
         CustomDialog(
-            showDialog = dialogShown.first,
-            title = "IEC message",
-            onDismissRequest = {
-                dialogShown = (false to "")
-            }) {
-            var uriIntent: Intent? = null
-            try {
-                uriIntent = Intent(Intent.ACTION_VIEW, Uri.parse(dialogShown.second))
-            } catch (e: Exception) {
-            }
-            Text(
-                text = dialogShown.second,
-                modifier = Modifier
-                    .padding(16.dp)
-                    .clickable {
-                        uriIntent?.let {
-                            context.startActivity(it)
-                        }
-                    }
+            showDialog = true,
+            onDismissRequest = { onCheckInDialog = !onCheckInDialog },
+        ) {
+            CheckInScreen(
+                userName = "ZzMITzZ",
+                onCheckInClick = {
+                    Toast.makeText(context, " ✅ Successful check-in", Toast.LENGTH_SHORT).show()
+                }
             )
         }
     }
+
+    if (uiState.value.isLoading) LoadingDialog()
+
 }
 
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun HomeScreenStateless(
-    screenType: ProfileType = ProfileType.BIO,
+    uiStateValue: HomeUIState,
     changeScreenType: (ProfileType) -> Unit = {},
     onMenuOpen: () -> Unit = {},
-    onScanAction: () -> Unit = {}
+    onScanAction: () -> Unit = {},
+    onCheckIn: () -> Unit = {}
 ) {
     Scaffold(
         backgroundColor = Color(0xFF1C1C1C),
@@ -359,7 +340,7 @@ fun HomeScreenStateless(
             modifier = Modifier.padding(innerpadding)
         ) {
             Spacer(modifier = Modifier.height(12.dp))
-            ComposablePickUp(screenType, changeScreenType)
+            ComposablePickUp(uiStateValue.selectedHomeScreen, changeScreenType)
             Spacer(modifier = Modifier.height(12.dp))
             Box(
                 modifier = Modifier.padding(horizontal = 32.dp, vertical = 32.dp)
@@ -393,7 +374,7 @@ fun HomeScreenStateless(
                     ),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    when (screenType) {
+                    when (uiStateValue.selectedHomeScreen) {
                         ProfileType.MY_WALLET -> {
                             MainComponents()
                         }
@@ -403,7 +384,12 @@ fun HomeScreenStateless(
                         }
 
                         ProfileType.CHECK -> {
-
+                            QRDisplayScreen(
+                                onCheckIn = {
+                                    onCheckIn()
+                                },
+                                qrBitmap = uiStateValue.qrCodeGenerated
+                            )
                         }
                     }
                 }
@@ -532,11 +518,15 @@ fun MainComponents() {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                var animate = -2*abs(pageOffset )+ 1
+                var animate = -2 * abs(pageOffset) + 1
                 Box(
-                    modifier = Modifier.fillMaxWidth().scale(animate).alpha(animate).graphicsLayer {
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .scale(animate)
+                        .alpha(animate)
+                        .graphicsLayer {
 
-                    },
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     BankCard(cardType = listBank[index])
@@ -683,6 +673,99 @@ fun RoundedAvatarCard(
     }
 }
 
+@Composable
+fun OverlayMainMenu(
+    onChangeMenuOverlayVisibility: () -> Unit,
+    logoutAction: () -> Unit,
+    clearLoginDataStore: () -> Unit
+) {
+    val context = LocalContext.current
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .alpha(0.95f)
+            .clickable {
+                // Do nothing, just for consume the click of overlay.
+                onChangeMenuOverlayVisibility()
+            }
+            .background(color = Color.White),
+    )
+    ConstraintLayout(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        val closeIcon = createRef()
+
+        // Close Icon
+        IconButton(
+            onClick = { /* Handle close click */ },
+            modifier = Modifier.constrainAs(closeIcon) {
+                top.linkTo(parent.top, margin = 16.dp)
+                start.linkTo(parent.start, margin = 16.dp)
+            }
+        ) {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = "Close",
+                modifier = Modifier.clickable {
+                    onChangeMenuOverlayVisibility()
+                }
+            )
+        }
+
+        // Column with text elements and spacers
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = androidx.compose.foundation.layout.Arrangement.Center
+        ) {
+            Text(
+                text = "Join Conference",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = "Quit Conference",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = "Help",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = "Delete Account",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Red,
+                modifier = Modifier.clickable {
+                    Toast.makeText(context, "Delete Account", Toast.LENGTH_SHORT).show()
+                }
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = "Log out",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Red,
+                modifier = Modifier.clickable {
+                    logoutAction()
+                    clearLoginDataStore()
+                }
+            )
+        }
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
@@ -693,7 +776,7 @@ private fun HomePreview() {
 @Preview(showBackground = true)
 @Composable
 private fun Home2Preview() {
-    HomeScreenStateless()
+    HomeScreenStateless(HomeUIState())
 }
 
 @Preview(showBackground = true)

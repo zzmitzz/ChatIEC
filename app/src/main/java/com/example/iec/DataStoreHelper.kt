@@ -10,8 +10,10 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -25,9 +27,9 @@ object PreferenceKeys {
 
 
 interface DataStoreHelper {
-    suspend fun saveData(key: Preferences.Key<String>, value: String)
+    fun saveData(key: Preferences.Key<String>, value: String,  scope: CoroutineScope)
     fun readData(key: Preferences.Key<String>): Flow<String?>
-    suspend fun clearData(vararg key: Preferences.Key<String>)
+    fun clearData(vararg key: Preferences.Key<String>, scope: CoroutineScope)
 }
 
 
@@ -38,11 +40,11 @@ class DataStoreHelperImpl @Inject constructor(
     private val dataStore = context.dataStore
 
 
-    override suspend fun saveData(key: Preferences.Key<String>, value: String) {
-        dataStore.edit { preference ->
-            preference[key] = value
-        }.also {
-            Log.d("DataStoreHelper", "Save data successfully ${key.name} = $value")
+    override fun saveData(key: Preferences.Key<String>, value: String, scope: CoroutineScope) {
+        scope.launch {
+            dataStore.edit { preference ->
+                preference[key] = value
+            }
         }
     }
 
@@ -52,9 +54,11 @@ class DataStoreHelperImpl @Inject constructor(
         }
     }
 
-    override suspend fun clearData(vararg keys: Preferences.Key<String>) {
-        keys.forEach { key ->
-            dataStore.edit { it.remove(key) }
+    override fun clearData(vararg keys: Preferences.Key<String>, scope: CoroutineScope) {
+        scope.launch {
+            keys.forEach { key ->
+                dataStore.edit { it.remove(key) }
+            }
         }
     }
 

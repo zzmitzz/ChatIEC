@@ -8,14 +8,17 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -71,7 +74,10 @@ import com.example.iec.ui.feature.main.home.ProfileType
 import com.example.iec.ui.model.UserInfo
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.example.iec.ui.feature.LoadingDialog
 import com.example.iec.ui.theme.ColorPrimary
 import com.example.iec.ui.theme.colorOnPrimary
 
@@ -430,18 +436,7 @@ fun ProfileComponent(
     }
 
 
-    CustomDialog(
-        showDialog = onCheckInDialog,
-        onDismissRequest = { onCheckInDialog = false },
-    ) {
-        CheckInScreen(
-            onGetLocationClick = { onGetLocation() },
-            userName = "ZzMITzZ",
-            onCheckInClick = {
-                Toast.makeText(context, " ✅ Successful check-in", Toast.LENGTH_SHORT).show()
-            }
-        )
-    }
+
 }
 
 
@@ -496,6 +491,11 @@ private fun CircleBoxPrev() {
     
 }
 
+@Preview
+@Composable
+private fun QRDisplayPreview() {
+    QRDisplayScreen()
+}
 @Composable
 fun QRDisplayScreen(
     onCheckIn: () -> Unit = {},
@@ -504,64 +504,108 @@ fun QRDisplayScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
-            .padding(16.dp),
+            .background(MaterialTheme.colorScheme.background)
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceBetween
+        verticalArrangement = Arrangement.SpaceBetween,
     ) {
-        Text(
-            text = "FAIR",
-            fontFamily = FontFamily.Cursive,
-            fontSize = 24.sp
-        )
-        // QR Code Display
+        // App Header
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 24.dp)
+        ) {
+            Text(
+                text = "FAIR",
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    fontFamily = FontFamily.Cursive,
+                    fontSize = 36.sp,
+                    letterSpacing = 2.sp
+                ),
+                color = ColorPrimary,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        // QR Code Section
         Card(
             modifier = Modifier
-                .padding(32.dp)
-                .wrapContentSize(),
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 4.dp
-            ),
-            shape = RoundedCornerShape(16.dp)
+                .padding(24.dp)
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .animateContentSize(),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface
+            )
         ) {
-            if (qrBitmap != null) {
-                Box(
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .padding(32.dp),
-                    contentAlignment = Alignment.Center
-                ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                if (qrBitmap != null) {
                     Image(
                         bitmap = qrBitmap.asImageBitmap(),
                         contentDescription = "QR Code",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(16.dp))
+                            .border(
+                                width = 1.dp,
+                                color = MaterialTheme.colorScheme.outline.copy(alpha = 0.1f),
+                                shape = RoundedCornerShape(16.dp)
+                            )
                     )
+                } else {
+                    LoadingDialog()
                 }
             }
         }
 
-        // Buttons Container
+        // Action Section
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(horizontal = 16.dp, vertical = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Check In Button
             Button(
                 onClick = onCheckIn,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(56.dp),
+                    .height(56.dp)
+                    .shadow(
+                        elevation = 4.dp,
+                        shape = RoundedCornerShape(16.dp)
+                    ),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF4CAF50) // Green
+                    containerColor = ColorPrimary
                 ),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(16.dp)
             ) {
-                Text(
-                    "CHECK IN",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Check,
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        "Check In",
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                }
             }
         }
     }

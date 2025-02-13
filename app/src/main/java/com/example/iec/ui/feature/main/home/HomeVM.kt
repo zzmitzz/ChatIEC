@@ -5,12 +5,15 @@ import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.camera.QRReaderML
+import com.example.camera.QRResult
 import com.example.iec.DataStoreHelper
 import com.example.iec.PreferenceKeys
 import com.example.iec.data.APIResult
 import com.example.iec.data.repository.AuthRepository
 import com.example.iec.ui.feature.main.home.common.Location
 import com.example.iec.ui.model.UserInfo
+import com.example.iec.ui.theme.ColorPrimary
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
@@ -20,6 +23,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.plus
@@ -40,29 +46,45 @@ data class HomeUIState(
     val onError: String? = null,
     val selectedHomeScreen: ProfileType = ProfileType.MY_WALLET,
     val userInfoShow: UserInfo? = null,
-    val qrCodeReceive: Bitmap? = null,
+    val qrCodeGenerated: Bitmap? = null,
     val onNotificationMessage: Queue<String>? = null,
     val checkedInStatus: Boolean = false,
+    var qrScannerResult: QRResult? = null
 )
 
 
 @HiltViewModel
 class HomeVM @Inject constructor(
-    val authRemote: AuthRepository,
-    val dataStore: DataStoreHelper
+    private val authRemote: AuthRepository,
+    private val dataStore: DataStoreHelper,
+    private val qrCodeScanner: QRReaderML
 ) : ViewModel() {
+
+
     private var _uiState = MutableStateFlow<HomeUIState>(HomeUIState())
     val uiState = _uiState
-    var userInfo: UserInfo? = null
 
+
+    private var userInfo: UserInfo? = null
     private val scopeException = viewModelScope + CoroutineExceptionHandler() { _, throwable ->
         Log.d("Error", throwable.message.toString())
     }
 
+    fun starScanQRCode() {
+        qrCodeScanner.startScanCode().onEach { result ->
+            _uiState.update {
+                it.copy(
+                    qrScannerResult = result
+                )
+            }
+        }.flowOn(Dispatchers.IO).launchIn(viewModelScope)
+    }
+
+
     private suspend fun generateQRCode(userKey: String): Bitmap {
         return withContext(Dispatchers.Default) {
             val qrCreator = QRCode.ofSquares()
-                .withColor(Colors.DEEP_SKY_BLUE)
+                .withColor(Colors.DARK_GRAY)
                 .withSize(24)
                 .build(userKey)
             val imageByteArray = qrCreator.renderToBytes()
@@ -86,7 +108,6 @@ class HomeVM @Inject constructor(
             is APIResult.Success -> {
                 response.data
             }
-
             else -> {
                 null
             }
@@ -105,7 +126,7 @@ class HomeVM @Inject constructor(
             }
         } else {
             _uiState.update {
-                it.copy(userInfoShow = getUser(username), qrCodeReceive = qrCode, isLoading = false)
+                it.copy(userInfoShow = getUser(username), qrCodeGenerated = qrCode, isLoading = false)
             }
         }
     }

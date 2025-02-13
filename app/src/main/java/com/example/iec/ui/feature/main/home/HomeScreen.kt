@@ -317,7 +317,7 @@ fun HomeScreen(
                 ProfileComponent(
                     screenType = screenType,
                     navigateEditProfile = onEditProfile,
-                    qrCodeReceive = uiState.qrCodeReceive,
+                    qrCodeReceive = uiState.qrCodeGenerated,
                     userInfo = uiState.userInfoShow,
                     onGetLocation = { onGetLocation() },
                 )

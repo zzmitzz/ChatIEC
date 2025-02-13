@@ -70,7 +70,6 @@ data class Location(
 @SuppressLint("DefaultLocale")
 @Composable
 fun CheckInScreen(
-    onGetLocationClick: () -> Location?,
     onCheckInClick: () -> Unit,
     userName: String = "Ngô Tuấn Anh",
 ) {
@@ -245,7 +244,6 @@ fun CheckInScreen(
 fun CheckInPreview() {
     CheckInScreen(
         userName = "Ngô Tuấn Anh",
-        onGetLocationClick = { Location(0.0, 0.0) },
         onCheckInClick = {}
     )
 }
