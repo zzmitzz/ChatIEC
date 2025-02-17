@@ -67,6 +67,7 @@ import com.example.iec.ui.feature.LoadingDialog
 import com.example.iec.ui.feature.main.home.common.Location
 import com.example.iec.ui.feature.main.home.common.OtherPPInfoCard
 import com.example.iec.ui.feature.main.home.common.ProfileComponent
+import com.example.iec.ui.theme.AtomicLoadingDialog
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
@@ -129,7 +130,7 @@ fun HomeScreenStateful(
         onGetLocation = { Location(0.0, 0.0) },
         onLogOutAction = logoutAction
     )
-    if (uiState.value.isLoading) LoadingDialog()
+    if (uiState.value.isLoading) AtomicLoadingDialog()
 }
 
 

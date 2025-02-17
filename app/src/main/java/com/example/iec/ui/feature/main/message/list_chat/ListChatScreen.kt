@@ -56,6 +56,7 @@ import com.example.iec.R
 import com.example.iec.ui.feature.LoadingDialog
 import com.example.iec.ui.feature.main.message.ChatMessageVM
 import com.example.iec.ui.feature.main.message.ChatScreenState
+import com.example.iec.ui.theme.AtomicLoadingDialog
 
 
 @Composable
@@ -85,7 +86,14 @@ fun ListChatScreen(
             )
         }
         if(uiState.isLoading){
-            LoadingDialog()
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Transparent),
+                contentAlignment = Alignment.Center
+            ){
+                AtomicLoadingDialog()
+            }
         }
     }
 }

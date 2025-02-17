@@ -111,6 +111,7 @@ import com.example.iec.ui.feature.dropShadow
 import com.example.iec.ui.feature.main.home.common.CheckInScreen
 import com.example.iec.ui.feature.main.home.common.QRDisplayScreen
 import com.example.iec.ui.model.UserInfo
+import com.example.iec.ui.theme.AtomicLoadingDialog
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.flow.launchIn
@@ -263,7 +264,16 @@ fun HomeScreenStateful(
         }
     }
 
-    if (uiState.value.isLoading) LoadingDialog()
+    if (uiState.value.isLoading) Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.LightGray.copy(
+                alpha = 0.7f
+            )),
+        contentAlignment = Alignment.Center
+    ){
+         AtomicLoadingDialog()
+    }
 
 }
 

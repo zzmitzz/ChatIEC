@@ -2,8 +2,10 @@ package com.example.iec.ui.feature.main.tools.components.notes
 
 import android.provider.ContactsContract.CommonDataKinds.Note
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -46,6 +48,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.data.IECNote
 import com.example.iec.ui.feature.LoadingDialog
 import com.example.iec.ui.feature.main.tools.ToolVM
+import com.example.iec.ui.theme.AtomicLoadingDialog
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -97,7 +100,14 @@ fun NoteScreen(
             onChipSelected = { selectedChip = it }
         )
         if(isLoading){
-            LoadingDialog()
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Transparent),
+                contentAlignment = Alignment.Center
+            ){
+                AtomicLoadingDialog()
+            }
         }else{
             LazyColumn(
                 state = lazyListState,

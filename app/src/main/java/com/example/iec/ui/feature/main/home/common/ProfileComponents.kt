@@ -78,6 +78,7 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.iec.ui.feature.LoadingDialog
+import com.example.iec.ui.theme.AtomicLoadingDialog
 import com.example.iec.ui.theme.ColorPrimary
 import com.example.iec.ui.theme.colorOnPrimary
 
@@ -562,7 +563,14 @@ fun QRDisplayScreen(
                             )
                     )
                 } else {
-                    LoadingDialog()
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Transparent),
+                        contentAlignment = Alignment.Center
+                    ){
+                        AtomicLoadingDialog()
+                    }
                 }
             }
         }
@@ -608,6 +616,9 @@ fun QRDisplayScreen(
                 }
             }
         }
+
+
+        Box(modifier = Modifier.height(50.dp))
     }
 }
 

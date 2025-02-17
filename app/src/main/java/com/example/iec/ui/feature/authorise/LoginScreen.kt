@@ -57,6 +57,7 @@ import com.example.iec.ui.feature.CustomDialog
 import com.example.iec.ui.feature.CustomTextField
 import com.example.iec.ui.feature.LoadingDialog
 import com.example.iec.ui.feature.SimpleButton
+import com.example.iec.ui.theme.AtomicLoadingDialog
 import com.example.iec.ui.theme.ButtonBackground
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.zip
@@ -93,7 +94,7 @@ fun LoginScreenStateful(
                 .background(Color.Transparent),
             contentAlignment = Alignment.Center
         ){
-            LoadingDialog()
+            AtomicLoadingDialog()
         }
     }
 }
