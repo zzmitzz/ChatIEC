@@ -411,12 +411,13 @@ fun HomeScreenStateless(
 
 
 @Composable
-fun MainComponents() {
-    val listBank: List<CardType> = listOf(
+fun MainComponents(
+    listBank: List<CardType> = listOf(
         CardType.MBBank,
         CardType.Momo,
         CardType.ZaloPay
     )
+) {
     val pagerState = rememberPagerState(pageCount = { (listBank.size) })
     ConstraintLayout(
         modifier = Modifier.fillMaxSize()
@@ -535,13 +536,11 @@ fun MainComponents() {
                         .scale(animate)
                         .alpha(animate)
                         .graphicsLayer {
-
                         },
                     contentAlignment = Alignment.Center
                 ) {
                     BankCard(cardType = listBank[index])
                 }
-                Log.d("HomeScreenV2", pageOffset.toString() + pagerState.currentPage.toString())
             }
         }
         Image(

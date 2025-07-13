@@ -1,7 +1,11 @@
 package com.example.iec.di
 
+import android.content.Context
+import androidx.room.Room
 import com.example.iec.DataStoreHelper
 import com.example.iec.DataStoreHelperImpl
+import com.example.iec.data.local.AppDatabase
+import com.example.iec.data.local.NoteDao
 import com.example.iec.data.remote.AuthRemote
 import com.example.iec.data.remote.MessageRemote
 import com.example.iec.data.remote.NoteRemote
@@ -15,6 +19,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
@@ -30,7 +35,7 @@ import kotlin.math.log
 
 @InstallIn(SingletonComponent::class)
 @Module
-class AppModule {
+class AppModule() {
 
     @Provides
     @Singleton
@@ -51,6 +56,9 @@ class AppModule {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
+
+
+
 
     @Provides
     @Singleton
@@ -78,12 +86,23 @@ class AppModule {
             install(WebSockets)
         }
     }
+
+    @Singleton
+    @Provides
+    fun getNoteDAO(
+        @ApplicationContext context: Context
+    ): NoteDao = Room.databaseBuilder(
+        context = context,
+        AppDatabase::class.java,
+        "note_database"
+    ).build().noteDAO()
 }
 
 
 @InstallIn(SingletonComponent::class)
 @Module
 abstract class RepoModule {
+
     @Binds
     abstract fun provideNoteRepository(noteRemote: NoteRepositoryImpl): NoteRepository
 
@@ -95,4 +114,7 @@ abstract class RepoModule {
 
     @Binds
     abstract fun provideDataStore(dataStoreHelper: DataStoreHelperImpl): DataStoreHelper
+
+
+
 }

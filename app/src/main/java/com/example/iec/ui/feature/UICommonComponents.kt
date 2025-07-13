@@ -47,6 +47,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -423,7 +424,8 @@ enum class CardType(
     val color: Color,
     val linkQR: String,
     val localLogo: Int = 0,
-    val localImage: Int = 0
+    val localImage: Int = 0,
+    val QRContentDefault: Int = R.drawable.untitled_1,
 ) {
     MBBank(
         Color(0xFF1F41BB), "1", R.drawable.logo_mb_new, com.example.camera_ml.R.drawable.mb
@@ -441,6 +443,9 @@ fun BankCard(
     cardType: CardType,
     scale: Float = 1f
 ) {
+    var isShowQR by remember {
+        mutableStateOf(false)
+    }
     Card(
         modifier = Modifier
             .height(240.dp)
@@ -454,14 +459,29 @@ fun BankCard(
 
         ) {
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize() ,
             contentAlignment = Alignment.Center
         ) {
-            Image(
-                painter = painterResource(id = cardType.localLogo),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(100.dp))
+            Box(
+                Modifier
+                    .padding(8.dp)
+                    .background(
+                        color = if (!isShowQR) Color.Transparent else Color.White,
+                    )
+                    .clickable {
+                        isShowQR = !isShowQR
+                    },
+            ) {
+                Image(
+                    painter = if (!isShowQR) painterResource(id = cardType.localLogo) else painterResource(
+                        cardType.QRContentDefault
+                    ),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(100.dp)
+                )
+            }
         }
     }
 }
